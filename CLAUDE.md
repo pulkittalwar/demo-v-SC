@@ -58,11 +58,11 @@ This room demands TECHNICAL CREDIBILITY before anything else. Invented vendor na
 
 Use only canonical Sembcorp / P&U industrial vocabulary (see SEMBCORP_SCOPE.md for the full table):
 
-- **Equipment:** GT (gas turbine), CCGT (Combined Cycle Gas Turbine), HRSG (Heat Recovery Steam Generator), boiler feed pump (BFP), condenser, cooling tower, generator, transformer, switchyard, GT exhaust temperature spread, compressor pressure ratio, heat rate (kJ/kWh), fuel gas pressure
+- **Equipment:** GT (gas turbine), CCGT (Combined Cycle Gas Turbine), HRSG (Heat Recovery Steam Generator), boiler feed pump (BFP — multi-stage centrifugal, NDE/DE bearing housings), steam turbine (ST), condenser, cooling tower, generator, transformer, switchyard, GT exhaust temperature spread, compressor pressure ratio, heat rate (kJ/kWh), fuel gas pressure, vibration RMS (mm/s), ISO 10816-7 alarm zones (A / B / C / D), 1×RPM (synchronous vibration component), phase angle, bearing temperature (°C)
 - **Metrics:** MW output, heat rate, availability factor, capacity factor, EAF (Equivalent Availability Factor), forced outage rate, dispatch reliability, derate
 - **Plant IDs:** Jurong-CCGT-1, Jurong-CCGT-2, Sakra-CCGT-1, Banyan-CHP, Tuas-Power
-- **Standards:** IEEE 1159 (power quality), ISO 50001 (energy management), IEC 61850 (substation automation), NERC reliability standards, ASME PTC (performance test codes)
-- **Vendors:** GE 9HA gas turbines, Siemens SGT-800, Mitsubishi Power M701F, ABB drives (ACS series), Honeywell Experion DCS, Emerson Ovation, OSIsoft PI System
+- **Standards:** IEEE 1159 (power quality), ISO 50001 (energy management), ISO 10816-7 (industrial pumps — mechanical vibration), ISO 20816-1 (general machinery vibration), API 670 (machinery protection systems), IEC 61850 (substation automation), NERC reliability standards, ASME PTC (performance test codes)
+- **Vendors:** GE 9HA gas turbines, Siemens SGT-800, Mitsubishi Power M701F, Sulzer (BFP — Swiss multi-stage centrifugal), Bently Nevada 3500 series (Emerson — machinery protection / vibration monitoring), SKF (bearings), ABB drives (ACS series), Honeywell Experion DCS, Emerson Ovation, OSIsoft PI System
 - **Engineer names (Sembcorp Singapore-flavored):** R. Kumar (Ops Control Tower), Lim Wei Jie (Onsite Eng / Maint), Dr. A. Wong (Offsite Expert), Priya Sundaram (Asset Perf Analyst). Backup roster: J. Tan, S. Ibrahim, M. Lim, P. Subramaniam
 
 NEVER invent fake standards, fake vendor model numbers, or generic "AI says check the system" copy. The 6 ITP attendees will pattern-match instantly. Joubert was Alstom Power CEO — he knows every gas turbine made in the last 30 years. Asherson ran Rolls-Royce SEA. Get a model number wrong and credibility collapses.
@@ -128,8 +128,8 @@ Narrative summaries like "tested, works" without per-test rows get bounced back 
 ## Tech stack (locked)
 
 - **Form factor:** Full browser viewport `100vw × 100vh` — edge-to-edge, NO centered floating rectangle. Split-pane CSS grid `2fr 1fr` (LEFT = tablet column · RIGHT = under-the-hood). Pane-level scroll on both `#left-pane` and `#right-pane` (W1.5c lock). Body has `overflow: hidden` + `overscroll-behavior: none` so the page itself never bounces. See SEMBCORP_SCOPE.md "## Split-pane layout (locked W1.5c — pane-level scroll)" for canonical layout spec.
-- **Tablet bezel:** `max-width: 620px`, centered in LEFT pane with `margin: 0 auto`, charcoal `#1F2937` frame (10px padding, 24px border-radius), NO green glow. `min-height: 110vh` so bottom bezel hangs below initial viewport — scrolling LEFT pane reveals the rest.
-- **Personas panel:** External white card ABOVE the tablet (NOT inside the bezel), matches `max-width: 620px` to line up as a centered column.
+- **Tablet bezel:** `max-width: 720px`, centered in LEFT pane with `margin: 0 auto`, charcoal `#1F2937` frame (10px padding, 24px border-radius), NO green glow. `min-height: 110vh` so bottom bezel hangs below initial viewport — scrolling LEFT pane reveals the rest.
+- **Personas panel:** External white card ABOVE the tablet (NOT inside the bezel), matches `max-width: 720px` to line up as a centered column.
 - **CSS:** Hand-rolled vanilla CSS inside `<style>` block in `index.html`. No Tailwind, no preprocessor.
 - **JS:** Vanilla. Single state object + render function. State stack array for back-button reversibility. `init()` runs once on DOMContentLoaded.
 - **3D KG library:** `three.js` + `3d-force-graph`, pre-bundled to `vendor/`. NO CDN. If pre-bundle exceeds 5MB or causes init perf issues, fall back to 2D-parallax SVG and log decision.
@@ -181,23 +181,32 @@ The Workflow Agent (added W3.4) embodies the learning narrative: as each persona
 
 This is the meta-learning loop: the app learns HOW Sembcorp actually works, not just whether the equipment is healthy.
 
-## Canonical demo scenario (locked)
+## Canonical demo scenario (locked — W3.9 pivot)
 
-**Incident:** `JRG-CCGT-1 · Block 2 · GT-3` — GT exhaust temperature spread widening (8.4°C, target ≤5°C) + heat rate drift (+2.1%) + compressor pressure ratio drift (-0.4). Date stamp `INC-2026-0537 · 08:42 SGT`. Severity **AMBER**.
+**Incident:** `JRG-CCGT-1 · Block 2 · BFP-3A` — vibration RMS on NDE bearing housing exceeds ISO 10816-7 Zone C alarm threshold (8.4 mm/s vs 7.1 mm/s). Date stamp `INC-2026-0537 · 02:47 SGT`. Severity **AMBER**.
 
-**Asset chain (KG-traced upstream):**
-`GT-3 → HRSG-3 → CONDENSER-3 → GENERATOR-3 → TRANSFORMER-3 → SWITCHYARD-A`
+**Asset chain (KG-traced cascade):**
+`BFP-3A → HRSG-3 → ST-3 → GENERATOR-3 → TRANSFORMER-3 → SWITCHYARD-A`
 
-**Hyperspace diagnosis (orchestrator + triage agent + Power Gen critic):**
-Compressor fouling correlated with last 90 days ambient humidity profile. Validated against 3 prior compressor-fouling RCAs from Jurong + Sakra fleet (KG layer L3 → L4).
+**Hyperspace diagnosis (presented to Faye Sit):**
+NDE bearing race spalling (early-stage). 78% confidence. Pattern-matched against 3 prior BFP bearing failures across the Sembcorp fleet (Jurong-CCGT-2 / Sakra-CCGT-1 / Banyan-CHP).
+
+**Alternatives surfaced (view-only):**
+- Shaft misalignment · 52%
+- Coupling wear · 31%
+- Impeller imbalance · 19%
+
+**Actual root cause (W4 reveal — DO NOT spoil in P1/P2/P3 broadcast):**
+Bent shaft on BFP-3A. Lim discovers via dial-indicator runout test during onsite inspection. Offsite senior engineer (Dr. A. Wong) confirms via remote vibration phase analysis (1×RPM dominant + ~180° NDE-DE phase shift = textbook bent shaft signature).
 
 **Operational impact:**
-MW dispatch reliability at risk — Block 2 derate ~50MW if unmitigated. Affects PSO commitment window 09:00–18:00 SGT. Action required within 45 min.
+BFP-3A trip risk → HRSG-3 feedwater starvation → ST-3 derate ~50 MW. PSO commitment window 09:00–18:00 SGT affected. Revenue at risk ~SGD 240k (50 MW × 4h × SGD 120/MWh peak — illustrative). Action required within 45 min.
 
-**Three-tier resolution:**
-1. **Immediate remediation** (Onsite Eng): compressor wash cycle initiation per OEM playbook
-2. **Short-term WO** (Offsite Expert approval): condenser tube inspection scheduled next shutdown
-3. **Long-term feedback to KG** (Asset Perf): update humidity-fouling pattern in L4, write back $X estimated revenue protected
+**Resolution arc:**
+1. **Faye (P1)** verifies metrics + dispatches Lim onsite (W3.9).
+2. **Lim (P2)** follows BFP vibration SOP + safety procedures + dial-indicator runout test → discovers shaft bow (W4).
+3. **Lim (P2)** calls offsite senior engineer (Dr. A. Wong) for remote confirmation — phase analysis seals diagnosis (W4).
+4. **Asset Perf (P4)** long-term WO + revenue protection writeback (W5 / W7).
 
 ## 4-persona workflow (locked)
 
@@ -218,17 +227,17 @@ Same canonical incident flows through 4 personas. Personas panel is an EXTERNAL 
 - No override / disagree workflow on diagnosis (CAG had this; Sembcorp skips for scope).
 - No login / auth screens.
 - No mobile responsive layout — desktop viewport only (full `100vw × 100vh`, projector at the meeting).
-- No multi-incident dashboard — single canonical Jurong-CCGT-1 GT-3 incident.
+- No multi-incident dashboard — single canonical Jurong-CCGT-1 BFP-3A incident.
 - No state machine library, no React, no Vue.
 - No tests, no CI, no documentation files beyond this CLAUDE.md + SEMBCORP_SCOPE.md.
 
 ## Demo flow (canonical)
 
-1. **Open** — Hyperspace OS tablet view shows Ops Control Tower curated dashboard with `JRG-CCGT-1 · GT-3` incident already detected, AMBER severity, TRIAGING pill. Right pane Agent View: Orchestrator idle, all reasoning + critic agents idle.
-2. **Triage** — Orchestrator dispatches Triage Agent (animates in Agent View card + on KG, traversing L2 → L3 → L4 nodes). Triage Agent produces diagnosis. Power Gen Critic validates path (KG path glows green). Diagnosis surfaces to tablet. Ops Control Tower engineer (R. Kumar) confirms. Hands off to Onsite.
-3. **Onsite** — Persona strip greys Ops, activates Onsite. Tablet re-renders for Lim Wei Jie. Playbook Agent dispatches (compressor wash procedure). Critic validates. Onsite engineer ticks verification steps + initiates immediate remediation. Hands off to Offsite.
-4. **Offsite** — Persona strip handoff. Tablet re-renders for Dr. A. Wong (Offsite Expert). Long-term WO pre-fill surfaces. HSE Risk Validator + P&L Impact Validator run (Cross-Functional Validators bucket activates). Offsite approves WO + escalation memo. Hands off to Asset Perf.
-5. **Asset Perf** — Persona strip handoff. Tablet re-renders for Priya Sundaram. P&L dashboard surfaces. $X revenue protected. Learning Engine activates: correction writes back to KG (visible as new green node appearing on L3 humidity-fouling pattern). Learning Flywheel completes step 5/5.
+1. **Open** — Hyperspace OS tablet view shows Ops Control Tower dashboard with `JRG-CCGT-1 · BFP-3A` incident already detected, AMBER severity, `TRIAGE READY` pill. Right pane Agent View: Orchestrator idle, all reasoning + critic agents idle.
+2. **Triage** — Faye clicks the header → Sensor Anomaly Inspector + Turbine Diagnostic Agent + Power Gen Critic fire in right pane. Faye clicks the AMBER row → 2-stage loading theater (Inspection at t=0 → Summary report at t=5s with Triage placeholder → diagnosis hypothesis + alternates + HITL pill at t=10s). Hypothesis: NDE bearing race spalling, 78% confidence. Hands off to Onsite.
+3. **Onsite** — Persona strip greys Ops, activates Onsite. Tablet re-renders for Lim Wei Jie. BFP Maintenance Playbook Agent dispatches (Sulzer BFP procedure). Critic validates. Onsite engineer ticks verification steps + initiates immediate remediation (W4 reveals bent-shaft actual root cause via dial-indicator runout test). Hands off to Offsite.
+4. **Offsite** — Persona strip handoff. Tablet re-renders for Dr. A. Wong (Offsite Expert). Senior engineer confirms bent-shaft via remote vibration phase analysis. Long-term WO pre-fill surfaces. HSE Risk Validator + P&L Impact Validator run. Offsite approves WO + escalation memo. Hands off to Asset Perf.
+5. **Asset Perf** — Persona strip handoff. Tablet re-renders for Priya Sundaram. P&L dashboard surfaces. $X revenue protected. Learning Engine activates: correction writes back to KG (visible as new green node appearing on L3 bearing-spalling / bent-shaft pattern). Learning Flywheel completes step 5/5.
 6. **Close** — "Next decision sharper" beat lands. Demo ends.
 
 ## When in doubt
