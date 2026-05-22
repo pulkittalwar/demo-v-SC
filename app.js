@@ -3886,15 +3886,579 @@ function closeTraderModal() {
   }
 }
 
-// ── W7 — Right pane variant: P2 onsite gets full-pane inline 3D KG ──
+// ── W10 — Right pane: all personas route through standard pane.
+// W7 P2 inline KG mechanic REVERTED — KG lives permanently in floating window.
+// paintRightPaneInlineKG retained as dead code per WA #5 (throwaway).
 function renderRightPane() {
   const rightPane = document.getElementById('right-pane');
   if (!rightPane) return;
+  paintRightPaneStandard();
+  paintPersonaNarrative();
+}
+
+// W10 Section B — per-persona narrative dispatch
+function paintPersonaNarrative() {
+  const host = document.getElementById('persona-narrative-host');
+  if (!host) return;
   const personaKey = state.activePersona;
-  if (personaKey === 'onsite') {
-    paintRightPaneInlineKG();
-  } else {
-    paintRightPaneStandard();
+  // Clear host if active persona changed since last paint
+  if (host.dataset.personaBuilt && host.dataset.personaBuilt !== personaKey) {
+    host.innerHTML = '';
+    delete host.dataset.personaBuilt;
+  }
+  if (personaKey === 'ops')          renderRightPaneFaye();
+  else if (personaKey === 'onsite')  renderRightPaneLim();
+  else if (personaKey === 'analyst') renderRightPanePriya();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Section J — P3 Priya right-pane narrative (single Commercial card)
+// ═══════════════════════════════════════════════════════════════
+
+function renderRightPanePriya() {
+  const host = document.getElementById('persona-narrative-host');
+  if (!host) return;
+  if (host.dataset.personaBuilt === 'analyst') return;
+  host.innerHTML = '';
+  host.dataset.personaBuilt = 'analyst';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'persona-narrative';
+  wrap.dataset.persona = 'analyst';
+
+  wrap.innerHTML = `
+    <div class="pn-header">
+      <div class="pn-h-title">Knowledge Graph · beyond single site</div>
+      <div class="pn-h-sub">For the trader, the KG extends into merchant markets, contracts, and cross-site availability.</div>
+    </div>
+    <div class="pn-section" data-section="P3-KG">
+      <div class="pn-s-num">★</div>
+      <div class="pn-s-body">
+        <div class="pn-s-title">Commercial intelligence cluster</div>
+        <div class="pn-s-sub">7 new nodes integrated into the KG: merchant prices · power purchase agreements · supply/demand curves · cross-site availability.</div>
+        <div class="pn-s-meta">Sources: USEP · merchant market feed · PPA registry · cross-site SCADA</div>
+      </div>
+      <button class="pn-s-play" type="button" data-section="P3-KG" data-action="open-kg">
+        <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
+        <span>Open KG</span>
+      </button>
+    </div>
+  `;
+  host.appendChild(wrap);
+  wirePriyaRightPaneButtons();
+}
+
+function wirePriyaRightPaneButtons() {
+  document.querySelectorAll('.persona-narrative[data-persona="analyst"] .pn-s-play').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      if (!state.graphWinOpen) toggleGraphWindow();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Section H — P2 Lim right-pane narrative (Safety · Tacit · KG promotion)
+// ═══════════════════════════════════════════════════════════════
+
+const P2_NARRATIVE_SECTIONS = [
+  {
+    num: 'A',
+    title: 'Safety-first field gating',
+    sub: 'HSE agents block field work unless safety certs + PPE + LOTO state are current.',
+    meta: '3 domain experts · 1 critic · sources: Org Knowledge · Hyperspace',
+    buttonLabel: 'Play',
+  },
+  {
+    num: 'B',
+    title: 'Tacit knowledge capture from calls + chats',
+    sub: 'AI extracts the engineering insight that\'s normally lost on the phone or WhatsApp.',
+    meta: '3 domain experts · 1 critic · sources: call audio · Org Knowledge',
+    buttonLabel: 'Play',
+  },
+  {
+    num: 'C',
+    title: 'Tacit knowledge → Knowledge Graph promotion',
+    sub: 'Agents triage tacit bytes · process engineers review · only validated insights promote to the KG.',
+    meta: '3 domain experts · 2 critics · sources: tacit staging · Main KG',
+    buttonLabel: 'Open KG',
+  },
+];
+
+function renderRightPaneLim() {
+  const host = document.getElementById('persona-narrative-host');
+  if (!host) return;
+  if (host.dataset.personaBuilt === 'onsite') return;
+  host.innerHTML = '';
+  host.dataset.personaBuilt = 'onsite';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'persona-narrative';
+  wrap.dataset.persona = 'onsite';
+
+  wrap.innerHTML = `
+    <div class="pn-header">
+      <div class="pn-h-title">On-site agents at work · 3 capabilities</div>
+      <div class="pn-h-sub">Safety-first dispatch · tacit knowledge capture · KG learning loop.</div>
+    </div>
+    ${P2_NARRATIVE_SECTIONS.map(s => `
+      <div class="pn-section ${state.w10.playedSections.p2[s.num] ? 'pn-section-played' : ''}" data-section="${s.num}">
+        <div class="pn-s-num">${s.num}</div>
+        <div class="pn-s-body">
+          <div class="pn-s-title">${s.title}</div>
+          <div class="pn-s-sub">${s.sub}</div>
+          <div class="pn-s-meta">${s.meta}</div>
+        </div>
+        <button class="pn-s-play ${s.num !== 'C' && state.w10.playedSections.p2[s.num] ? 'pn-s-played' : ''}" type="button" data-section="${s.num}" data-action="${s.num === 'C' ? 'open-kg' : 'modal'}">
+          <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
+          <span>${s.num === 'C' ? 'Open KG' : (state.w10.playedSections.p2[s.num] ? '✓ Replay' : 'Play')}</span>
+        </button>
+      </div>
+    `).join('')}
+  `;
+  host.appendChild(wrap);
+  wireLimRightPaneButtons();
+}
+
+function wireLimRightPaneButtons() {
+  document.querySelectorAll('.persona-narrative[data-persona="onsite"] .pn-s-play').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      const num = btn.dataset.section;
+      const action = btn.dataset.action;
+      if (action === 'open-kg') {
+        // Section C → open floating KG window (toolbar Display Graph handler)
+        if (!state.graphWinOpen) toggleGraphWindow();
+      } else {
+        openP2NarrativeModal(num);
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 — P2 modal content defs
+// ═══════════════════════════════════════════════════════════════
+
+const P2_SECTION_A = {
+  num: 'A', title: 'Safety-first field gating',
+  domain: [
+    { name: 'HSE Field Compliance Agent', persistent: 'hse',  dataSource: 'Org Knowledge' },
+    { name: 'Safety Cert Validator',      persistent: null,   dataSource: 'Org Knowledge' },
+    { name: 'PPE/LOTO Check Agent',       persistent: null,   dataSource: 'Hyperspace' },
+  ],
+  orch: [
+    { name: 'A2A Coordination Agent', persistent: 'workflow' },
+  ],
+  critique: [
+    { name: 'HSE Risk Validator', persistent: 'hse' },
+  ],
+  sources: ['Org Knowledge · cert records', 'Hyperspace · LOTO state'],
+  narration: [
+    'HSE agents pull current safety certifications + PPE issue records from Org Knowledge.',
+    'PPE/LOTO Check Agent confirms lockout/tagout state on the asset from Hyperspace.',
+    'HSE Risk Validator gates field dispatch — block if any cert lapsed or LOTO not asserted.',
+  ],
+};
+
+const P2_SECTION_B = {
+  num: 'B', title: 'Tacit knowledge capture from calls + chats',
+  domain: [
+    { name: 'Audio-transcription Agent', persistent: 'audio-transcription', dataSource: 'Call audio' },
+    { name: 'Tacit Knowledge Extractor', persistent: null,                  dataSource: 'Transcript' },
+    { name: 'Semantic Tag Agent',        persistent: null,                  dataSource: 'Main KG' },
+  ],
+  orch: [
+    { name: 'A2A Coordination Agent', persistent: 'workflow' },
+  ],
+  critique: [
+    { name: 'Tacit Relevance Critic', persistent: null },
+  ],
+  sources: ['Call audio · Lim ↔ Wong', 'Main KG · entity catalog'],
+  narration: [
+    'Audio-transcription Agent converts the Lim ↔ Wong call into structured transcript.',
+    'Tacit Knowledge Extractor surfaces the engineering insight the engineers exchange in passing.',
+    'Semantic Tag Agent maps the insight to existing entities in the Main KG (Sulzer, BFP casing, 4-o\'clock volute).',
+    'Tacit Relevance Critic filters out small-talk and routes only operationally-relevant bytes onward.',
+  ],
+};
+
+const P2_SECTION_BY_NUM = { 'A': P2_SECTION_A, 'B': P2_SECTION_B };
+
+function openP2NarrativeModal(num) {
+  const sectionDef = P2_SECTION_BY_NUM[String(num)];
+  if (!sectionDef) return;
+  openNarrativeModal('p2', sectionDef);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Section C — P1 Faye right-pane narrative (3 sections + Play)
+// ═══════════════════════════════════════════════════════════════
+
+const P1_NARRATIVE_SECTIONS = [
+  {
+    num: '1',
+    title: 'Criticality · Diagnosis · Summary',
+    sub: 'Agents pull the right Hyperspace OS metrics + run pattern-match against prior incidents to land a single criticality + diagnosis summary card.',
+    meta: '4 domain experts · 2 critics · sources: Hyperspace · Netscope · Org Knowledge',
+  },
+  {
+    num: '2',
+    title: 'SOP-driven telemetry confirmation',
+    sub: 'SOP says operator must confirm metrics. Agents fetch the snapshot and bundle it for Faye.',
+    meta: '3 domain experts · 2 critics · sources: Hyperspace · SOP store',
+  },
+  {
+    num: '3',
+    title: 'Scheduling · Expertise match · Dispatch',
+    sub: 'Agents check duty roster + expertise DB · pick Lim Wei Jie · auto-bundle dispatch payload.',
+    meta: '4 domain experts · 1 critic · source: Org Knowledge (roster · expertise DB · cert records)',
+  },
+];
+
+// W10 — persisted across renders so replay state survives back-nav / persona switch
+state.w10 = state.w10 || {
+  playedSections: { p1: {}, p2: {} },
+  modalOpen: false,
+  modalTimers: [],
+};
+
+function renderRightPaneFaye() {
+  const host = document.getElementById('persona-narrative-host');
+  if (!host) return;
+  // Build once per persona; subsequent calls preserve play/replay state on existing buttons
+  if (host.dataset.personaBuilt === 'ops') return;
+  host.innerHTML = '';
+  host.dataset.personaBuilt = 'ops';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'persona-narrative';
+  wrap.dataset.persona = 'ops';
+
+  wrap.innerHTML = `
+    <div class="pn-header">
+      <div class="pn-h-title">Agents at work · 3 capabilities</div>
+      <div class="pn-h-sub">Diagnosis · SOP-confirmed telemetry · dispatch — Pulkit clicks Play to land each beat.</div>
+    </div>
+    ${P1_NARRATIVE_SECTIONS.map(s => `
+      <div class="pn-section ${state.w10.playedSections.p1[s.num] ? 'pn-section-played' : ''}" data-section="${s.num}">
+        <div class="pn-s-num">${s.num}</div>
+        <div class="pn-s-body">
+          <div class="pn-s-title">${s.title}</div>
+          <div class="pn-s-sub">${s.sub}</div>
+          <div class="pn-s-meta">${s.meta}</div>
+        </div>
+        <button class="pn-s-play ${state.w10.playedSections.p1[s.num] ? 'pn-s-played' : ''}" type="button" data-section="${s.num}">
+          <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
+          <span>${state.w10.playedSections.p1[s.num] ? '✓ Replay' : 'Play'}</span>
+        </button>
+      </div>
+    `).join('')}
+  `;
+
+  host.appendChild(wrap);
+  wireFayeRightPanePlayButtons();
+}
+
+function wireFayeRightPanePlayButtons() {
+  document.querySelectorAll('.persona-narrative[data-persona="ops"] .pn-s-play').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      const num = btn.dataset.section;
+      openP1NarrativeModal(num);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Sections E-G — P1 modal content definitions
+// ═══════════════════════════════════════════════════════════════
+
+const P1_SECTION_1 = {
+  num: 1, title: 'Criticality · Diagnosis · Summary',
+  domain: [
+    { name: 'Sensor Anomaly Inspector',      persistent: 'inspection', dataSource: 'Hyperspace' },
+    { name: 'Turbine Diagnostic Agent',      persistent: 'triage',     dataSource: 'Org Knowledge' },
+    { name: 'Criticality Scoring Agent',     persistent: null,         dataSource: 'Netscope' },
+    { name: 'Incident Summary Synthesizer',  persistent: null,         dataSource: 'Hyperspace' },
+  ],
+  orch: [
+    { name: 'Orchestrator',           persistent: 'orchestrator' },
+    { name: 'A2A Coordination Agent', persistent: 'workflow' },
+  ],
+  critique: [
+    { name: 'Critic · Power Gen',           persistent: 'critic-power-gen' },
+    { name: 'Criticality Standards Critic', persistent: null },
+  ],
+  sources: ['Hyperspace · telemetry', 'Netscope · analytics', 'Org Knowledge · SOPs + RCA'],
+  narration: [
+    'Domain experts pull vibration RMS from Hyperspace and pattern-match against prior BFP failures.',
+    'Criticality Scoring Agent uses Netscope analytics to confirm severity classification.',
+    'Incident Summary Synthesizer hands Faye a single Hyperspace-OS-sourced summary card.',
+  ],
+};
+
+const P1_SECTION_2 = {
+  num: 2, title: 'SOP-driven telemetry confirmation',
+  domain: [
+    { name: 'SOP Retrieval Agent',          persistent: null,         dataSource: 'Org Knowledge' },
+    { name: 'Sensor Anomaly Inspector',     persistent: 'inspection', dataSource: 'Hyperspace' },
+    { name: 'Telemetry Snapshot Compiler',  persistent: null,         dataSource: 'Hyperspace' },
+  ],
+  orch: [
+    { name: 'Orchestrator',           persistent: 'orchestrator' },
+    { name: 'A2A Coordination Agent', persistent: 'workflow' },
+  ],
+  critique: [
+    { name: 'SOP Adherence Critic',  persistent: null },
+    { name: 'Critic · Power Gen',    persistent: 'critic-power-gen' },
+  ],
+  sources: ['Hyperspace · last-15-min snapshot', 'Org Knowledge · SOP-BFP-VIBR-001'],
+  narration: [
+    'SOP says the operator must visually confirm the alarm against telemetry.',
+    'Agents fetch the last 15 minutes of vibration RMS from Hyperspace and bundle it as a snapshot.',
+    'SOP Adherence Critic confirms the snapshot satisfies the SOP gate.',
+  ],
+};
+
+const P1_SECTION_3 = {
+  num: 3, title: 'Scheduling · Expertise match · Dispatch',
+  domain: [
+    { name: 'Duty Roster Agent',          persistent: null,        dataSource: 'Org Knowledge' },
+    { name: 'Expertise Match Agent',      persistent: null,        dataSource: 'Org Knowledge' },
+    { name: 'Availability Window Agent',  persistent: null,        dataSource: 'Org Knowledge' },
+    { name: 'A2A Coordination Agent',     persistent: 'workflow' },
+  ],
+  orch: [
+    { name: 'Orchestrator', persistent: 'orchestrator' },
+  ],
+  critique: [
+    { name: 'Workforce Compliance Critic', persistent: null },
+  ],
+  sources: ['Org Knowledge · duty roster', 'Org Knowledge · expertise database', 'Org Knowledge · cert + training records'],
+  narration: [
+    'Agents check the duty roster for the right shift window.',
+    'Expertise Match confirms BFP / Sulzer / centrifugal-pump experience for the candidate.',
+    'Availability Window confirms Lim Wei Jie is free for the full 45-minute window.',
+    'Workforce Compliance Critic confirms his safety certs and recent SOP refresher are current.',
+    'A2A Coordination Agent fires the dispatch with all incident context pre-attached — no phone calls needed.',
+  ],
+};
+
+const P1_SECTION_BY_NUM = { '1': P1_SECTION_1, '2': P1_SECTION_2, '3': P1_SECTION_3 };
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Section D — pop-out narrative modal mechanic
+// ═══════════════════════════════════════════════════════════════
+
+function openP1NarrativeModal(num) {
+  const sectionDef = P1_SECTION_BY_NUM[String(num)];
+  if (!sectionDef) return;
+  openNarrativeModal('p1', sectionDef);
+}
+
+function openNarrativeModal(scope, sectionDef) {
+  closeNarrativeModal(); // tear down any in-flight modal
+  state.w10.modalOpen = true;
+  state.w10.modalScope = scope;
+  state.w10.modalSectionNum = String(sectionDef.num);
+
+  // Pulse the persistent card on the right pane while modal is open
+  const personaKey = scope === 'p1' ? 'ops' : scope === 'p2' ? 'onsite' : 'analyst';
+  const card = document.querySelector(`.persona-narrative[data-persona="${personaKey}"] .pn-section[data-section="${sectionDef.num}"]`);
+  if (card) card.classList.add('pn-section-pulse');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'narrative-modal-backdrop';
+  backdrop.id = 'narrative-modal-backdrop';
+  backdrop.innerHTML = `
+    <div class="narrative-modal" role="dialog" aria-modal="true">
+      <div class="narrative-modal-header">
+        <div class="nm-section-num">SECTION ${sectionDef.num}</div>
+        <div class="nm-section-title">${sectionDef.title}</div>
+        <button class="nm-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="narrative-modal-body" id="narrative-modal-body">
+        <div class="nv-canvas">
+          <div class="nv-bucket" data-bucket-type="domain">
+            <div class="nv-bucket-label">Domain experts · transient</div>
+            <div class="nv-agents">
+              ${sectionDef.domain.map((a, i) => `<span class="nv-agent" data-bucket="domain" data-idx="${i}">${a.name}</span>`).join('')}
+            </div>
+          </div>
+          <div class="nv-arrow" data-direction="down">
+            <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
+            <span>orchestrated by</span>
+          </div>
+          <div class="nv-bucket" data-bucket-type="orch">
+            <div class="nv-bucket-label">Orchestration</div>
+            <div class="nv-agents">
+              ${sectionDef.orch.map((a, i) => `<span class="nv-agent" data-bucket="orch" data-idx="${i}">${a.name}</span>`).join('')}
+            </div>
+          </div>
+          <div class="nv-arrow" data-direction="down">
+            <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
+            <span>validated by</span>
+          </div>
+          <div class="nv-bucket" data-bucket-type="critique">
+            <div class="nv-bucket-label">Critique</div>
+            <div class="nv-agents">
+              ${sectionDef.critique.map((a, i) => `<span class="nv-agent" data-bucket="critique" data-idx="${i}">${a.name}</span>`).join('')}
+            </div>
+          </div>
+          <div class="nv-loop">
+            <svg viewBox="0 0 18 18"><path d="M14 4 A6 6 0 1 1 4 4 M14 4 L11 1 M14 4 L11 7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            <span>continuous monitoring</span>
+          </div>
+          <div class="nv-sources">
+            <div class="nv-sources-label">Data sources used:</div>
+            <div class="nv-source-pills">
+              ${sectionDef.sources.map(s => `<span class="nv-source-pill" data-source="${s.split(' · ')[0]}">${s}</span>`).join('')}
+            </div>
+          </div>
+          ${sectionDef.narration ? `
+            <div class="nv-narration">
+              ${sectionDef.narration.map(line => `<span class="nv-narration-line">› ${line}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(backdrop);
+
+  // Wire close × + backdrop click
+  backdrop.querySelector('.nm-close').addEventListener('click', () => closeNarrativeModalAndMarkPlayed());
+  backdrop.addEventListener('click', e => {
+    if (e.target === backdrop) closeNarrativeModalAndMarkPlayed();
+  });
+  // ESC key handled via document listener (one-shot per modal)
+  state.w10.modalEscHandler = e => {
+    if (e.key === 'Escape') closeNarrativeModalAndMarkPlayed();
+  };
+  document.addEventListener('keydown', state.w10.modalEscHandler);
+
+  // Mark played + flip button label to ✓ Replay
+  state.w10.playedSections[scope === 'p1' ? 'p1' : 'p2'][sectionDef.num] = true;
+  const playBtn = document.querySelector(
+    `.persona-narrative[data-persona="${personaKey}"] .pn-s-play[data-section="${sectionDef.num}"]`
+  );
+  if (playBtn) {
+    playBtn.classList.add('pn-s-played');
+    const sp = playBtn.querySelector('span');
+    if (sp) sp.textContent = '✓ Replay';
+    const sectionEl = playBtn.closest('.pn-section');
+    if (sectionEl) sectionEl.classList.add('pn-section-played');
+  }
+
+  // Kick off animation sequence
+  playNarrativeModalAnimation(sectionDef);
+}
+
+function closeNarrativeModalAndMarkPlayed() {
+  // Played state already set on open; this just tears down.
+  closeNarrativeModal();
+}
+
+function closeNarrativeModal() {
+  const backdrop = document.getElementById('narrative-modal-backdrop');
+  if (backdrop) backdrop.remove();
+  if (state.w10.modalEscHandler) {
+    document.removeEventListener('keydown', state.w10.modalEscHandler);
+    state.w10.modalEscHandler = null;
+  }
+  // Clear pulse on the persistent card
+  document.querySelectorAll('.pn-section-pulse').forEach(el => el.classList.remove('pn-section-pulse'));
+  // Cancel any pending animation timers
+  (state.w10.modalTimers || []).forEach(t => clearTimeout(t));
+  state.w10.modalTimers = [];
+  state.w10.modalOpen = false;
+  state.w10.modalScope = null;
+  state.w10.modalSectionNum = null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W10 Section D.5 — modal animation sequencer
+// ═══════════════════════════════════════════════════════════════
+
+function playNarrativeModalAnimation(sectionDef) {
+  const seq = [];
+  // Phase 1 — domain agents
+  (sectionDef.domain || []).forEach((agent, idx) => {
+    seq.push({ at: idx * 700,        action: 'reveal-agent', bucket: 'domain', idx });
+    seq.push({ at: idx * 700 + 300,  action: 'pulse-agent',  bucket: 'domain', idx });
+    seq.push({ at: idx * 700 + 1200, action: 'check-agent',  bucket: 'domain', idx });
+    if (agent.dataSource) {
+      seq.push({ at: idx * 700 + 200, action: 'flash-source', source: agent.dataSource });
+    }
+    if (agent.persistent) {
+      seq.push({ at: idx * 700 + 300, action: 'pulse-persistent', agentId: agent.persistent });
+    }
+  });
+
+  const phase2Start = (sectionDef.domain || []).length * 700 + 300;
+  (sectionDef.orch || []).forEach((agent, idx) => {
+    seq.push({ at: phase2Start + idx * 500,       action: 'reveal-agent', bucket: 'orch', idx });
+    seq.push({ at: phase2Start + idx * 500 + 300, action: 'pulse-agent',  bucket: 'orch', idx });
+    if (agent.persistent) {
+      seq.push({ at: phase2Start + idx * 500 + 300, action: 'pulse-persistent', agentId: agent.persistent });
+    }
+  });
+
+  const phase3Start = phase2Start + (sectionDef.orch || []).length * 500 + 500;
+  (sectionDef.critique || []).forEach((agent, idx) => {
+    seq.push({ at: phase3Start + idx * 500,        action: 'reveal-agent', bucket: 'critique', idx });
+    seq.push({ at: phase3Start + idx * 500 + 300,  action: 'pulse-agent',  bucket: 'critique', idx });
+    seq.push({ at: phase3Start + idx * 500 + 1200, action: 'check-agent',  bucket: 'critique', idx });
+    if (agent.persistent) {
+      seq.push({ at: phase3Start + idx * 500 + 300, action: 'pulse-persistent', agentId: agent.persistent });
+    }
+  });
+
+  state.w10.modalTimers = seq.map(step => setTimeout(() => applyNarrativeAction(step), step.at));
+}
+
+function applyNarrativeAction(step) {
+  const body = document.getElementById('narrative-modal-body');
+  if (!body) return;
+  switch (step.action) {
+    case 'reveal-agent': {
+      const el = body.querySelector(`.nv-agent[data-bucket="${step.bucket}"][data-idx="${step.idx}"]`);
+      if (el) el.classList.add('nv-agent-visible');
+      break;
+    }
+    case 'pulse-agent': {
+      const el = body.querySelector(`.nv-agent[data-bucket="${step.bucket}"][data-idx="${step.idx}"]`);
+      if (el) el.classList.add('nv-agent-active');
+      break;
+    }
+    case 'check-agent': {
+      const el = body.querySelector(`.nv-agent[data-bucket="${step.bucket}"][data-idx="${step.idx}"]`);
+      if (el) {
+        el.classList.remove('nv-agent-active');
+        el.classList.add('nv-agent-done');
+      }
+      break;
+    }
+    case 'flash-source': {
+      const pill = body.querySelector(`.nv-source-pill[data-source="${step.source}"]`);
+      if (pill) {
+        pill.classList.add('nv-source-pill-active');
+        setTimeout(() => pill.classList.remove('nv-source-pill-active'), 1400);
+      }
+      break;
+    }
+    case 'pulse-persistent': {
+      // Layered theater: pulse the same agent's card in the persistent roster (zone-agents).
+      // fireAgentCardLifecycle existing W3.3 helper handles the engage-pulse animation.
+      if (typeof fireAgentCardLifecycle === 'function') {
+        try { fireAgentCardLifecycle(step.agentId, 1400); } catch (_) { /* defensive */ }
+      }
+      break;
+    }
   }
 }
 
@@ -4275,6 +4839,75 @@ KG_EDGES.push(...KG_CLUSTER_FLOW_EDGES);
 // Tacit cluster node IDs flashed (green halo) 10s after Lim diagnosis-confirmed click — W6 behavior preserved.
 const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 
+// ── W10 Section I — Tacit-KG Staging cluster (4-tier flow) ──
+// Tacit bytes (raw from Lim ↔ Wong call) → Knowledge Triage Agent → Process Engineering Review Agent
+// → promoted bytes route up to W7 tacit cluster (knowledge stratum).
+// 4-tier visual: main KG (-100..+100) → Auditor (180..260) → W7 Tacit (340..420) → Staging (500..600).
+const KG_STAGING_NODES = [
+  // 5 tacit bytes — diamond glyph, 3 promoted green / 2 unpromoted amber
+  { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Jurong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
+  { id: 'tacit-byte-2', label: 'Byte · "always check 4-o\'clock volute first"',     layer: 'L4', x: 540, y:  30, z: -20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
+  { id: 'tacit-byte-3', label: 'Byte · "Sulzer-specific failure mode"',              layer: 'L4', x: 560, y:   0, z:  20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
+  { id: 'tacit-byte-4', label: 'Byte · "Wong mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  { id: 'tacit-byte-5', label: 'Byte · "casual aside · vendor service rep visit"',   layer: 'L4', x: 540, y: -60, z:  30, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  // 2 staging agents — gateway + promoter (blue halo, mirroring auditor cluster)
+  { id: 'knowledge-triage-agent',           label: 'Knowledge Triage Agent',           layer: 'L1', x: 580, y:  20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
+  { id: 'process-engineering-review-agent', label: 'Process Engineering Review Agent', layer: 'L1', x: 600, y: -20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
+];
+KG_NODES.push(...KG_STAGING_NODES);
+
+// W10 staging-cluster edges: bytes → triage → review → promoted bytes → W7 tacit cluster
+const KG_STAGING_EDGES = [
+  // All 5 bytes feed into triage agent
+  { source: 'tacit-byte-1', target: 'knowledge-triage-agent', canonical: false, cluster: 'staging-byte-to-triage' },
+  { source: 'tacit-byte-2', target: 'knowledge-triage-agent', canonical: false, cluster: 'staging-byte-to-triage' },
+  { source: 'tacit-byte-3', target: 'knowledge-triage-agent', canonical: false, cluster: 'staging-byte-to-triage' },
+  { source: 'tacit-byte-4', target: 'knowledge-triage-agent', canonical: false, cluster: 'staging-byte-to-triage' },
+  { source: 'tacit-byte-5', target: 'knowledge-triage-agent', canonical: false, cluster: 'staging-byte-to-triage' },
+  // Triage hands curated bytes to review agent
+  { source: 'knowledge-triage-agent', target: 'process-engineering-review-agent', canonical: false, cluster: 'staging-internal' },
+  // Review promotes 3 of 5 — promotion edges (thicker green + flow particles)
+  { source: 'process-engineering-review-agent', target: 'tacit-byte-1', canonical: false, cluster: 'staging-promotion', isPromotionEdge: true },
+  { source: 'process-engineering-review-agent', target: 'tacit-byte-2', canonical: false, cluster: 'staging-promotion', isPromotionEdge: true },
+  { source: 'process-engineering-review-agent', target: 'tacit-byte-3', canonical: false, cluster: 'staging-promotion', isPromotionEdge: true },
+  // Promoted bytes link UP to W7 tacit cluster nodes (knowledge stratum)
+  { source: 'tacit-byte-1', target: 'casing-tacit-knowledge',     canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
+  { source: 'tacit-byte-2', target: 'casing-tacit-knowledge',     canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
+  { source: 'tacit-byte-3', target: 'wong-field-experience-2023', canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
+];
+KG_EDGES.push(...KG_STAGING_EDGES);
+
+// Promoted byte IDs — green halo flash on P2 KG open
+const KG_STAGING_PROMOTED_IDS = KG_STAGING_NODES.filter(n => n.isPromoted).map(n => n.id);
+
+// ── W10 Section K — Commercial intelligence cluster (P3 Priya · trader-domain KG extension) ──
+// 5-tier visual: + Commercial (x ∈ [700, 820]). Connects via bfp-3a → merchant-market-sg bridge.
+const KG_COMMERCIAL_NODES = [
+  { id: 'merchant-market-sg',          label: 'Merchant market · USEP · Singapore',     layer: 'L4', x: 720, y:  60, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'ppa-pso-2026',                label: 'PPA · PSO commitment · 2026',            layer: 'L1', x: 740, y:  30, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'supply-curve-singapore',      label: 'Supply curve · Singapore · Q3-2026',     layer: 'L4', x: 760, y:   0, z:  20, canonical: false, cluster: 'commercial' },
+  { id: 'demand-forecast-q3-2026',     label: 'Demand forecast · Q3-2026',              layer: 'L4', x: 780, y: -30, z: -20, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-sakra-availability', label: 'Cross-site availability · Sakra-CCGT-1', layer: 'L3', x: 740, y: -60, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-tuas-availability',  label: 'Cross-site availability · Tuas-Power',   layer: 'L3', x: 780, y:  60, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'hedge-instrument-catalog',    label: 'Hedge instrument catalog · forward + spot', layer: 'L4', x: 820, y:   0, z:   0, canonical: false, cluster: 'commercial' },
+];
+KG_NODES.push(...KG_COMMERCIAL_NODES);
+
+const KG_COMMERCIAL_EDGES = [
+  // Bridge: main KG (bfp-3a asset chain) → commercial intelligence
+  { source: 'bfp-3a',                       target: 'merchant-market-sg',           canonical: false, cluster: 'main-to-commercial' },
+  // Commercial-internal flow
+  { source: 'merchant-market-sg',           target: 'supply-curve-singapore',       canonical: false, cluster: 'commercial-internal' },
+  { source: 'supply-curve-singapore',       target: 'demand-forecast-q3-2026',      canonical: false, cluster: 'commercial-internal' },
+  { source: 'demand-forecast-q3-2026',      target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-sakra-availability', canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-tuas-availability',  canonical: false, cluster: 'commercial-internal' },
+  { source: 'cross-site-sakra-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
+];
+KG_EDGES.push(...KG_COMMERCIAL_EDGES);
+
+const KG_COMMERCIAL_IDS = KG_COMMERCIAL_NODES.map(n => n.id);
+
 // ── W3.5: helpers for billboarded canvas-based sprites ──
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -4499,29 +5132,44 @@ function initKG3D() {
       .nodeThreeObject(node => {
         const radius = isInChain(node.id) ? 14 : 9;
         const group = new THREE.Group();
-        const sphereGeo = new THREE.SphereGeometry(radius, 32, 20);
+        // W10 — tacit-byte nodes (staging cluster, NOT agent) render as diamond (octahedron)
+        const isTacitByte = node.cluster === 'staging' && node.isStaging && !node.isStagingAgent;
+        const sphereGeo = isTacitByte
+          ? new THREE.OctahedronGeometry(radius * 1.05, 0)
+          : new THREE.SphereGeometry(radius, 32, 20);
+        // Unpromoted staging bytes = 60% opacity (less prominent)
+        const baseOpacity = nodeOpacityFor(node);
+        const stagingOpacityMul = (node.cluster === 'staging' && node.isStaging && !node.isPromoted) ? 0.6 : 1.0;
         const sphereMat = new THREE.MeshBasicMaterial({
           color: KG_LAYER_COLORS[node.layer],
           transparent: true,
-          opacity: nodeOpacityFor(node),
+          opacity: baseOpacity * stagingOpacityMul,
         });
         const sphere = new THREE.Mesh(sphereGeo, sphereMat);
         group.add(sphere);
-        // White halo — thicker back-face shell (W3.6b: deeper border)
-        // W7 — cluster ring colors:
-        //   newly-grown (green halo flash, 4s) > tacit cluster (amber) > auditor cluster (blue) > default (white)
+        // W10 — ring color rules extended:
+        //   newly-added (green flash) > staging-agent (blue) > staging-promoted (green) > staging-unpromoted (amber)
+        //   > auditor (blue) > tacit (amber) > default (white)
         const isNewlyAdded = KG_STATE.newlyAddedNodes && KG_STATE.newlyAddedNodes.has(node.id);
         let ringColor;
-        if (isNewlyAdded)               ringColor = 0x00A651;   // Sembcorp green
-        else if (node.cluster === 'auditor') ringColor = 0x3B82F6;   // blue
-        else if (node.cluster === 'tacit')   ringColor = 0xF59E0B;   // amber
-        else                            ringColor = 0xFFFFFF;
-        const ringRadius = isNewlyAdded ? radius * 1.55 : radius * 1.30;
-        const ringGeo = new THREE.SphereGeometry(ringRadius, 32, 20);
+        if (isNewlyAdded)                                       ringColor = 0x00A651;
+        else if (node.cluster === 'staging' && node.isStagingAgent) ringColor = 0x3B82F6;
+        else if (node.cluster === 'staging' && node.isPromoted)     ringColor = 0x00A651;
+        else if (node.cluster === 'staging')                        ringColor = 0xF59E0B;
+        else if (node.cluster === 'auditor')                        ringColor = 0x3B82F6;
+        else if (node.cluster === 'tacit')                          ringColor = 0xF59E0B;
+        else if (node.cluster === 'commercial')                     ringColor = 0xA855F7;   // purple
+        else                                                        ringColor = 0xFFFFFF;
+        const ringRadius = isNewlyAdded
+          ? radius * 1.55
+          : (node.cluster === 'staging' && node.isStagingAgent ? radius * 1.40 : radius * 1.30);
+        const ringGeo = isTacitByte
+          ? new THREE.OctahedronGeometry(ringRadius * 1.05, 0)
+          : new THREE.SphereGeometry(ringRadius, 32, 20);
         const ringMat = new THREE.MeshBasicMaterial({
           color: ringColor,
           transparent: true,
-          opacity: nodeOpacityFor(node) * 1.0,
+          opacity: baseOpacity * stagingOpacityMul,
           side: THREE.BackSide,
         });
         const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -4534,12 +5182,18 @@ function initKG3D() {
       .nodeThreeObjectExtend(false)
       .linkColor(link => {
         if (chainContainsLink(link)) return '#FFFFFF';
+        if (link.isPromotionEdge)    return 'rgba(0,166,81,0.85)';
         return link.canonical ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.10)';
       })
       .linkWidth(link => {
         if (chainContainsLink(link)) return 3.0;
+        if (link.isPromotionEdge)    return 2.5;
         return link.canonical ? 1.2 : 0.5;
       })
+      .linkDirectionalParticles(link => link.isPromotionEdge ? 3 : 0)
+      .linkDirectionalParticleSpeed(0.008)
+      .linkDirectionalParticleWidth(2.5)
+      .linkDirectionalParticleColor(() => '#00A651')
       .linkOpacity(0.85)
       .backgroundColor('#0A0F1C')
       .showNavInfo(false)
@@ -5265,6 +5919,54 @@ function toggleLogDropdown() {
   if (icon) icon.textContent = state.logDropdownOpen ? '▾' : '▸';
 }
 
+// W10 Section A.5 — Log dropdown 2-tab switcher [Log · Agents]
+// Reparents #zone-agents inside the dropdown so the agent roster lives behind a tab.
+// Persistent-roster pulses (fireAgentCardLifecycle) still fire regardless of tab visibility.
+function initLogDropdownTabs() {
+  const content = document.querySelector('#log-dropdown .rp-log-dropdown-content');
+  if (!content || content.dataset.tabsBuilt === '1') return;
+  const orchLog = content.querySelector('.orch-log');
+  const zoneAgents = document.getElementById('zone-agents');
+  if (!orchLog || !zoneAgents) return;
+
+  const tabRow = document.createElement('div');
+  tabRow.className = 'rp-tab-row';
+  tabRow.innerHTML = `
+    <button class="rp-tab-btn" type="button" data-tab="log" data-active="true">Log</button>
+    <button class="rp-tab-btn" type="button" data-tab="agents" data-active="false">Agents · 17</button>
+  `;
+
+  const logPane = document.createElement('div');
+  logPane.className = 'rp-tab-pane';
+  logPane.dataset.tab = 'log';
+  logPane.dataset.active = 'true';
+  orchLog.parentNode.insertBefore(logPane, orchLog);
+  logPane.appendChild(orchLog);
+
+  const agentsPane = document.createElement('div');
+  agentsPane.className = 'rp-tab-pane';
+  agentsPane.dataset.tab = 'agents';
+  agentsPane.dataset.active = 'false';
+  agentsPane.appendChild(zoneAgents);
+  content.appendChild(agentsPane);
+
+  content.insertBefore(tabRow, content.firstChild);
+
+  tabRow.querySelectorAll('.rp-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      tabRow.querySelectorAll('.rp-tab-btn').forEach(b => {
+        b.dataset.active = (b.dataset.tab === tab) ? 'true' : 'false';
+      });
+      content.querySelectorAll('.rp-tab-pane').forEach(p => {
+        p.dataset.active = (p.dataset.tab === tab) ? 'true' : 'false';
+      });
+    });
+  });
+
+  content.dataset.tabsBuilt = '1';
+}
+
 function toggleGraphWindow() {
   state.graphWinOpen = !state.graphWinOpen;
   const win = document.getElementById('kg-floating-window');
@@ -5280,7 +5982,46 @@ function toggleGraphWindow() {
     const w = body.clientWidth;
     const h = body.clientHeight;
     KG_STATE.graph.width(w).height(h);
+    // W10 — persona-specific camera pose + cluster flash on open
+    openKGForPersona(state.activePersona);
   }
+}
+
+// W10 — persona-specific KG camera pose + flash sequence
+function openKGForPersona(persona) {
+  if (!KG_STATE.graph) return;
+  state.w10 = state.w10 || {};
+  state.w10.kgFlashedFor = state.w10.kgFlashedFor || { onsite: false, analyst: false };
+
+  const POSE = {
+    onsite:  { cam: { x: 250, y: 0, z: 580 }, lookAt: { x: 300, y: 0, z: 0 }, flashIds: KG_STAGING_PROMOTED_IDS },
+    analyst: { cam: { x: 400, y: 0, z: 700 }, lookAt: { x: 400, y: 0, z: 0 }, flashIds: KG_COMMERCIAL_IDS },
+    ops:     null, // default camera (no override)
+  };
+  const pose = POSE[persona];
+  if (!pose) return;
+
+  // Pause auto-rotate for the panning + flash window
+  stopAutoRotate();
+  KG_STATE.graph.cameraPosition(pose.cam, pose.lookAt, 2000);
+
+  // First-open per persona: flash the promoted-byte cluster green for 4s after camera arrives
+  if (!state.w10.kgFlashedFor[persona] && pose.flashIds && pose.flashIds.length) {
+    setTimeout(() => {
+      pose.flashIds.forEach(id => KG_STATE.newlyAddedNodes.add(id));
+      refreshKGStyles();
+      setTimeout(() => {
+        pose.flashIds.forEach(id => KG_STATE.newlyAddedNodes.delete(id));
+        refreshKGStyles();
+      }, 4000);
+    }, 2000);
+    state.w10.kgFlashedFor[persona] = true;
+  }
+
+  // Resume auto-rotate after 6s (camera pan + flash settled)
+  setTimeout(() => {
+    if (!anyChainActive()) startAutoRotate();
+  }, 6000);
 }
 
 function initFloatingWindowHandlers() {
@@ -5442,6 +6183,9 @@ function init() {
   updateGraphCountBadge();
   initAgentCardStates();
   updateAgentDimmingForActivePersona();
+  // W10 A.5 — relocate agent buckets into log dropdown as 2-tab switcher.
+  // Runs AFTER seedLogLines + initAgentCardStates so orch-log + agent cards are populated before reparenting.
+  initLogDropdownTabs();
 }
 
 document.addEventListener('DOMContentLoaded', init);

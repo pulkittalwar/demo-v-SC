@@ -1917,3 +1917,134 @@ Human-check items (subjective; flagged not auto-asserted):
 Follow-up (W9):
 - Banner label after Lock decision pulls from `PRIYA_LAPTOP_OPTION_LABEL` (e.g. hedge → `Forward Q3 capacity hedge`), which is the W5/W8 label NOT the new W9 card title (`Hedge forward · 4×HH PSO window`). Visually divergent but plan C.4 explicitly preserves PRIYA_*_OPTION_LABEL maps; flagged for human-check whether the banner should be updated post-W9 to match new card titles.
 - `renderAnalystIncidentDetail` still in code (W8 follow-up flagged it as unreachable). `spawnAnalystScreenContent` modified by W9 but reachable only via the modal path (not the tablet path); the tablet-path render remains dead code per WA #5.
+
+### W10 deployment confirmation (2026-05-22) — RIGHT-PANE REWORK + PER-PERSONA THEATER
+
+Major right-pane rework. Layout shifts to 50/50. KG becomes button-only (no auto-render). Each persona gets a curated right-pane narrative experience that lands the demo's key takeaway for that persona's beat. Agent buckets relocate behind a tab inside the dispatch-log dropdown so per-persona narrative becomes the primary right-pane voice. Two new KG clusters added (Tacit-KG Staging for P2, Commercial Intelligence for P3).
+
+**Section A — Layout + KG:**
+- `#stage[data-drawer="open"]` `grid-template-columns` `2fr 1fr` → `1fr 1fr` (50/50 split when drawer open).
+- `#laptop-frame` max-width `1100px` → `920px` (fits ~50% of typical 1920-wide viewport).
+- W7 P2 inline KG mechanic REVERTED. `paintRightPaneInlineKG` retained as dead code (WA #5 throwaway). `renderRightPane()` now routes all personas through `paintRightPaneStandard()` and dispatches per-persona narrative via `paintPersonaNarrative()`.
+- KG floating window never auto-opens. Opens only on user click of toolbar `Display Graph` button OR section-card `▶ Open KG` button (for P2 Section C and P3 ★ section).
+- `triggerNewIncident()` was already absent from the codebase prior to W10 — the W3.4 auto-open path had been removed before this wave; W10 verifies the no-auto-open invariant via test A2.
+
+**Section A.5 — Agent buckets relocated to Log dropdown 2-tab switcher:**
+- `#zone-agents` reparented from primary right-pane content into `#log-dropdown` body as the second tab `Agents · 17`.
+- Default-active tab = `Log` (existing dispatch-log behaviour preserved).
+- Click `Agents` tab → reveals 5 buckets · 17 agent cards (W6 dim per persona + W6 fireAgentCardLifecycle pulse/done lifecycle preserved exactly — `data-agent-id` selectors still bind to the same DOM elements).
+- `initLogDropdownTabs()` runs in `init()` AFTER `seedLogLines` + `initAgentCardStates` so the reparenting picks up the populated `orch-log-body` and agent cards.
+- `#log-dropdown[data-open="true"]` max-height bumped `800px` → `1800px` to accommodate the full 17-card roster when Agents tab active. Right pane scrolls naturally if content exceeds viewport.
+- New CSS: `.rp-tab-row`, `.rp-tab-btn[data-active]`, `.rp-tab-pane[data-active]`. Reparented `#zone-agents` sheds outer zone chrome via `.rp-tab-pane[data-tab="agents"] #zone-agents { background: transparent; border: none; box-shadow: none; padding: 0; min-height: 0 }`.
+
+**Section B — Per-persona render dispatch:**
+- New `paintPersonaNarrative()` branches on `state.activePersona` after `paintRightPaneStandard()`: ops → `renderRightPaneFaye()` · onsite → `renderRightPaneLim()` · analyst → `renderRightPanePriya()`.
+- New `#persona-narrative-host` element inserted between toolbar and zone-agents in HTML; per-persona renderers lazy-build into it.
+- Cross-persona cleanup: when active persona changes, host clears + `dataset.personaBuilt` resets so the next persona's renderer rebuilds. In-persona re-renders skip rebuild (preserves play/replay state on existing buttons).
+
+**Sections C-G — P1 Faye right-pane narrative + modals:**
+- 3 narrative section cards: `1` Criticality · Diagnosis · Summary · `2` SOP-driven telemetry confirmation · `3` Scheduling · Expertise match · Dispatch. Each card carries title + sub-text + meta + `▶ Play` button.
+- Click `▶ Play` → 700×500 narrative modal pops over tablet area with green-soft header band, section num pill, title, close ×.
+- Modal canvas renders 3 dashed-border buckets (Domain experts · transient / Orchestration / Critique) + 2 flow arrows + continuous-monitoring loop + data source pills + narration footer.
+- Animation sequence ~12s per modal: domain agents reveal → pulse → check sequentially at 700ms intervals; orchestration agents reveal + pulse at 500ms intervals; critique agents reveal + pulse + check at 500ms intervals. Data source pills flash during corresponding agent reveal.
+- 11 ephemeral agents introduced across the 3 modal contexts (NOT added to persistent 17-agent roster). Section 1 = 4 domain (Sensor Anomaly Inspector / Turbine Diagnostic Agent / Criticality Scoring Agent / Incident Summary Synthesizer) · 2 orch (Orchestrator / A2A Coordination Agent) · 2 critique (Critic · Power Gen / Criticality Standards Critic) · 3 sources. Section 2 = 3 domain (SOP Retrieval Agent / Sensor Anomaly Inspector / Telemetry Snapshot Compiler) · 2 orch · 2 critique (SOP Adherence Critic / Critic · Power Gen) · 2 sources. Section 3 = 4 domain (Duty Roster Agent / Expertise Match Agent / Availability Window Agent / A2A Coordination Agent) · 1 orch · 1 critique (Workforce Compliance Critic) · 3 sources.
+- Right-pane sync (D.6): persistent-roster cards in the Agents tab pulse in lockstep with their modal counterparts via existing `fireAgentCardLifecycle(agentId, 1400ms)`. Two surfaces light up simultaneously — modal is storytelling, persistent roster is proof-of-existence.
+- Played state persistence: `state.w10.playedSections.p1` map tracks played sections. On modal open the button flips from `Play` → `✓ Replay` and the section card adds `pn-section-played`. State survives persona switch (host rebuild restores replay labels from the persistent map).
+- Pop-out modal mechanic is reusable. `openNarrativeModal(scope, sectionDef)` consumed by both P1 (`openP1NarrativeModal`) and P2 (`openP2NarrativeModal`).
+- Bonus mechanics added beyond spec by operator: ESC-key close handler · `state.w10.modalTimers` array cleared on close (prevents zombie animations if user closes mid-flight) · `state.w10.modalScope` field disambiguates P1/P2 contexts for shared modal engine · backdrop click also closes modal.
+
+**Section H — P2 Lim right pane:**
+- 3 narrative section cards: `A` Safety-first field gating · `B` Tacit knowledge capture from calls + chats · `C` Tacit knowledge → Knowledge Graph promotion.
+- Sections A + B use narrative modals (P1 mechanic reused with scope `'p2'`).
+- Section C button label = `Open KG` (not `Play`); click fires `toggleGraphWindow()` directly — opens the floating KG window so the staging cluster becomes visible.
+- P2_SECTION_A = 3 domain (HSE Field Compliance Agent / Safety Cert Validator / PPE/LOTO Check Agent) · 1 orch (A2A Coordination Agent) · 1 critique (HSE Risk Validator) · 2 sources (Org Knowledge cert records · Hyperspace LOTO state).
+- P2_SECTION_B = 3 domain (Audio-transcription Agent / Tacit Knowledge Extractor / Semantic Tag Agent) · 1 orch (A2A Coordination Agent) · 1 critique (Tacit Relevance Critic) · 2 sources (Call audio · Main KG entity catalog).
+- `wireLimRightPaneButtons` routes A+B clicks to `openP2NarrativeModal` and C click to `toggleGraphWindow`.
+
+**Section I — P2 Tacit-KG Staging cluster (4-tier flow):**
+- 4-tier visual separation along KG X-axis: main KG (x ∈ [-100, +100]) · W7 Auditor cluster (x ∈ [180, 260]) · W7 Tacit cluster (x ∈ [340, 420]) · W10 Staging cluster (x ∈ [500, 600]).
+- 7 staging nodes: 5 tacit-byte nodes (diamond glyph via `THREE.OctahedronGeometry` · 3 promoted `tacit-byte-1/2/3` with green halo · 2 unpromoted `tacit-byte-4/5` with amber halo + 60% opacity) + 2 staging agents (`knowledge-triage-agent` · `process-engineering-review-agent` · blue halo, mirroring auditor cluster · ring radius bumped to `radius * 1.40` for slightly larger sphere).
+- 12 staging edges: 5 byte→triage + 1 triage→review + 3 review→promoted-byte + 3 promoted-byte→W7-tacit-cluster (the latter 6 carry `isPromotionEdge: true`).
+- Promotion edges render thicker (`linkWidth` 2.5) + green (`linkColor` `rgba(0,166,81,0.85)`) + 3 directional particles flowing along each edge via 3d-force-graph's native `linkDirectionalParticles` API (simpler than spec's "animated stroke-dashoffset" suggestion which would require shader work; the particle flow visual achieves the same narrative effect).
+- Camera pose on P2 KG open: `(x: 250, y: 0, z: 580)` look-at `(x: 300, y: 0, z: 0)` over 2000ms transition.
+- First-open flash: 4s green halo on the 3 promoted bytes (`tacit-byte-1/2/3`) starting 2s after open (camera-pan settle delay), reusing the W6 `KG_STATE.newlyAddedNodes` Set + `refreshKGStyles()` mechanism. Guard `state.w10.kgFlashedFor.onsite` prevents flash re-firing on subsequent opens.
+- Auto-rotate paused on open (`stopAutoRotate()`), resumed 6s later (`startAutoRotate()` after camera-pan + flash window).
+
+**Section J — P3 Priya right pane:**
+- Single narrative card: `★ Commercial intelligence cluster` (star glyph in `pn-s-num` position). Body summarises the 7 commercial nodes, meta lists sources (USEP · merchant market feed · PPA registry · cross-site SCADA). Button label = `Open KG`.
+- `renderRightPanePriya()` paints into `#persona-narrative-host` only — LEFT pane (W8 laptop frame + W9 KPI strip) untouched.
+- Button click → `toggleGraphWindow()` (same pattern as P2 Section C).
+
+**Section K — Commercial intelligence cluster (5-tier KG):**
+- 7 commercial nodes in x ∈ [700, 820]: `merchant-market-sg` (L4 · USEP) · `ppa-pso-2026` (L1 · PSO commitment) · `supply-curve-singapore` (L4 · Q3-2026) · `demand-forecast-q3-2026` (L4) · `cross-site-sakra-availability` (L3) · `cross-site-tuas-availability` (L3) · `hedge-instrument-catalog` (L4 · forward + spot). All carry `cluster: 'commercial'`.
+- 7 commercial edges: 1 bridge (`bfp-3a → merchant-market-sg` · cluster `main-to-commercial` · links the asset incident into the commercial domain) + 6 commercial-internal flows (merchant → supply curve → demand forecast → hedge catalog · PPA → both cross-site availability nodes · sakra → hedge catalog).
+- Purple halo `#A855F7` (`0xA855F7` in `nodeThreeObject` ring-color branch) distinguishes commercial nodes from main (white) · auditor (blue) · tacit (amber) · staging (green/amber/blue).
+- Commercial nodes use standard sphere geometry (only staging-byte nodes are diamond).
+- Camera pose on P3 KG open: `(x: 400, y: 0, z: 700)` look-at `(x: 400, y: 0, z: 0)` over 2000ms — wide pull-back to fit all 5 clusters in frame with attention drawn to far right.
+- First-open flash: 4s green halo on all 7 commercial nodes (reuses same flash mechanism as staging cluster). Guard `state.w10.kgFlashedFor.analyst`.
+
+**Files changed (W10):**
+- `app.js` — new `state.w10` namespace (playedSections / modalOpen / modalTimers / modalEscHandler / modalScope / kgFlashedFor); `renderRightPane` rewritten to route through `paintRightPaneStandard` + `paintPersonaNarrative`; new `paintPersonaNarrative` cleanup-aware dispatcher; `renderRightPaneFaye` + `wireFayeRightPanePlayButtons` + `P1_NARRATIVE_SECTIONS` + `P1_SECTION_1/2/3` + `P1_SECTION_BY_NUM` + `openP1NarrativeModal`; `renderRightPaneLim` + `wireLimRightPaneButtons` + `P2_NARRATIVE_SECTIONS` + `P2_SECTION_A/B` + `P2_SECTION_BY_NUM` + `openP2NarrativeModal`; `renderRightPanePriya` + `wirePriyaRightPaneButtons`; modal engine `openNarrativeModal` + `closeNarrativeModal` + `closeNarrativeModalAndMarkPlayed` + `playNarrativeModalAnimation` + `applyNarrativeAction`; `KG_STAGING_NODES` + `KG_STAGING_EDGES` + `KG_STAGING_PROMOTED_IDS` + `KG_COMMERCIAL_NODES` + `KG_COMMERCIAL_EDGES` + `KG_COMMERCIAL_IDS` + `KG_NODES.push(...)` + `KG_EDGES.push(...)` for both clusters; `nodeThreeObject` extended (octahedron geometry for tacit-byte nodes, ring-color rules for staging/staging-agent/staging-promoted/staging-unpromoted/auditor/tacit/commercial, opacity multiplier for unpromoted bytes, ring-radius bump for staging agents); `linkColor` + `linkWidth` extended with `isPromotionEdge` branches + new `linkDirectionalParticles` config (3 particles per promotion edge, speed 0.008, width 2.5, green colour); `openKGForPersona(persona)` helper with POSE table (onsite + analyst) + first-open flash via `KG_STATE.newlyAddedNodes` + `refreshKGStyles()` + 4s clear timer + 6s auto-rotate resume; `toggleGraphWindow` hooked to call `openKGForPersona(state.activePersona)` after KG open; `initLogDropdownTabs` programmatically reparents `#zone-agents` into the log-dropdown body behind an `Agents · 17` tab and wires tab-switch click handler; `init()` calls `initLogDropdownTabs()` last (after `seedLogLines` + `initAgentCardStates`).
+- `index.html` — `#stage[data-drawer="open"]` grid `2fr 1fr` → `1fr 1fr`; `#laptop-frame` max-width `1100px` → `920px`; added W10 CSS block (`#persona-narrative-host`, `.persona-narrative` + `.pn-header` + `.pn-h-title` + `.pn-h-sub` + `.pn-section` + `.pn-s-num` + `.pn-s-body` + `.pn-s-title` + `.pn-s-sub` + `.pn-s-meta` + `.pn-s-play` + `.pn-s-played`, `.narrative-modal-backdrop` + `.narrative-modal` + `.narrative-modal-header` + `.nm-section-num` + `.nm-section-title` + `.nm-close` + `.narrative-modal-body`, `.nv-canvas` + `.nv-bucket[data-bucket-type]` + `.nv-bucket-label` + `.nv-agents` + `.nv-agent` (visible / active / done states) + `.nv-arrow` + `.nv-loop` + `.nv-sources` + `.nv-sources-label` + `.nv-source-pills` + `.nv-source-pill` + `.nv-narration`, keyframes `backdrop-fade` + `modal-rise` + `nv-agent-pulse` + `nv-arrow-flow` + `nv-loop-spin` + `pn-section-pulse`); A.5 CSS (`.rp-tab-row` + `.rp-tab-btn[data-active]` + `.rp-tab-pane[data-active]` + reparented-zone-agents chrome reset); `#log-dropdown[data-open="true"]` max-height `800px` → `1800px`; new `<div id="persona-narrative-host">` between toolbar and `#zone-agents`.
+- `SEMBCORP_SCOPE.md` — this confirmation block (W10 deployment).
+
+**Files intentionally not touched (W10):**
+- W7 tacit cluster (`KG_TACIT_NODES`) + auditor cluster (`KG_AUDITOR_NODES`) + cluster-flow edges (`KG_CLUSTER_FLOW_EDGES`) — preserved.
+- W8 Priya laptop frame (`#laptop-frame` markup + `paintLaptopDashboard` content) + W9 KPI strip + W9 trader modal redesign — left pane untouched.
+- W6 KG growth animation (`triggerKGGrowth`, `flashKGGrowthHalo`) — reused for staging + commercial cluster flash via the same `KG_STATE.newlyAddedNodes` Set + `refreshKGStyles` plumbing.
+- All Faye P1 dispatch arc + banner copy + INC row markup + Lim tablet flow (W4 / W4.1 / W6 / W7 / W8 / W9) + Wong dead-code paths.
+- Persistent 17-agent roster (Orchestrator / inspection / triage / diag-hrsg / diag-electrical / playbook / sop-action / audio-transcription / wo-prefill / workflow / learning / critic-power-gen / critic-renewables / critic-networks / hse / pl / market-intelligence) preserved exactly. W6 agent-dim per persona logic + W6 fireAgentCardLifecycle pulse/done lifecycle preserved.
+- `paintRightPaneInlineKG` (W7 reshape mechanic) kept as dead code per WA #5 throwaway convention.
+
+**Verified via Chrome MCP — per-test observed-vs-expected table:**
+
+```
+#: A1 · Test: 50/50 grid split (drawer open) · Observed: grid-template-columns "822.4px 822.4px"; leftW=822 rightW=822 ratio 1.00 · Expected: 1fr 1fr · Pass: ✓
+#: A2 · Test: KG floating window closed on cold load · Observed: kgWinOpen=false, kgWinDisplay="none" · Expected: closed until user click · Pass: ✓
+#: A4 · Test: P2 inline KG container absent · Observed: #right-pane-kg-inline never created; standard pane used for all personas · Expected: W7 reshape mechanic reverted · Pass: ✓
+#: A.5.1 · Test: Tab row structure inside log dropdown · Observed: .rp-tab-row with 2 .rp-tab-btn elements [Log · Agents · 17]; Log default-active; Agents inactive · Expected: same · Pass: ✓
+#: A.5.2 · Test: #zone-agents reparented into agents tab pane · Observed: agentsPane.querySelector('#zone-agents') truthy; #right-pane > #zone-agents falsy (no direct child anymore) · Expected: same · Pass: ✓
+#: A.5.3 · Test: Tab click switches visibility · Observed: cold-load logPane display=block agentsPane display=none; after Agents click → logPane none agentsPane block (17 agent cards visible); after Log click → reverts · Expected: same · Pass: ✓
+#: B1 · Test: Faye right pane = 3 narrative sections · Observed: 3 .pn-section nodes "1"/"2"/"3" + titles matching P1_SECTION_1/2/3 · Expected: same · Pass: ✓
+#: C1 · Test: Play Section 1 opens narrative modal · Observed: backdrop present, header "Criticality · Diagnosis · Summary", num "SECTION 1", close × · Expected: same · Pass: ✓
+#: D1 · Test: Modal canvas structure · Observed: 3 dashed buckets (domain/orch/critique) + 2 arrows + 1 loop + 3 source pills + 3 narration lines · Expected: same · Pass: ✓
+#: D2 · Test: Section 1 animation runs through all phases · Observed: at t=8s — 4 domain done, 2 orch active (no check by design), 2 critique done, all 8 visible · Expected: full reveal/pulse/check within 12s · Pass: ✓
+#: D3 · Test: Right-pane sync — persistent roster pulse · Observed: 5/5 watched cards pulsed in lockstep timing (inspection@302ms triage@1001 orchestrator@3402 workflow@3902 critic-power-gen@4902); all final data-state="done" · Expected: persistent agent cards pulse synced with modal pulses · Pass: ✓
+#: D4 · Test: Modal close on × · Observed: backdrop removed, section card pulse class cleared · Expected: same · Pass: ✓
+#: E1 · Test: Section 1 played-state · Observed: btn classList has pn-s-played, label "✓ Replay" · Expected: same · Pass: ✓
+#: F1 · Test: Section 2 modal content · Observed: header "SOP-driven telemetry confirmation"; 3 domain · 2 orch · 2 critique · 2 sources (Hyperspace last-15-min + Org Knowledge SOP-BFP-VIBR-001) · Expected: same · Pass: ✓
+#: G1 · Test: Section 3 modal content · Observed: header "Scheduling · Expertise match · Dispatch"; 4 domain (incl A2A) · 1 orch · 1 critique · 3 sources · Expected: same · Pass: ✓
+#: Replay-persistence · Test: ops → onsite → ops preserves replay state · Observed: ops re-render shows all 3 "✓ Replay" labels intact; non-ops personas clear host · Expected: same · Pass: ✓
+#: H1 · Test: P2 Lim right pane = 3 sections w/ correct button labels · Observed: ["A","B","C"]; titles match P2 spec; buttonLabels ["Play","Play","Open KG"]; buttonActions ["modal","modal","open-kg"] · Expected: same · Pass: ✓
+#: H2 · Test: P2 Section A modal — Safety · Observed: SECTION A; 3 domain (HSE Field Compliance / Safety Cert Validator / PPE-LOTO Check); 1 orch (A2A Coordination); 1 critique (HSE Risk Validator); 2 sources · Expected: same · Pass: ✓
+#: H3 · Test: P2 Section B modal — Tacit knowledge · Observed: 3 domain (Audio-transcription / Tacit Knowledge Extractor / Semantic Tag); 1 orch (A2A Coordination); 1 critique (Tacit Relevance Critic); 2 sources · Expected: same · Pass: ✓
+#: H4 · Test: P2 Section C "Open KG" opens floating KG (NOT narrative modal) · Observed: state.graphWinOpen=true · kg-floating-window data-open="true" · no narrative modal · Expected: same · Pass: ✓
+#: I1 · Test: KG_NODES contains staging cluster · Observed: 7 staging nodes (5 bytes · 3 promoted [tacit-byte-1/2/3] · 2 unpromoted [tacit-byte-4/5] · 2 agents [knowledge-triage-agent · process-engineering-review-agent]) · Expected: same · Pass: ✓
+#: I2 · Test: KG_EDGES contains staging + promotion edges · Observed: 12 staging edges total · 6 isPromotionEdge=true · 3 cluster="staging-to-tacit" · Expected: same · Pass: ✓
+#: I3 · Test: Staging visual rules (diamond glyph / halo colors / opacity / promotion-edge particles) · Observed: code paths present (OctahedronGeometry for tacit bytes; ringColor green for isPromoted / amber for unpromoted / blue for isStagingAgent; stagingOpacityMul 0.6 for unpromoted; linkColor green + linkWidth 2.5 + linkDirectionalParticles=3 for isPromotionEdge) · Expected: same · Pass: ✓ (code path; visual confirm = human-check, WebGL disabled in headless Chrome MCP)
+#: I4 · Test: Camera pose on P2 KG open · Observed: cameraPosition called with cam={x:250,y:0,z:580} lookAt={x:300,y:0,z:0} ms=2000 · Expected: same per Section I.5 · Pass: ✓
+#: I5 · Test: Green halo flash on 3 promoted bytes for 4s after camera arrival · Observed: t=0 flag flipped + 0 flashed; t=2200ms newlyAddedNodes={tacit-byte-1/2/3}; t=6500ms cleared · Expected: flash 2s in, runs 4s · Pass: ✓
+#: I6 · Test: First-open guard for P2 KG · Observed: subsequent open repositions camera but flashedAfter2s=[] (no flash); flashedFlag stays true · Expected: same · Pass: ✓
+#: J1 · Test: P3 Priya right pane = single narrative card · Observed: 1 .pn-section · num "★" · title "Commercial intelligence cluster" · button "Open KG" w/ data-action="open-kg" · Expected: same · Pass: ✓
+#: K1 · Test: KG_NODES contains 7 commercial nodes · Observed: ["merchant-market-sg","ppa-pso-2026","supply-curve-singapore","demand-forecast-q3-2026","cross-site-sakra-availability","cross-site-tuas-availability","hedge-instrument-catalog"] all cluster="commercial" · Expected: same · Pass: ✓
+#: K2 · Test: KG_EDGES contains commercial edges · Observed: 7 total (1 bridge bfp-3a→merchant-market-sg + 6 commercial-internal) · Expected: same · Pass: ✓
+#: K3 · Test: Camera pose on P3 KG open · Observed: cameraPosition called with cam={x:400,y:0,z:700} lookAt={x:400,y:0,z:0} ms=2000 · Expected: same per Section K.5 · Pass: ✓
+#: K4 · Test: Green halo flash on 7 commercial nodes for 4s · Observed: t=2200ms newlyAddedNodes contains all 7 commercial IDs; t=6500ms cleared · Expected: same · Pass: ✓
+#: K5 · Test: Purple halo at-rest (#A855F7) · Observed: nodeThreeObject branch `cluster === 'commercial' → ringColor = 0xA855F7` · Expected: same · Pass: ✓ (code path; visual confirm = human-check)
+#: K6 · Test: First-open guard for P3 KG · Observed: subsequent open repositions camera but flashedAfter2s=[]; flashedFlag stays true · Expected: same · Pass: ✓
+#: J-button · Test: P3 Section button opens KG (not modal) · Observed: state.graphWinOpen=true; no narrative modal · Expected: same · Pass: ✓
+#: E2E · Test: Full walkthrough — ops cold → Section 1 modal → close → switch Lim → Section A modal → close → Section C KG → switch ops (replay state intact) → switch Priya → Section ★ KG · Observed: all transitions clean, replay labels preserved, no narrative-modal artifacts, KG opens/closes correctly · Expected: same · Pass: ✓
+#: app.js parse · Observed: node -c app.js exit 0 · Expected: clean · Pass: ✓
+#: Console clean · Observed: 0 console errors / warnings during full E2E walkthrough · Expected: clean · Pass: ✓
+```
+
+Human-check items (subjective; flagged not auto-asserted):
+- **I3 + K5 visual confirmation** — Chrome MCP browser tool runs in headless mode without WebGL; KG falls back to CSS scaffold so 3D node geometries (diamond tacit-byte glyph), halo colors (green promoted / amber unpromoted / blue staging-agent / purple commercial), promotion-edge directional particles, camera-pan animation, and 4s green halo flash cannot be auto-verified. Code paths verified via mock-graph injection; visual confirmation requires Pulkit eyeballing in real Chrome at dry-run.
+- **Projector legibility** of the 5-cluster KG scene at venue projector distance — needs dry-run human-check (clusters span x ∈ [-100, 820] which is much wider than the previous 3-tier scene).
+- **Narrative modal at projector resolution** — 700×500 overlay needs legibility check; bucket-label / agent-card / source-pill font sizes (9.5-12px) may be at the edge of readability at meeting-room distance.
+- **Tacit-byte and commercial-cluster Y-positions don't follow layer-band convention** — spec assigned cluster-local Y values (e.g. L4 tacit-byte at y=60 instead of y=-90); honored as-spec but the visual 4-layer banding integrity is broken for these clusters. Flag for Pulkit's call whether to rewrite to match LAYER_Y on layout pass.
+
+Follow-up:
+- `paintRightPaneInlineKG` (W7) + `KG_GROWTH_NODE_IDS` (W6 W7 reuse) + `triggerKGGrowth` (W6) all retained as dead code per throwaway convention.
+- Pre-W10 lint warnings on lines 1139, 4734, 4916, 4946, 5180, 5263 (per W8 follow-up) unchanged — not touched by W10. Karpathy rule 3.
+- W10 = COMPLETE. Demo build = FEATURE COMPLETE for the 2026-05-27 ITP presentation. Remaining work = projector dry-run + narration script + final vocab/legibility sweep.
