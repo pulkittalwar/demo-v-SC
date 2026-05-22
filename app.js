@@ -64,7 +64,10 @@ const state = {
     safetyTheaterFired: false,
     instrumentTheaterFired: false,
     rciTheaterFired: false,
-    confirmBtnPhase: 'idle',           // idle | confirm-ready | awaiting-call | escalate-ready
+    // W7 — Diagnosis Verdict + revised-diagnosis flow
+    verdictSpawned: false,
+    rejectClicked: false,
+    confirmRevisedClicked: false,
   },
   // ── W4 — Wong curated Screen D state ──
   wong: {
@@ -113,7 +116,11 @@ const BANNER_COPY = {
   },
   opsRouteBack: {
     label: 'ROUTED BACK · Hyperspace OS',
-    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Dr. A. Wong</span> · diagnosis confirmed · ops + commercial action required',
+    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Lim Wei Jie</span> · diagnosis revised via expert call · ops + commercial action required',
+  },
+  opsConfirmedReturn: {
+    label: 'WO SUBMITTED · Hyperspace OS',
+    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Lim Wei Jie</span> · diagnosis confirmed · WO submitted · ops review required',
   },
   onsite: {
     label: 'INCOMING HANDOFF · Hyperspace OS',
@@ -129,16 +136,14 @@ const BANNER_COPY = {
   },
 };
 
-// ── W5 — State pill labels (canonical map) ──
+// ── W7 — State pill labels (simplified chain · Wong intermediate dropped) ──
 const STATE_PILL_LABEL = {
-  TRIAGE_READY:                  'TRIAGE READY',
-  DISPATCHED_TO_ONSITE:          'DISPATCHED TO ONSITE',
-  ONSITE_CONFIRMED:              'ONSITE CONFIRMED',
-  AWAITING_ASSET_PERF:           'AWAITING ASSET PERF',
-  ESCALATED_TO_OFFSITE:          'ESCALATED TO OFFSITE',
-  ROUTED_BACK_TO_OPS:            'ROUTED BACK · ACTION REQUIRED',
-  ROUTED_TO_TRADING_DESK:        'ROUTED TO TRADING DESK',
-  HEDGED:                        'HEDGED · CLOSED',
+  TRIAGE_READY:                     'TRIAGE READY',
+  DISPATCHED_TO_ONSITE:             'DISPATCHED TO ONSITE',
+  REVISED_DIAGNOSIS_ROUTED:         'ROUTED BACK · ACTION REQUIRED',
+  DIAGNOSIS_CONFIRMED_WO_SUBMITTED: 'WO SUBMITTED · ROUTED',
+  ROUTED_TO_TRADING_DESK:           'ROUTED TO TRADING DESK',
+  HEDGED:                           'HEDGED · CLOSED',
 };
 
 // W5 — option labels for Priya's lock-decision footer
@@ -172,8 +177,7 @@ const DISPATCH_LABEL = {
 
 const POST_DISPATCH_STATE_PILL = {
   ops:     'DISPATCHED_TO_ONSITE',
-  onsite:  'ONSITE_CONFIRMED',
-  offsite: 'AWAITING_ASSET_PERF',
+  // W7 — onsite/offsite no longer dispatch via this CTA path
 };
 
 // ── Hardcoded incident data (Jurong-CCGT-1 BFP-3A) — W3.9 pivot ──
@@ -460,32 +464,52 @@ function back() {
   render();
 }
 
-// ── Personas panel (external, above tablet) — W3.9: data-state + clickable + pulse ──
+// ── Personas panel (external, above tablet) — W7: Wong tile removed (3 tiles) ──
+// W8 Section 0 Part 1 — diff-update (build once, mutate attrs/classes on subsequent calls).
+// Preserves in-flight .persona-tile-pulse keyframe — fixes "flash" caused by innerHTML wipe restarting pulse from 0%.
 function renderPersonasPanel() {
   const row = document.getElementById('personas-row');
-  row.innerHTML = '';
+  if (!row) return;
   const ticket = getCanonicalTicket();
-  PERSONAS.forEach(p => {
-    const tile = el('div', 'persona-tile');
+  const visiblePersonas = PERSONAS.filter(p => p.key !== 'offsite');
+
+  // Lazy build — first call only.
+  if (!row.dataset.built) {
+    row.innerHTML = '';
+    visiblePersonas.forEach(p => {
+      const tile = el('div', 'persona-tile');
+      tile.dataset.personaKey = p.key;
+      tile.innerHTML = `
+        <div class="persona-scene">${PERSONA_SCENES[p.key]}</div>
+        <div class="persona-label">
+          <span class="persona-role">${p.role}</span>
+          <span class="persona-name">${p.name}</span>
+        </div>`;
+      tile.addEventListener('click', () => onPersonaTileClick(p.key));
+      row.appendChild(tile);
+    });
+    row.dataset.built = '1';
+  }
+
+  // Diff-update — runs every render(), only touches attrs/classes.
+  visiblePersonas.forEach(p => {
+    const tile = row.querySelector(`.persona-tile[data-persona-key="${p.key}"]`);
+    if (!tile) return;
     let dataState;
     if (p.key === state.activePersona) dataState = 'active';
     else if (p.key === 'analyst' && !state.priyaUnlocked) dataState = 'locked';
     else                               dataState = 'available';
-    tile.setAttribute('data-state', dataState);
-    tile.dataset.personaKey = p.key;
-    if (dataState !== 'locked' && ticket && ticket.handoffPending[p.key]) {
+    if (tile.getAttribute('data-state') !== dataState) {
+      tile.setAttribute('data-state', dataState);
+    }
+    const shouldPulse = dataState !== 'locked' && ticket && ticket.handoffPending[p.key];
+    const hasPulse = tile.classList.contains('persona-tile-pulse');
+    if (shouldPulse && !hasPulse) {
       tile.classList.add('persona-tile-pulse');
+    } else if (!shouldPulse && hasPulse) {
+      tile.classList.remove('persona-tile-pulse');
     }
-    tile.innerHTML = `
-      <div class="persona-scene">${PERSONA_SCENES[p.key]}</div>
-      <div class="persona-label">
-        <span class="persona-role">${p.role}</span>
-        <span class="persona-name">${p.name}</span>
-      </div>`;
-    if (dataState !== 'locked' && dataState !== 'active') {
-      tile.addEventListener('click', () => onPersonaTileClick(p.key));
-    }
-    row.appendChild(tile);
+    // If pulse already on + still should be on → leave class untouched (preserves keyframe phase).
   });
 }
 
@@ -496,6 +520,8 @@ function onPersonaTileClick(personaKey) {
 }
 
 function switchToPersona(personaKey) {
+  // W7 — offsite tile removed; guard against any stray call
+  if (personaKey === 'offsite') return;
   cancelInProgressReveal();
   state.activePersona = personaKey;
   state.screen = 'monitoring';
@@ -524,20 +550,24 @@ function cancelInProgressReveal() {
 // ─────────────────────────────────────────────
 
 const AGENT_PERSONA_RELEVANCE = {
-  orchestrator:        ['ops', 'onsite', 'offsite', 'analyst'],
-  inspection:          ['ops', 'onsite'],
-  triage:              ['ops', 'onsite', 'offsite'],
-  'diag-hrsg':         [],
-  'diag-electrical':   [],
-  playbook:            ['ops', 'onsite'],
-  'wo-prefill':        ['ops'],
-  workflow:            ['ops', 'onsite', 'offsite', 'analyst'],
-  learning:            ['analyst'],
-  'critic-power-gen':  ['ops', 'onsite', 'offsite'],
-  'critic-renewables': [],
-  'critic-networks':   [],
-  hse:                 ['onsite'],
-  pl:                  ['ops', 'offsite', 'analyst'],
+  // W7 — offsite persona removed from all relevance arrays
+  // W8 — sop-action + audio-transcription added (Section A)
+  orchestrator:          ['ops', 'onsite', 'analyst'],
+  inspection:            ['ops', 'onsite'],
+  triage:                ['ops', 'onsite'],
+  'diag-hrsg':           [],
+  'diag-electrical':     [],
+  playbook:              ['ops', 'onsite'],
+  'sop-action':          ['ops', 'onsite'],
+  'audio-transcription': ['onsite'],
+  'wo-prefill':          ['ops'],
+  workflow:              ['ops', 'onsite', 'analyst'],  // a.k.a. A2A Coordination Agent
+  learning:              ['analyst'],
+  'critic-power-gen':    ['ops', 'onsite'],
+  'critic-renewables':   [],
+  'critic-networks':     [],
+  hse:                   ['onsite'],
+  pl:                    ['ops', 'analyst'],
   'market-intelligence': ['analyst'],
 };
 
@@ -583,13 +613,17 @@ function renderIncidentDetailView(root) {
   switch (state.activePersona) {
     case 'ops': {
       const pill = ticket && ticket.statePill;
-      if (pill === 'ROUTED_BACK_TO_OPS' || pill === 'ROUTED_TO_TRADING_DESK' || pill === 'HEDGED') {
+      // W7 — Escalation Report fires on revised or confirmed return paths (plus downstream Priya states)
+      if (pill === 'REVISED_DIAGNOSIS_ROUTED' ||
+          pill === 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED' ||
+          pill === 'ROUTED_TO_TRADING_DESK' ||
+          pill === 'HEDGED') {
         return renderOpsEscalationReport(root);
       }
       return renderOpsIncidentDetail(root);
     }
     case 'onsite':  return renderOnsiteIncidentDetail(root);
-    case 'offsite': return renderOffsiteIncidentDetail(root);
+    case 'offsite': return renderOffsiteIncidentDetail(root);  // W7 — tile removed; path dead
     case 'analyst': return renderAnalystIncidentDetail(root);
   }
 }
@@ -636,13 +670,10 @@ function renderOpsIncidentDetail(root) {
   summarySlot.id = 'summary-slot';
   content.appendChild(summarySlot);
 
-  // (D) Action Steps slot
+  // (D) Action Steps slot — W8 B: Notes section now lives INSIDE Step 2 (between Lim row + Confirm CTA).
   const actionSlot = el('div', 'action-steps-slot');
   actionSlot.id = 'action-steps-slot';
   content.appendChild(actionSlot);
-
-  // (E) Notes section — always visible
-  content.appendChild(buildNotesSectionStandalone());
 
   // Back button — pops state.history
   const backBtn = content.querySelector('.inc-back');
@@ -652,8 +683,6 @@ function renderOpsIncidentDetail(root) {
   }
 
   root.appendChild(content);
-
-  wireNotesMic();
 
   // Drive content into the slots based on per-persona state
   const personaState = activePersonaTicketState();
@@ -821,7 +850,16 @@ function paintActionStepsComplete(actionSlot) {
       </div>
       <div class="dispatch-confirmed">✓ Dispatched at ${currentSGTTime()} · ${DISPATCH_LABEL[state.activePersona] || 'next persona'} notified</div>
     </div>`;
+  // W8 B — Notes tile lives inside the action-steps container even in re-entry view.
+  const stepsRoot = actionSlot.querySelector('.action-steps');
+  const confirmed = stepsRoot && stepsRoot.querySelector('.dispatch-confirmed');
+  if (stepsRoot && confirmed) {
+    const notes = buildNotesSectionStandalone();
+    notes.classList.add('notes-in-step2');
+    stepsRoot.insertBefore(notes, confirmed);
+  }
   wireTelemetryModal();
+  wireNotesMic();
 }
 
 function startActionStep1() {
@@ -868,7 +906,25 @@ function unlockActionStep2() {
         <div class="as-eng-hint">Click to select</div>
       </div>`;
     wireEngineerCardClick();
+    // W8 B — insert Notes tile inside Step 2, between Lim engineer card + Confirm CTA.
+    insertOpsNotesIntoStep2();
   }, 5000);
+}
+
+// W8 B — Notes tile lives inside Step 2 (between Lim row + Confirm CTA).
+function insertOpsNotesIntoStep2() {
+  const stepsRoot = document.querySelector('.action-steps');
+  if (!stepsRoot) return;
+  if (stepsRoot.querySelector('.notes-standalone')) return;
+  const cta = stepsRoot.querySelector('.action-cta');
+  const notes = buildNotesSectionStandalone();
+  notes.classList.add('notes-in-step2');
+  if (cta) {
+    stepsRoot.insertBefore(notes, cta);
+  } else {
+    stepsRoot.appendChild(notes);
+  }
+  wireNotesMic();
 }
 
 function wireEngineerCardClick() {
@@ -1346,7 +1402,7 @@ function appendDispatchCaptureFooter() {
     </div>
     <div class="dcf-line">
       <span class="dcf-ic">✓</span>
-      <span class="dcf-txt">Notes sent to <strong>Workflow Agent</strong> for review</span>
+      <span class="dcf-txt">Notes sent to <strong>A2A Coordination Agent</strong> for review</span>
     </div>
     <div class="dcf-line">
       <span class="dcf-ic">✓</span>
@@ -1535,19 +1591,16 @@ function buildLimDetailScaffold() {
 const LIM_INCOMING_NOTE = 'Lim — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.';
 
 function buildLimNotesSection() {
-  const wrap = el('div', 'notes-standalone');
+  // W8 C.3 + C.4 — display-only incoming note (no record affordance, no textarea).
+  // 12px top margin separates from metrics 2x2 above.
+  const wrap = el('div', 'notes-standalone notes-incoming');
   wrap.innerHTML = `
-    <div class="notes-section">
-      <div class="notes-header">
-        <span class="notes-title">Note attached from <span class="dyn-name">Faye Sit</span></span>
-        <button class="notes-mic-btn" data-recording="false" type="button">
-          <svg class="mic-ic" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-            <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V5a3 3 0 0 0-3-3zm5 9a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/>
-            </svg>
-          <span class="notes-mic-lbl">Record</span>
-        </button>
+    <div class="notes-section notes-section-display">
+      <div class="notes-header notes-header-display">
+        <span class="notes-title">Note from <span class="dyn-name">Faye Sit</span></span>
+        <span class="notes-incoming-chip">incoming · 02:48 SGT</span>
       </div>
-      <textarea class="notes-textarea" readonly>${LIM_INCOMING_NOTE}</textarea>
+      <div class="notes-body-display">${LIM_INCOMING_NOTE}</div>
     </div>`;
   return wrap;
 }
@@ -1558,11 +1611,20 @@ function renderOnsiteIncidentDetail(root) {
 
   const personaState = activePersonaTicketState();
   if (personaState.actioned) {
-    // Post-escalation re-entry — paint completed state straight away
-    paintLimSummaryComplete(true);
+    // W7 — post-action re-entry. Pick footer per state pill (Confirm path vs Reject/Confirm-revised path).
+    const ticket = getCanonicalTicket();
+    const pill = ticket.statePill;
+    paintLimSummaryComplete(state.lim.diagnosisRevised);
     paintLimChecklistComplete();
-    paintLimEscalationComplete();
-    setTimeout(appendEscalationCaptureFooter, 200);
+    const slot = document.getElementById('lim-ctas-slot');
+    if (slot) slot.innerHTML = '';
+    setTimeout(() => {
+      if (pill === 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED') {
+        appendConfirmedCaptureFooter();
+      } else {
+        appendRevisedDiagnosisCaptureFooter();
+      }
+    }, 200);
     return;
   }
 
@@ -1570,20 +1632,20 @@ function renderOnsiteIncidentDetail(root) {
   if (state.lim.summaryRevealed) {
     paintLimSummaryComplete(state.lim.diagnosisRevised);
     paintLimChecklist();
-    // W6 — only spawn binary CTAs if user already met threshold (re-entry mid-flow)
+    // W7 — Diagnosis Verdict re-entry path
     const checkedCount = Object.keys(state.lim.checked).length;
-    if (checkedCount >= LIM_CHECKLIST_THRESHOLD || state.lim.callStarted || state.lim.diagnosisRevised) {
-      paintLimBinaryCTAs();
-    }
-    if (state.lim.callStarted && !state.lim.callEnded) {
-      replaceEscalateCTAWithInCallStrip();
-    }
-    if (state.lim.callEnded) {
-      replaceEscalateCTAWithInCallStrip();
-      paintPostCallStagesFromState();
-    }
     if (state.lim.diagnosisRevised) {
-      morphConfirmCTAToEscalate();
+      // Past the call — show post-call state + Revise diagnosis tile (or footer if already routed)
+      spawnInCallStrip();
+      paintPostCallStagesFromState();
+      spawnReviseDiagnosisTile();
+    } else if (state.lim.callEnded) {
+      spawnInCallStrip();
+      paintPostCallStagesFromState();
+    } else if (state.lim.callStarted) {
+      spawnInCallStrip();
+    } else if (checkedCount >= LIM_CHECKLIST_THRESHOLD) {
+      paintDiagnosisVerdict();
     }
   } else {
     startLimScreenDReveal();
@@ -1591,47 +1653,16 @@ function renderOnsiteIncidentDetail(root) {
 }
 
 function startLimScreenDReveal() {
-  state.lim.revealStarted = true;
-  const slot = document.getElementById('lim-summary-slot');
-  if (!slot) return;
-
-  // Stage 1 — t=0: workflow agent loading incident summary
-  slot.innerHTML = `
-    <div class="reveal-pending" data-stage="lim-summary">
-      <div class="reveal-dots"><span></span><span></span><span></span></div>
-      <div class="reveal-msg">
-        <span class="reveal-agent">Workflow Agent</span> ·
-        Loading incident summary for <strong>Lim Wei Jie</strong>
-      </div>
-    </div>`;
-  // W6 — fire Workflow Agent card synced with Loading #1
-  fireAgentCardLifecycle('workflow', 5000);
-
-  // Stage 2 — t=5s: swap to Summary report shell with diagnosis loading placeholder
+  // W8 C.1 + C.2 — paint Predicted Diagnosis IMMEDIATELY (Faye already revealed it · no 10s reload).
+  // Eliminates the W6 dual-stage theater + the double-paint bug where pushReveal Stage 3 fired
+  // paintLimSummaryComplete a second time after the section was already painted.
+  if (state.lim.summaryRevealed) return;
+  state.lim.summaryRevealed = true;
+  paintLimSummaryComplete(false);
+  // Inspection Workflow checklist spawns at t=2s — gives metrics + notes + diagnosis time to settle.
   pushReveal(() => {
-    slot.innerHTML = `
-      <div class="summary-report">
-        <div class="sr-heading">Predicted diagnosis</div>
-        <div class="sr-body">
-          <div class="reveal-pending" data-stage="lim-hypothesis">
-            <div class="reveal-dots"><span></span><span></span><span></span></div>
-            <div class="reveal-msg">
-              <span class="reveal-agent">Sensor Anomaly Inspector</span> ·
-              Loading diagnosis hypothesis
-            </div>
-          </div>
-        </div>
-      </div>`;
-    // W6 — fire Sensor Anomaly Inspector card synced with Loading #2
-    fireAgentCardLifecycle('inspection', 5000);
-  }, 5000);
-
-  // Stage 3 — t=10s: paint full Summary + checklist (W6 — binary CTAs deferred until 10/10)
-  pushReveal(() => {
-    state.lim.summaryRevealed = true;
-    paintLimSummaryComplete(false);
     paintLimChecklist();
-  }, 10000);
+  }, 2000);
 }
 
 function paintLimSummaryComplete(revised) {
@@ -1646,10 +1677,12 @@ function paintLimSummaryComplete(revised) {
   if (revised) {
     tileHtml = buildRevisedDiagnosisTileHTML();
   } else {
+    // W8 C.1 — confirmation pill: Faye already passed this through Hyperspace OS · pending onsite verification.
     tileHtml = `
       <div class="sr-hypothesis">
         <div class="sr-hyp-row">
           <span class="sr-hyp-name">${hyp.primary}</span>
+          <span class="sr-hyp-status-pill">✓ confirmed by Hyperspace OS · pending onsite verification</span>
         </div>
       </div>
       <div class="sr-alternates">
@@ -1762,6 +1795,28 @@ function paintLimChecklistComplete() {
   // All items rendered as checked (post-escalation re-entry)
   LIM_INSPECTION_CHECKLIST.forEach(g => g.items.forEach(it => { state.lim.checked[it.id] = true; }));
   paintLimChecklist();
+  // W8 C.5 — re-entry path also shows truncated groups.
+  truncateInspectionGroupsToCompleted();
+}
+
+// W8 C.5 — replace each inspection group's inner content with header-only completed row.
+function truncateInspectionGroupsToCompleted() {
+  document.querySelectorAll('.ic-group').forEach(grpEl => {
+    if (grpEl.dataset.collapsed === 'true') return;
+    const groupName = grpEl.dataset.group;
+    const grpDef = LIM_INSPECTION_CHECKLIST.find(g => g.group === groupName);
+    if (!grpDef) return;
+    const total = grpDef.items.length;
+    grpEl.innerHTML = `
+      <div class="ic-group-label ic-group-label-completed">
+        <span class="ic-group-label-text">${groupName}</span>
+        <span class="ic-group-label-status">✓ ${total}/${total} completed</span>
+      </div>`;
+    grpEl.dataset.collapsed = 'true';
+    grpEl.dataset.locked = 'false';
+  });
+  // Also drop any in-flight theater placeholders that would now be orphaned.
+  document.querySelectorAll('.ic-group-theater').forEach(t => t.remove());
 }
 
 function wireInspectionChecklist() {
@@ -1883,96 +1938,147 @@ function updateChecklistProgress() {
   }
 
   if (checked >= LIM_CHECKLIST_THRESHOLD) {
-    // W6 — spawn binary CTAs at 10/10 (deferred from initial reveal)
+    // W7 — spawn Diagnosis Verdict section at 10/10 (replaces W4.1 binary CTAs)
     const slot = document.getElementById('lim-ctas-slot');
-    if (slot && !slot.querySelector('.binary-ctas')) {
-      paintLimBinaryCTAs();
+    if (slot && !slot.querySelector('.diagnosis-verdict')
+             && !slot.querySelector('.sop-routing-theater')
+             && !slot.querySelector('.in-call-strip')
+             && !slot.querySelector('.post-call-stage')
+             && !state.lim.rejectClicked) {
+      paintDiagnosisVerdict();
     }
-    enableBinaryCTAs();
   }
 }
 
-function paintLimBinaryCTAs() {
+// W7 — Diagnosis Verdict section (replaces W4.1 binary-ctas)
+// Spawns ONLY when 10/10 inspection checks complete. Reject = main path, Confirm = stub.
+// W8 C.5 — truncate inspection groups to header-only at this moment (frees vertical space).
+function paintDiagnosisVerdict() {
   const slot = document.getElementById('lim-ctas-slot');
   if (!slot) return;
+  if (slot.querySelector('.diagnosis-verdict')) return;
+  state.lim.verdictSpawned = true;
+
+  // W8 C.5 — collapse all inspection groups to header-only `✓ <label> · N/N completed`.
+  truncateInspectionGroupsToCompleted();
+
   slot.innerHTML = `
-    <div class="binary-ctas">
-      <button class="binary-cta confirm-cta" disabled data-action="confirm" type="button">
-        Confirm diagnosis and submit WO
-      </button>
-      <button class="binary-cta escalate-cta" disabled data-action="escalate" type="button">
-        <svg class="cta-phone-ic" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-          <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.58l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/>
-        </svg>
-        <span>Diagnosis not confirmed — contact Senior Engineer <span class="dyn-name">Dr. A. Wong</span></span>
-      </button>
+    <div class="diagnosis-verdict">
+      <div class="dv-heading">Diagnosis verdict</div>
+      <div class="dv-sub">Confirm Hyperspace OS hypothesis OR reject and escalate to senior engineer.</div>
+      <div class="dv-buttons">
+        <button class="dv-btn dv-reject" type="button">Reject</button>
+        <button class="dv-btn dv-confirm" type="button">Confirm</button>
+      </div>
     </div>`;
-  const checked = Object.keys(state.lim.checked).length;
-  if (checked >= LIM_CHECKLIST_THRESHOLD) enableBinaryCTAs();
-}
-
-function enableBinaryCTAs() {
-  const confirmCta = document.querySelector('.confirm-cta');
-  const escalateCta = document.querySelector('.escalate-cta');
-  if (confirmCta && confirmCta.disabled) {
-    confirmCta.disabled = false;
-  }
-  if (escalateCta && escalateCta.disabled) {
-    escalateCta.disabled = false;
-    if (escalateCta.dataset.wired !== '1') {
-      escalateCta.dataset.wired = '1';
-      escalateCta.addEventListener('click', onEscalateCTAClick);
-    }
-  }
-  setConfirmBtnPhase('confirm-ready');
-}
-
-// W4.1 — top button morph chain (3 phases)
-function setConfirmBtnPhase(phase) {
-  state.lim.confirmBtnPhase = phase;
-  const btn = document.querySelector('.confirm-cta');
-  if (!btn) return;
-  btn.classList.remove('phase-confirm-ready', 'phase-awaiting-call', 'phase-escalate-ready');
-  btn.classList.add(`phase-${phase}`);
-  if (phase === 'confirm-ready') {
-    btn.disabled = false;
-    btn.textContent = 'Confirm diagnosis and submit WO';
-  } else if (phase === 'awaiting-call') {
-    btn.disabled = true;
-    btn.textContent = 'Awaiting diagnosis confirmation';
-  } else if (phase === 'escalate-ready') {
-    btn.disabled = false;
-    btn.textContent = 'Escalate for approval';
-    if (btn.dataset.wiredEscalate !== '1') {
-      btn.dataset.wiredEscalate = '1';
-      btn.addEventListener('click', onEscalateForApprovalClick);
-    }
-  }
-}
-
-function onEscalateCTAClick() {
-  if (state.lim.callStarted) return;
-  state.lim.callStarted = true;
-  replaceEscalateCTAWithInCallStrip();
-  setConfirmBtnPhase('awaiting-call');
+  wireVerdictButtons();
   if (window.LOG) {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'workflow',
-      text: 'Lim Wei Jie · initiated escalation call to Dr. A. Wong',
+      text: 'Inspection workflow complete · 10/10 checks logged · Diagnosis Verdict gated open',
       dataSource: 'Hyperspace OS',
-      nodeChain: ['dr-wong'],
+      nodeChain: ['sop-bfp-vibration-investigation'],
     });
   }
 }
 
-function replaceEscalateCTAWithInCallStrip() {
-  const cta = document.querySelector('.escalate-cta');
-  if (!cta) return;
+function wireVerdictButtons() {
+  const reject = document.querySelector('.dv-reject');
+  const confirm = document.querySelector('.dv-confirm');
+  if (reject && reject.dataset.wired !== '1') {
+    reject.dataset.wired = '1';
+    reject.addEventListener('click', onVerdictReject);
+  }
+  if (confirm && confirm.dataset.wired !== '1') {
+    confirm.dataset.wired = '1';
+    confirm.addEventListener('click', onVerdictConfirm);
+  }
+}
+
+// W7 — Reject = main path. SOP-routing theater → in-call strip.
+// W8 D.1 — theater 3s → 6s. W8 A.6 — fire SOP Action Agent (not workflow).
+function onVerdictReject() {
+  if (state.lim.rejectClicked) return;
+  state.lim.rejectClicked = true;
+  state.lim.callStarted = true;
+
+  const slot = document.getElementById('lim-ctas-slot');
+  if (!slot) return;
+  // Drop verdict section, spawn SOP-routing theater
+  slot.innerHTML = `
+    <div class="sop-routing-theater">
+      <span class="reveal-dots"><span></span><span></span><span></span></span>
+      <span class="reveal-msg">
+        <span class="reveal-agent">SOP Action Agent</span> · Connecting to <span class="dyn-name">Dr. A. Wong</span> via call · routing through escalation playbook
+      </span>
+    </div>`;
+
+  if (window.LOG) {
+    window.LOG.appendLine({
+      ts: currentSGTLog(),
+      source: 'sop-action',
+      text: 'SOP Action Agent · Connecting to Dr. A. Wong via call · routing through escalation playbook',
+      dataSource: 'Hyperspace OS',
+      nodeChain: ['dr-wong', 'sop-bfp-vibration-investigation'],
+    });
+  }
+  fireAgentCardLifecycle('sop-action', 6000);
+
+  // After 6s: remove theater, spawn in-call strip
+  setTimeout(() => {
+    const t = slot.querySelector('.sop-routing-theater');
+    if (t) t.remove();
+    spawnInCallStrip();
+  }, 6000);
+}
+
+// W7 — Confirm = alt-path stub (Pulkit won't click in live demo).
+function onVerdictConfirm() {
+  const ticket = getCanonicalTicket();
+  if (ticket.byPersona.onsite.actioned) return;
+  ticket.byPersona.onsite.actioned = true;
+  setStatePill('DIAGNOSIS_CONFIRMED_WO_SUBMITTED');
+  ticket.handoffPending.ops = true;
+  ticket.byPersona.ops.seen = false;
+  ticket.byPersona.ops.opened = false;
+
+  const slot = document.getElementById('lim-ctas-slot');
+  if (slot) slot.innerHTML = '';
+  appendConfirmedCaptureFooter();
+
+  if (window.LOG) {
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Hyperspace OS hypothesis confirmed by Lim Wei Jie · WO submitted', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation'] });
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Faye Sit notified', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+  }
+  fireAgentCardLifecycle('workflow', 2000);
+  render();
+}
+
+function appendConfirmedCaptureFooter() {
+  const container = document.getElementById('incident-detail-view');
+  if (!container) return;
+  if (container.querySelector('.dispatch-capture-footer')) return;
+  const footer = el('div', 'dispatch-capture-footer');
+  footer.innerHTML = `
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · diagnosis confirmed · WO submitted</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Workflow trace routed to <strong>A2A Coordination Agent</strong></span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><span class="dyn-name">Faye Sit</span> notified · returned for ops + commercial action</span></div>`;
+  container.appendChild(footer);
+  const lbl = el('div', 'dispatched-to-label');
+  lbl.innerHTML = `WO submitted · returned to <span class="dyn-name">Faye Sit</span> · ${currentSGTLog()}`;
+  container.appendChild(lbl);
+}
+
+// W7 — spawn in-call strip directly (no top button to morph; replaces W4.1 escalate-cta replacement path)
+function spawnInCallStrip() {
+  const slot = document.getElementById('lim-ctas-slot');
+  if (!slot) return;
+  if (slot.querySelector('.in-call-strip')) return;
   const strip = document.createElement('div');
   strip.className = 'in-call-strip';
   strip.innerHTML = buildInCallStripHTML();
-  cta.replaceWith(strip);
+  slot.appendChild(strip);
   wireInCallEnd();
   if (state.lim.callEnded) {
     strip.classList.add('call-ended');
@@ -2013,45 +2119,67 @@ function onCallEnd() {
   if (label) label.textContent = `Call ended · transcript captured · ${currentSGTLog()}`;
   if (endBtn) endBtn.remove();
 
-  // Stage 1: generating-transcript (3s)
+  // Stage 1: generating-transcript (3s · Audio-transcription Agent — W8 A.6)
   spawnPostCallStage('generating-transcript');
-  // W6 — fire Workflow Agent card synced with Generating transcript
-  fireAgentCardLifecycle('workflow', 3000);
+  if (window.LOG) {
+    window.LOG.appendLine({
+      ts: currentSGTLog(),
+      source: 'audio-transcription',
+      text: 'Audio-transcription Agent · Capturing call audio · generating transcript',
+      dataSource: 'Hyperspace OS',
+      nodeChain: [],
+    });
+  }
+  fireAgentCardLifecycle('audio-transcription', 3000);
   setTimeout(() => {
     swapPostCallStage('generating-transcript', 'transcript-attached');
     state.lim.transcriptAttached = true;
+
+    // W8 D.4 — drop call-ended strip when Transcript attached appears.
+    if (strip) {
+      strip.style.transition = 'opacity 0.3s ease-out';
+      strip.style.opacity = '0';
+      setTimeout(() => strip.remove(), 320);
+    }
+
     if (window.LOG) {
       window.LOG.appendLine({
         ts: currentSGTLog(),
-        source: 'workflow',
+        source: 'audio-transcription',
         text: 'Call transcript generated · 7m 23s · 6 exchanges · auto-attached',
         dataSource: 'Hyperspace OS',
         nodeChain: [],
       });
     }
     spawnPostCallStage('analyzing-transcript');
-    // W6 — fire Workflow Agent card synced with Analyzing transcript
-    fireAgentCardLifecycle('workflow', 3000);
+    // Stage 2: analyzing-transcript (3s · Audio-transcription Agent — W8 A.6)
+    fireAgentCardLifecycle('audio-transcription', 3000);
     setTimeout(() => {
-      swapPostCallStage('analyzing-transcript', 'diagnosis-confirmed-button');
+      // Remove analyzing-transcript loading visual
+      const slot = document.getElementById('lim-ctas-slot');
+      const analyzingEl = slot && slot.querySelector('.post-call-stage[data-stage="analyzing-transcript"]');
+      if (analyzingEl) analyzingEl.remove();
+
       if (window.LOG) {
         window.LOG.appendLine({
           ts: currentSGTLog(),
-          source: 'workflow',
-          text: 'Transcript analysis · revised diagnosis extracted · awaiting Lim confirmation',
+          source: 'audio-transcription',
+          text: 'Transcript analysis · diarized speakers · revised diagnosis extracted',
           dataSource: 'Hyperspace OS',
           nodeChain: ['pump-casing-crack-pattern'],
         });
       }
+      // W8 E.4 — auto-trigger diagnosis morph + Revise diagnosis tile spawn (no user click).
+      onDiagnosisConfirmedClick();
     }, 3000);
   }, 3000);
 }
 
 function paintPostCallStagesFromState() {
-  // Re-entry mid-flow — show transcript-attached + diagnosis-confirmed button if those stages were reached.
+  // Re-entry mid-flow — show transcript-attached if that stage was reached.
+  // W8 E.4 — diagnosis-confirmed-button stage removed; Revise diagnosis tile spawned separately by caller.
   if (state.lim.transcriptAttached) {
     spawnPostCallStage('transcript-attached');
-    spawnPostCallStage('diagnosis-confirmed-button');
   }
 }
 
@@ -2065,7 +2193,7 @@ function spawnPostCallStage(stage) {
   node.innerHTML = postCallStageHTML(stage);
   slot.appendChild(node);
   if (stage === 'transcript-attached') wireTranscriptModalLinks();
-  if (stage === 'diagnosis-confirmed-button') wireDiagnosisConfirmedButton();
+  // W8 E.4 — diagnosis-confirmed-button stage retired; Revise tile spawned via spawnReviseDiagnosisTile().
 }
 
 function swapPostCallStage(fromStage, toStage) {
@@ -2077,12 +2205,13 @@ function swapPostCallStage(fromStage, toStage) {
 }
 
 function postCallStageHTML(stage) {
+  // W8 A.6 — generating/analyzing fire Audio-transcription Agent (not workflow).
   switch (stage) {
     case 'generating-transcript':
       return `
         <span class="reveal-dots"><span></span><span></span><span></span></span>
         <span class="post-call-msg">
-          <span class="post-call-agent">Workflow Agent</span> · Generating transcript...
+          <span class="post-call-agent">Audio-transcription Agent</span> · Generating transcript...
         </span>`;
     case 'transcript-attached':
       return `
@@ -2095,22 +2224,14 @@ function postCallStageHTML(stage) {
       return `
         <span class="reveal-dots"><span></span><span></span><span></span></span>
         <span class="post-call-msg">
-          <span class="post-call-agent">Workflow Agent</span> · Analyzing transcript...
+          <span class="post-call-agent">Audio-transcription Agent</span> · Analyzing transcript...
         </span>`;
     case 'diagnosis-confirmed-button':
-      return `
-        <button class="post-call-confirm-btn" type="button">
-          Use <span class="dyn-name">crack in pump casing</span> diagnosis confirmed over call with <span class="dyn-name">Dr. A. Wong</span>
-        </button>`;
+      // W8 E.2 — replaced by .revise-diagnosis-tile spawned via spawnReviseDiagnosisTile().
+      // This stage no longer renders user-facing content; trigger handled inside onCallEnd timeline.
+      return '';
   }
   return '';
-}
-
-function wireDiagnosisConfirmedButton() {
-  const btn = document.querySelector('.post-call-confirm-btn');
-  if (!btn || btn.dataset.wired === '1') return;
-  btn.dataset.wired = '1';
-  btn.addEventListener('click', onDiagnosisConfirmedClick);
 }
 
 function onDiagnosisConfirmedClick() {
@@ -2119,7 +2240,8 @@ function onDiagnosisConfirmedClick() {
   state.lim.revisionTimestamp = '02:55 SGT';
   // Replace diagnosis hypothesis tile inline
   morphDiagnosisTile();
-  morphConfirmCTAToEscalate();
+  // W8 E.2 — spawn Revise diagnosis TILE w/ inline Confirm button (replaces W7 standalone button)
+  spawnReviseDiagnosisTile();
   if (window.LOG) {
     window.LOG.appendLine({
       ts: currentSGTLog(),
@@ -2133,7 +2255,7 @@ function onDiagnosisConfirmedClick() {
   setTimeout(triggerKGGrowth, 10000);
 }
 
-// W6 — KG growth: add 3 nodes + 5 edges to live graph, log Workflow Agent tacit-knowledge capture
+// W7 — KG growth: nodes already in initial graph; just flash green halo on tacit cluster for 4s.
 function triggerKGGrowth() {
   if (state.kgGrowthFired) return;
   state.kgGrowthFired = true;
@@ -2141,36 +2263,25 @@ function triggerKGGrowth() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'workflow',
-      text: "Tacit knowledge captured from Dr. A. Wong's expert collaboration · 3 KG nodes + 5 edges enriched · BFP casing patterns codified",
+      text: "Tacit knowledge captured from Dr. A. Wong's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
       dataSource: 'Hyperspace OS',
       nodeChain: ['casing-tacit-knowledge', 'wong-field-experience-2023', 'bfp-casing-inspection-protocol'],
     });
   }
   fireAgentCardLifecycle('workflow', 2000);
-  growKG();
+  flashKGGrowthHalo();
 }
 
-function growKG() {
+function flashKGGrowthHalo() {
   if (!KG_STATE.graph) return;
-  // Push into module-level arrays so any subsequent re-render keeps them
-  KG_NODES.push(...KG_GROWTH_NODES);
-  KG_EDGES.push(...KG_GROWTH_EDGES);
-  KG_STATE.newlyAddedNodes = new Set(KG_GROWTH_NODES.map(n => n.id));
-
-  const current = KG_STATE.graph.graphData();
-  const newNodes = KG_GROWTH_NODES.map(n => ({ ...n, fy: n.y }));
-  const merged = {
-    nodes: [...current.nodes, ...newNodes],
-    links: [...current.links, ...KG_GROWTH_EDGES],
-  };
-  KG_STATE.graph.graphData(merged);
-
-  // Auto-revert green halo after 4s (force re-render so non-new nodes restore white halo)
+  KG_STATE.newlyAddedNodes = new Set(KG_GROWTH_NODE_IDS);
+  refreshKGStyles();
   setTimeout(() => {
     KG_STATE.newlyAddedNodes.clear();
     if (KG_STATE.graph && typeof KG_STATE.graph.refresh === 'function') {
       KG_STATE.graph.refresh();
     }
+    refreshKGStyles();
   }, 4000);
 }
 
@@ -2183,8 +2294,112 @@ function morphDiagnosisTile() {
   wireTranscriptModalLinks();
 }
 
+// W7 — dead code path (W4.1 escalate-ready morph removed; kept for re-entry safety, no-op).
 function morphConfirmCTAToEscalate() {
-  setConfirmBtnPhase('escalate-ready');
+  spawnReviseDiagnosisTile();
+}
+
+// W8 E.2 — Revise diagnosis TILE w/ heading + body + inline Confirm button (replaces W7 standalone button).
+function spawnReviseDiagnosisTile() {
+  const slot = document.getElementById('lim-ctas-slot');
+  if (!slot) return;
+  if (slot.querySelector('.revise-diagnosis-tile')) return;
+  slot.insertAdjacentHTML('beforeend', `
+    <div class="revise-diagnosis-tile">
+      <div class="rdt-icon-block">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3,12 6,9 9,12"/>
+          <path d="M6 9 v6 a4 4 0 0 0 4 4 h6"/>
+          <polyline points="14,16 17,19 20,16"/>
+          <path d="M17 19 v-6 a4 4 0 0 0 -4 -4 h-3"/>
+        </svg>
+      </div>
+      <div class="rdt-body">
+        <div class="rdt-heading">REVISE DIAGNOSIS</div>
+        <div class="rdt-text">
+          Hyperspace OS detected the correct diagnosis was <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Wong</span>.
+        </div>
+      </div>
+      <button class="rdt-confirm-btn" type="button">Confirm revised diagnosis</button>
+    </div>`);
+  wireReviseDiagnosisTile();
+}
+
+function wireReviseDiagnosisTile() {
+  const btn = document.querySelector('.rdt-confirm-btn');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', onConfirmRevisedDiagnosisClick);
+}
+
+function onConfirmRevisedDiagnosisClick() {
+  if (state.lim.confirmRevisedClicked) return;
+  state.lim.confirmRevisedClicked = true;
+  const btn = document.querySelector('.rdt-confirm-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Reviewing...';
+  }
+  const slot = document.getElementById('lim-ctas-slot');
+  if (slot) {
+    slot.insertAdjacentHTML('beforeend', `
+      <div class="sop-review-theater">
+        <span class="reveal-dots"><span></span><span></span><span></span></span>
+        <span class="reveal-msg">
+          <span class="reveal-agent">SOP Action Agent</span> · Reviewing SOP-BFP-VIBR-001 + cross-checking revised diagnosis against current procedures
+        </span>
+      </div>`);
+  }
+  if (window.LOG) {
+    window.LOG.appendLine({
+      ts: currentSGTLog(),
+      source: 'sop-action',
+      text: 'SOP Action Agent · Reviewing SOP-BFP-VIBR-001 + cross-checking revised diagnosis · routing to Ops',
+      dataSource: 'Hyperspace OS',
+      nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'],
+    });
+  }
+  fireAgentCardLifecycle('sop-action', 3000);
+
+  setTimeout(() => {
+    document.querySelector('.sop-review-theater')?.remove();
+    document.querySelector('.revise-diagnosis-tile')?.remove();
+    advanceToRoutedRevisedDiagnosis();
+  }, 3000);
+}
+
+function advanceToRoutedRevisedDiagnosis() {
+  const ticket = getCanonicalTicket();
+  ticket.byPersona.onsite.actioned = true;
+  setStatePill('REVISED_DIAGNOSIS_ROUTED');
+  ticket.handoffPending.ops = true;
+  ticket.byPersona.ops.seen = false;
+  ticket.byPersona.ops.opened = false;
+  state.lim.revisionTimestamp = state.lim.revisionTimestamp || '02:55 SGT';
+
+  appendRevisedDiagnosisCaptureFooter();
+
+  if (window.LOG) {
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Faye Sit for ops + commercial impact', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'Hyperspace OS', nodeChain: ['pump-casing-crack-pattern'] });
+  }
+  fireAgentCardLifecycle('workflow', 2000);
+  render();
+}
+
+function appendRevisedDiagnosisCaptureFooter() {
+  const container = document.getElementById('incident-detail-view');
+  if (!container) return;
+  if (container.querySelector('.dispatch-capture-footer')) return;
+  const footer = el('div', 'dispatch-capture-footer');
+  footer.innerHTML = `
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · <span class="dyn-name">Faye Sit</span> notified · revised diagnosis routed</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript + revised diagnosis routed to <strong>A2A Coordination Agent</strong> for chain-of-custody</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · revised diagnosis + transcript enriched · routing recorded</span></div>`;
+  container.appendChild(footer);
+  const lbl = el('div', 'dispatched-to-label');
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Faye Sit</span> · ${currentSGTLog()}`;
+  container.appendChild(lbl);
 }
 
 function onEscalateForApprovalClick() {
@@ -2213,7 +2428,7 @@ function appendEscalationCaptureFooter() {
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> confirms revised diagnosis SOP followed</span></div>
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript routed to <strong>Workflow Agent</strong> for review</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript routed to <strong>A2A Coordination Agent</strong> for review</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · team · incident · revised diagnosis + transcript enriched</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
@@ -2367,13 +2582,13 @@ function paintWongSummaryComplete() {
 function paintWongCTADisabled() {
   const slot = document.getElementById('wong-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="wong-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name">Faye Sit</span></button>`;
+  slot.innerHTML = `<button class="wong-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
 }
 
 function paintWongCTAReady() {
   const slot = document.getElementById('wong-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="wong-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name">Faye Sit</span></button>`;
+  slot.innerHTML = `<button class="wong-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
   wireWongApproveClick();
 }
 
@@ -2416,7 +2631,7 @@ function appendWongApprovalCaptureFooter() {
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · escalation approval sign-off recorded</span></div>
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Approval + transcript routed to <strong>Workflow Agent</strong> for chain-of-custody</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Approval + transcript routed to <strong>A2A Coordination Agent</strong> for chain-of-custody</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · sign-off attached to incident · routed back to Site Operations Manager</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
@@ -2482,7 +2697,7 @@ function renderOpsEscalationReport(root) {
 
       <div class="reveal-pending oer-loading" data-stage="oer-summary">
         <span class="reveal-dots"><span></span><span></span><span></span></span>
-        <span class="reveal-msg"><span class="reveal-agent">Workflow Agent</span> · Loading escalation report for <span class="dyn-name">Faye Sit</span></span>
+        <span class="reveal-msg"><span class="reveal-agent">A2A Coordination Agent</span> · Loading escalation report for <span class="dyn-name">Faye Sit</span></span>
       </div>
     </div>`;
   content.appendChild(wrap);
@@ -2506,7 +2721,7 @@ function renderOpsEscalationReport(root) {
     return;
   }
 
-  // First open at ROUTED_BACK_TO_OPS — run loading theater
+  // W7 — First open at REVISED_DIAGNOSIS_ROUTED or DIAGNOSIS_CONFIRMED_WO_SUBMITTED — run loading theater
   startEscalationReportReveal();
 }
 
@@ -2533,7 +2748,7 @@ function spawnEscalationReportContent() {
           <div class="oer-wl-item">✓ 2/2 Root cause isolation checks</div>
           <div class="oer-wl-item">✓ Initial bearing-spalling hypothesis rejected</div>
           <div class="oer-wl-item">✓ Call with <span class="dyn-name">Dr. A. Wong</span> · 7m 23s · transcript captured</div>
-          <div class="oer-wl-item">✓ Revised diagnosis sign-off received</div>
+          <div class="oer-wl-item">✓ Transcript captured · <span class="dyn-name">Dr. A. Wong</span> + <span class="dyn-name">Lim Wei Jie</span> discussed and agreed <button class="oer-tx-inline" type="button">(see transcript)</button></div>
         </div>
       </div>
 
@@ -2554,7 +2769,7 @@ function spawnEscalationReportContent() {
       </div>
     </div>
     <button class="oer-cta" type="button" disabled>
-      Notify trading desk · route to <span class="dyn-name">Priya Sundaram</span>
+      Notify trading desk · route to <span class="dyn-name-on-green">Priya Sundaram</span>
     </button>`;
   card.insertAdjacentHTML('beforeend', contentHTML);
 }
@@ -2596,7 +2811,9 @@ function onNotifyTradingDeskClick() {
   const cta = document.querySelector('.oer-cta');
   if (cta && cta.disabled) return;
   const ticket = getCanonicalTicket();
-  if (ticket.statePill !== 'ROUTED_BACK_TO_OPS') return;
+  // W7 — guard against re-fire from the two return states
+  if (ticket.statePill !== 'REVISED_DIAGNOSIS_ROUTED' &&
+      ticket.statePill !== 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED') return;
   setStatePill('ROUTED_TO_TRADING_DESK');
   ticket.handoffPending.analyst = true;
   ticket.handoffPending.ops = false;
@@ -2614,7 +2831,7 @@ function appendNotifyTradingDeskCaptureFooter() {
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · ops escalation logged · trading desk notification queued</span></div>
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Escalation packet routed to <strong>Workflow Agent</strong> for trading-desk chain</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Escalation packet routed to <strong>A2A Coordination Agent</strong> for trading-desk chain</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · commercial-impact context attached · routed to Trader</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
@@ -2721,12 +2938,13 @@ function spawnAnalystScreenContent() {
   if (card.querySelector('.ac-content')) return;
   const contentHTML = `
     <div class="ac-content reveal-in">
-      <div class="ac-section">
-        <div class="ac-section-label">Operational context (from <span class="dyn-name">Faye Sit</span>)</div>
-        <div class="ac-context-list">
-          <div class="ac-ctx-row"><span class="ac-ctx-k">Diagnosis</span><span class="ac-ctx-v"><span class="dyn-name">Crack in pump casing on BFP-3A</span></span></div>
-          <div class="ac-ctx-row"><span class="ac-ctx-k">Recommendation</span><span class="ac-ctx-v">Shutdown BFP-3A · Block 2 isolated</span></div>
-          <div class="ac-ctx-row"><span class="ac-ctx-k">Exposure</span><span class="ac-ctx-v">50 MW · 4h PSO peak · ~SGD 240k revenue at risk</span></div>
+      <div class="ac-section ac-section-context">
+        <div class="ac-context-row ac-context-exposure">
+          <div class="ac-ctx-label">EXPOSURE</div>
+          <div class="ac-ctx-content">
+            <div class="ac-ctx-primary">50 MW derate · SGD 240k revenue at risk</div>
+            <div class="ac-ctx-secondary">4× 30-min settlement periods · HH18 (09:00 SGT) → HH21 (10:30 SGT) · PSO commitment window</div>
+          </div>
         </div>
         <button class="ac-transcript-link" type="button">View source transcript</button>
       </div>
@@ -2735,32 +2953,80 @@ function spawnAnalystScreenContent() {
         <div class="ac-section-label">Decision options · select one</div>
         <div class="ac-decision-list">
           <button class="ac-option-card" data-option="hedge" type="button">
-            <span class="ac-opt-bullet">○</span>
-            <span class="ac-opt-body">
-              <span class="ac-opt-title">Forward Q3 capacity hedge</span>
-              <span class="ac-opt-detail">Lock SGD 220k · auto-eligible · est ramp &lt;30 min</span>
-            </span>
+            <div class="ac-opt-header">
+              <span class="ac-opt-bullet">○</span>
+              <div class="ac-opt-body">
+                <span class="ac-opt-title">Hedge forward · 4×HH PSO window</span>
+                <span class="ac-opt-detail">Lock SGD 120/MWh forward · 50 MW × 4 settlement periods</span>
+              </div>
+            </div>
+            <div class="ac-opt-viz">
+              <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
+                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5" stroke="#00A651" stroke-width="2" fill="none"/>
+              </svg>
+              <div class="ac-opt-stats">
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 240k</div>
+                <div class="ac-opt-delta-chip ac-opt-delta-positive">+5.7% toward May target</div>
+              </div>
+            </div>
           </button>
           <button class="ac-option-card" data-option="cross-site" type="button">
-            <span class="ac-opt-bullet">○</span>
-            <span class="ac-opt-body">
-              <span class="ac-opt-title">Cross-site balance</span>
-              <span class="ac-opt-detail">Sakra-CCGT-1 standby spin-up · ramp est 90 min · ~SGD 180k cost</span>
-            </span>
+            <div class="ac-opt-header">
+              <span class="ac-opt-bullet">○</span>
+              <div class="ac-opt-body">
+                <span class="ac-opt-title">Cross-site balance · Sakra-CCGT-1 standby</span>
+                <span class="ac-opt-detail">Dispatch Sakra standby capacity · cover BFP-3A derate</span>
+              </div>
+            </div>
+            <div class="ac-opt-viz">
+              <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
+                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
+              </svg>
+              <div class="ac-opt-stats">
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 198k</div>
+                <div class="ac-opt-delta-chip ac-opt-delta-positive">+4.7% toward May target</div>
+              </div>
+            </div>
           </button>
           <button class="ac-option-card" data-option="spot" type="button">
-            <span class="ac-opt-bullet">○</span>
-            <span class="ac-opt-body">
-              <span class="ac-opt-title">Spot market purchase</span>
-              <span class="ac-opt-detail">USEP peak procurement · ~SGD 280k est cost · fastest</span>
-            </span>
+            <div class="ac-opt-header">
+              <span class="ac-opt-bullet">○</span>
+              <div class="ac-opt-body">
+                <span class="ac-opt-title">Sell-back to spot · USEP arbitrage</span>
+                <span class="ac-opt-detail">Sell uncommitted MW into spot market · capture forecast +20% USEP spike</span>
+              </div>
+            </div>
+            <div class="ac-opt-viz">
+              <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
+                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
+              </svg>
+              <div class="ac-opt-stats">
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 156k</div>
+                <div class="ac-opt-delta-chip ac-opt-delta-positive">+3.7% toward May target</div>
+              </div>
+            </div>
           </button>
           <button class="ac-option-card" data-option="curtailment" type="button">
-            <span class="ac-opt-bullet">○</span>
-            <span class="ac-opt-body">
-              <span class="ac-opt-title">PSO curtailment notice</span>
-              <span class="ac-opt-detail">Regulatory disclosure · ~SGD 320k penalty exposure</span>
-            </span>
+            <div class="ac-opt-header">
+              <span class="ac-opt-bullet">○</span>
+              <div class="ac-opt-body">
+                <span class="ac-opt-title">Curtail · accept PSO penalty</span>
+                <span class="ac-opt-detail">Accept 4×HH curtailment penalty · preserve BFP for full inspection</span>
+              </div>
+            </div>
+            <div class="ac-opt-viz">
+              <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 0 14 L 60 14 L 70 32 L 120 32 L 120 36 L 0 36 Z" fill="#DC2626" opacity="0.12"/>
+                <path d="M 0 14 L 60 14 L 70 32 L 120 32" stroke="#DC2626" stroke-width="2" fill="none"/>
+              </svg>
+              <div class="ac-opt-stats">
+                <div class="ac-opt-amt-chip ac-opt-amt-negative">-SGD 88k</div>
+                <div class="ac-opt-delta-chip ac-opt-delta-negative">-2.1% toward May target</div>
+              </div>
+            </div>
           </button>
         </div>
       </div>
@@ -2844,7 +3110,15 @@ function onLockDecisionClick() {
   paintAnalystLockedCTA();
   // Lock all option cards
   document.querySelectorAll('.ac-option-card').forEach(c => { c.style.pointerEvents = 'none'; });
-  render();
+  // W8 G.8 — for the laptop modal path, hold the locked CTA visible briefly before closing.
+  if (state.activePersona === 'analyst') {
+    setTimeout(() => {
+      // statePill already HEDGED so syncLaptopModalState() will tear the modal down on render().
+      render();
+    }, 900);
+  } else {
+    render();
+  }
 }
 
 function paintAnalystLockedCTA() {
@@ -2863,7 +3137,7 @@ function appendLockDecisionCaptureFooter() {
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · trading decision locked · commercial close</span></div>
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Decision audit + lineage routed to <strong>Workflow Agent</strong></span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Decision audit + lineage routed to <strong>A2A Coordination Agent</strong></span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · trading outcome attached · cycle complete</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
@@ -2907,7 +3181,7 @@ function closeTranscriptModal() {
   if (m) { m.dataset.open = 'false'; m.setAttribute('aria-hidden', 'true'); }
 }
 function wireTranscriptModalLinks() {
-  document.querySelectorAll('.post-call-transcript-link, .sr-hyp-transcript-link, .wong-tx-link, .oer-transcript-link, .ac-transcript-link').forEach(btn => {
+  document.querySelectorAll('.post-call-transcript-link, .sr-hyp-transcript-link, .wong-tx-link, .oer-transcript-link, .ac-transcript-link, .oer-tx-inline').forEach(btn => {
     if (btn.dataset.wired === '1') return;
     btn.dataset.wired = '1';
     btn.addEventListener('click', openTranscriptModal);
@@ -2941,25 +3215,15 @@ function buildLandedIncidentRow() {
       stateClass = 'dispatched';
       dynamicTagText = { label: 'dispatched to Lim Wei Jie ·', value: '02:47 SGT', from: null };
       break;
-    case 'ONSITE_CONFIRMED':
-      stateText = STATE_PILL_LABEL.ONSITE_CONFIRMED;
-      stateClass = 'dispatched';
-      dynamicTagText = { label: 'routed to Dr. A. Wong ·', value: '02:47 SGT', from: null };
+    case 'REVISED_DIAGNOSIS_ROUTED':
+      stateText = STATE_PILL_LABEL.REVISED_DIAGNOSIS_ROUTED;
+      stateClass = 'revised-diagnosis-routed';
+      dynamicTagText = { label: 'returned by Lim Wei Jie ·', value: '02:58 SGT', from: null };
       break;
-    case 'AWAITING_ASSET_PERF':
-      stateText = STATE_PILL_LABEL.AWAITING_ASSET_PERF;
-      stateClass = 'dispatched';
-      dynamicTagText = { label: 'routed to Priya Sundaram ·', value: '02:47 SGT', from: null };
-      break;
-    case 'ESCALATED_TO_OFFSITE':
-      stateText = STATE_PILL_LABEL.ESCALATED_TO_OFFSITE;
-      stateClass = 'dispatched';
-      dynamicTagText = { label: 'escalated to Dr. A. Wong ·', value: '02:56 SGT', from: null };
-      break;
-    case 'ROUTED_BACK_TO_OPS':
-      stateText = STATE_PILL_LABEL.ROUTED_BACK_TO_OPS;
-      stateClass = 'routed-back-to-ops';
-      dynamicTagText = { label: 'returned by Dr. A. Wong ·', value: '02:58 SGT', from: null };
+    case 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED':
+      stateText = STATE_PILL_LABEL.DIAGNOSIS_CONFIRMED_WO_SUBMITTED;
+      stateClass = 'revised-diagnosis-routed';
+      dynamicTagText = { label: 'WO submitted by Lim Wei Jie ·', value: '02:58 SGT', from: null };
       break;
     case 'ROUTED_TO_TRADING_DESK':
       stateText = STATE_PILL_LABEL.ROUTED_TO_TRADING_DESK;
@@ -3160,9 +3424,11 @@ function onHeaderClick() {
   ticket.byPersona[personaKey].seen = true;
 
   state.bannerVisible = true;
-  // W5 — pick opsRouteBack copy when Faye re-receives the ticket post-Wong approval
-  if (personaKey === 'ops' && ticket.statePill === 'ROUTED_BACK_TO_OPS') {
+  // W7 — pick return-banner copy when Faye re-receives via Lim (revised or confirmed paths)
+  if (personaKey === 'ops' && ticket.statePill === 'REVISED_DIAGNOSIS_ROUTED') {
     state.bannerKey = 'opsRouteBack';
+  } else if (personaKey === 'ops' && ticket.statePill === 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED') {
+    state.bannerKey = 'opsConfirmedReturn';
   } else {
     state.bannerKey = personaKey;
   }
@@ -3242,8 +3508,36 @@ function backToMonitoring() {
 }
 
 // ── Tablet root renderer ──
+// W8 Section 0 Part 3 — wipe-guard via tabletCacheKey().
+// Skip innerHTML wipe + repaint when no state in the cache key has changed.
+// Preserves in-flight reveal-slide animations + imperative DOM mutations done
+// outside render() (checklist progression, banner fades, capture footers).
+function tabletCacheKey() {
+  const ticket = getCanonicalTicket();
+  const p = state.activePersona;
+  const bp = ticket && ticket.byPersona && ticket.byPersona[p];
+  const hp = ticket && ticket.handoffPending;
+  return [
+    p,
+    state.screen,
+    state.bannerVisible ? 1 : 0,
+    state.bannerKey || '',
+    state.incidentLanded ? 1 : 0,
+    state.priyaUnlocked ? 1 : 0,
+    ticket ? ticket.statePill : '',
+    hp ? `${hp.ops?1:0}${hp.onsite?1:0}${hp.analyst?1:0}${hp.offsite?1:0}` : '',
+    bp ? `${bp.seen?1:0}${bp.opened?1:0}${bp.actioned?1:0}` : '',
+  ].join('|');
+}
+
 function renderTablet() {
   const root = document.getElementById('tablet-root');
+  if (!root) return;
+  const key = tabletCacheKey();
+  if (root.dataset.cacheKey === key && root.innerHTML !== '') {
+    // No state change relevant to tablet structure — skip wipe.
+    return;
+  }
   root.innerHTML = '';
   switch (state.screen) {
     case 'monitoring':
@@ -3256,12 +3550,420 @@ function renderTablet() {
       renderIncidentDetailView(root);
       break;
   }
+  root.dataset.cacheKey = key;
 }
 
 // ── render() = pure paint ──
+// W8 G — left pane swaps tablet ↔ laptop frame depending on active persona.
 function render() {
   renderPersonasPanel();
-  renderTablet();
+  renderLeftPane();
+  renderRightPane();
+}
+
+function renderLeftPane() {
+  const tablet = document.getElementById('tablet');
+  const laptop = document.getElementById('laptop-frame');
+  if (state.activePersona === 'analyst') {
+    if (tablet) tablet.style.display = 'none';
+    if (laptop) laptop.style.display = '';
+    renderLaptopContent();
+  } else {
+    if (laptop) laptop.style.display = 'none';
+    if (tablet) tablet.style.display = '';
+    // Tear down any open trader modal on persona switch away.
+    const modal = document.getElementById('trader-modal-backdrop');
+    if (modal) modal.remove();
+    renderTablet();
+  }
+}
+
+// ─────────────────────────────────────────────
+// W8 G — Priya laptop view (MacBook chrome + trading dashboard + 60% modal)
+// ─────────────────────────────────────────────
+
+function renderLaptopContent() {
+  const content = document.getElementById('laptop-content');
+  if (!content) return;
+  if (!content.dataset.built) {
+    paintLaptopDashboard(content);
+    content.dataset.built = '1';
+    wireLaptopBellClick();
+  }
+  updateLaptopBellState();
+  updateLaptopDemoEndBanner();
+  syncLaptopModalState();
+}
+
+function paintLaptopDashboard(content) {
+  const tasks = buildPersonaOwnTasks('analyst');
+  const tasksHTML = tasks.map(t => `
+    <div class="td-task-row">
+      <span class="td-task-id">${t.id}</span>
+      <span class="td-task-title">${t.body}</span>
+      <span class="td-task-meta">${t.state}</span>
+    </div>`).join('');
+
+  content.innerHTML = `
+    <div class="trader-dash">
+      <div class="td-topbar">
+        <div class="td-brand">
+          <svg class="td-brand-mark" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 4 28 Q 12 12, 24 18 T 38 12" stroke="#00A651" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 4 34 Q 14 22, 26 24 T 38 18" stroke="#00A651" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.65"/>
+          </svg>
+          <div class="td-brand-text-block">
+            <span class="td-brand-text">Sembcorp</span>
+            <span class="td-brand-text-sub">Energy Trading · Singapore</span>
+          </div>
+        </div>
+        <div class="td-persona">
+          <span class="td-persona-name">Priya Sundaram</span>
+          <span class="td-persona-role">Senior Power Trader · Singapore</span>
+        </div>
+        <button class="td-notification-bell" type="button" data-count="0">
+          <svg class="td-bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="td-bell-count">1</span>
+        </button>
+      </div>
+
+      <div class="td-kpi-strip">
+        <div class="td-kpi-card td-kpi-headline">
+          <div class="td-kpi-label">
+            <svg class="td-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 2"/>
+            </svg>
+            <span>Next settlement period · HH18 · 09:00–09:30 SGT</span>
+          </div>
+          <div class="td-kpi-rows">
+            <div class="td-kpi-row">
+              <span class="td-kpi-row-label">PSO commitment</span>
+              <span class="td-kpi-row-value">50 MW @ SGD 120/MWh</span>
+            </div>
+            <div class="td-kpi-row">
+              <span class="td-kpi-row-label">Settlement value</span>
+              <span class="td-kpi-row-value">SGD 6,000</span>
+            </div>
+            <div class="td-kpi-row">
+              <span class="td-kpi-row-label">At risk if no action</span>
+              <span class="td-kpi-row-value td-kpi-amber">SGD 6,000 · 4 periods (HH18–HH21)</span>
+            </div>
+          </div>
+          <div class="td-kpi-status">
+            <span class="td-kpi-status-pill td-kpi-status-at-risk">AT RISK · awaiting decision</span>
+          </div>
+        </div>
+
+        <div class="td-kpi-card td-kpi-secondary">
+          <div class="td-kpi-label">
+            <svg class="td-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="12" cy="12" r="5"/>
+              <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+            </svg>
+            <span>May 2026 target · revenue at risk hedged</span>
+          </div>
+          <div class="td-kpi-target-bar">
+            <div class="td-kpi-target-fill" style="width: 74%"></div>
+          </div>
+          <div class="td-kpi-target-stats">
+            <span class="td-kpi-target-mtd"><strong>SGD 3.1M</strong> MTD <span class="td-kpi-target-pct">(74%)</span></span>
+            <span class="td-kpi-target-goal">Target SGD 4.2M</span>
+          </div>
+          <div class="td-kpi-target-delta">
+            INC-2026-0537 unlock: <strong class="td-kpi-target-delta-amt">+SGD 240k</strong> · <span class="td-kpi-target-delta-pct">+5.7% toward target</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="td-zone">
+        <div class="td-zone-header">
+          <span class="td-zone-num">1</span>
+          <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
+        </div>
+        <div class="td-portfolio">
+          <div class="td-pf-card"><div class="td-pf-label">Jurong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
+          <div class="td-pf-card"><div class="td-pf-label">Tuas Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
+          <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
+          <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
+          <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
+        </div>
+      </div>
+
+      <div class="td-zone">
+        <div class="td-zone-header"><span class="td-zone-num">2</span><span class="td-zone-title">Market Snapshot</span></div>
+        <div class="td-market">
+          <div class="td-market-card td-market-curve-card">
+            <div class="td-mk-label">USEP Forward Curve · 24h</div>
+            <div class="td-mk-headline">
+              <span class="td-mk-headline-value">$112.45</span>
+              <span class="td-mk-headline-unit">SGD/MWh</span>
+              <span class="td-mk-headline-delta td-mk-delta-up">+18.30 (19.4%)</span>
+            </div>
+            <svg class="td-mk-curve" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="td-curve-gradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#00A651" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#00A651" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M 0 48 L 10 46 L 20 47 L 30 44 L 40 42 L 50 40 L 60 38 L 70 36 L 80 34 L 90 33 L 100 35 L 110 32 L 120 28 L 130 26 L 140 24 L 150 22 L 160 20 L 170 18 L 180 19 L 190 16 L 200 14 L 210 12 L 220 10 L 230 8 L 240 6 L 240 60 L 0 60 Z"
+                    fill="url(#td-curve-gradient)" opacity="0.20"/>
+              <path d="M 0 48 L 10 46 L 20 47 L 30 44 L 40 42 L 50 40 L 60 38 L 70 36 L 80 34 L 90 33 L 100 35 L 110 32 L 120 28 L 130 26 L 140 24 L 150 22 L 160 20 L 170 18 L 180 19 L 190 16 L 200 14 L 210 12 L 220 10 L 230 8 L 240 6"
+                    stroke="#00A651" stroke-width="2" fill="none"/>
+              <line x1="120" y1="0" x2="120" y2="60" stroke="#64748B" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+              <text x="124" y="10" font-size="8" fill="#64748B">NOW</text>
+            </svg>
+            <div class="td-mk-curve-axis">
+              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+            </div>
+          </div>
+          <div class="td-market-card td-market-gauge-card">
+            <div class="td-mk-label">Reserve Margin · Singapore</div>
+            <div class="td-mk-gauge-wrap">
+              <svg class="td-mk-gauge" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="60" cy="60" r="46" stroke="#E5E7EB" stroke-width="10" fill="none"/>
+                <circle cx="60" cy="60" r="46" stroke="#00A651" stroke-width="10" fill="none"
+                        stroke-dasharray="81 289" stroke-linecap="round"
+                        transform="rotate(-90 60 60)"/>
+                <text x="60" y="62" text-anchor="middle" font-size="22" font-weight="800" fill="#0F1B3D">28%</text>
+                <text x="60" y="78" text-anchor="middle" font-size="9" font-weight="600" fill="#64748B" letter-spacing="0.5">COMFORTABLE</text>
+              </svg>
+            </div>
+            <div class="td-mk-trend">Forecast (Next 6 Hrs) · 22–30%</div>
+          </div>
+          <div class="td-market-card">
+            <div class="td-mk-label">Market Regime</div>
+            <div class="td-mk-value normal">▶ NORMAL</div>
+            <div class="td-mk-trend">Stable conditions · Adequate supply</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="td-zone">
+        <div class="td-zone-header"><span class="td-zone-num">3</span><span class="td-zone-title">Active Tasks</span></div>
+        <div class="td-tasks">${tasksHTML}</div>
+      </div>
+    </div>`;
+}
+
+function wireLaptopBellClick() {
+  const bell = document.querySelector('.td-notification-bell');
+  if (!bell || bell.dataset.wired === '1') return;
+  bell.dataset.wired = '1';
+  bell.addEventListener('click', onLaptopBellClick);
+}
+
+function onLaptopBellClick() {
+  const bell = document.querySelector('.td-notification-bell');
+  if (!bell || bell.dataset.count === '0') return;
+  if (state.priya.decisionLocked) return;
+  if (state.screen !== 'incident-detail') {
+    state.history.push(state.screen);
+    state.screen = 'incident-detail';
+  }
+  render();
+}
+
+function updateLaptopBellState() {
+  const bell = document.querySelector('.td-notification-bell');
+  if (!bell) return;
+  const ticket = getCanonicalTicket();
+  const pill = ticket && ticket.statePill;
+  const shouldPulse = (pill === 'ROUTED_TO_TRADING_DESK') && !state.priya.decisionLocked;
+  const newCount = shouldPulse ? '1' : '0';
+  if (bell.dataset.count !== newCount) bell.dataset.count = newCount;
+  if (shouldPulse && !bell.classList.contains('td-bell-pulse')) {
+    bell.classList.add('td-bell-pulse');
+  } else if (!shouldPulse && bell.classList.contains('td-bell-pulse')) {
+    bell.classList.remove('td-bell-pulse');
+  }
+}
+
+const PRIYA_LAPTOP_OPTION_LABEL = {
+  hedge:       'Forward Q3 capacity hedge',
+  'cross-site':'Cross-site balance',
+  spot:        'Spot market purchase',
+  curtailment: 'PSO curtailment notice',
+};
+
+function updateLaptopDemoEndBanner() {
+  const dash = document.querySelector('.trader-dash');
+  if (!dash) return;
+  const existing = dash.querySelector('.td-demo-end-banner');
+  if (state.priya.decisionLocked) {
+    if (existing) return;
+    const opt = state.priya.selectedOption;
+    const optLabel = PRIYA_LAPTOP_OPTION_LABEL[opt] || 'Decision';
+    const banner = el('div', 'td-demo-end-banner');
+    banner.innerHTML = `
+      <span>✓</span>
+      <span>Cycle complete · <strong>${optLabel}</strong> locked · revenue exposure neutralized · INC-2026-0537 closed · ${state.priya.decisionTimestamp || '03:01 SGT'}</span>`;
+    const topbar = dash.querySelector('.td-topbar');
+    if (topbar && topbar.nextSibling) {
+      dash.insertBefore(banner, topbar.nextSibling);
+    } else {
+      dash.appendChild(banner);
+    }
+  } else if (existing) {
+    existing.remove();
+  }
+}
+
+function syncLaptopModalState() {
+  const shouldOpen = state.activePersona === 'analyst'
+                  && state.screen === 'incident-detail'
+                  && !state.priya.decisionLocked;
+  const existing = document.getElementById('trader-modal-backdrop');
+  if (shouldOpen && !existing) {
+    openTraderModal();
+  } else if (!shouldOpen && existing) {
+    existing.remove();
+  }
+}
+
+function openTraderModal() {
+  if (document.getElementById('trader-modal-backdrop')) return;
+  const backdrop = el('div', 'trader-modal-backdrop');
+  backdrop.id = 'trader-modal-backdrop';
+  backdrop.innerHTML = `
+    <div class="trader-modal" role="dialog" aria-modal="true">
+      <div class="trader-modal-header">
+        <div class="tm-heading">INC-2026-0537 · Trading Desk Action Required</div>
+        <button class="tm-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="trader-modal-body" id="trader-modal-body"></div>
+    </div>`;
+  backdrop.querySelector('.tm-close').addEventListener('click', closeTraderModal);
+  backdrop.addEventListener('click', e => {
+    if (e.target === backdrop) closeTraderModal();
+  });
+  document.body.appendChild(backdrop);
+
+  const body = backdrop.querySelector('#trader-modal-body');
+  paintAnalystContentIntoModal(body);
+}
+
+function paintAnalystContentIntoModal(container) {
+  const wrap = el('div', 'analyst-screen-d');
+  wrap.id = 'incident-detail-view';  // re-use ID so existing helpers find this container
+  wrap.innerHTML = `
+    <div class="analyst-card">
+      <div class="reveal-pending ac-loading" data-stage="analyst-summary">
+        <span class="reveal-dots"><span></span><span></span><span></span></span>
+        <span class="reveal-msg"><span class="reveal-agent">Market Intelligence Agent</span> · Loading market position + hedge eligibility for INC-2026-0537</span>
+      </div>
+    </div>`;
+  container.appendChild(wrap);
+
+  if (state.priya.escalationSummaryRevealed) {
+    revealAnalystScreenInstant();
+    wireDecisionOptions();
+    restoreSelectedOptionUI();
+    wireLockDecisionCTA();
+    if (state.priya.selectedOption) {
+      const cta = document.querySelector('.ac-lock-cta');
+      if (cta) cta.disabled = false;
+    }
+  } else if (!state.priya.escalationRevealStarted) {
+    startAnalystScreenDReveal();
+  } else {
+    // Reveal already in flight from earlier modal open — just rewire when content arrives.
+    // The pushReveal timer will paint into the new modal via revealAnalystScreenInstant on completion.
+  }
+}
+
+function closeTraderModal() {
+  const existing = document.getElementById('trader-modal-backdrop');
+  if (existing) existing.remove();
+  if (state.activePersona === 'analyst' && state.screen === 'incident-detail' && !state.priya.decisionLocked) {
+    state.screen = state.history.length ? state.history.pop() : 'monitoring';
+    render();
+  }
+}
+
+// ── W7 — Right pane variant: P2 onsite gets full-pane inline 3D KG ──
+function renderRightPane() {
+  const rightPane = document.getElementById('right-pane');
+  if (!rightPane) return;
+  const personaKey = state.activePersona;
+  if (personaKey === 'onsite') {
+    paintRightPaneInlineKG();
+  } else {
+    paintRightPaneStandard();
+  }
+}
+
+function paintRightPaneInlineKG() {
+  const rightPane = document.getElementById('right-pane');
+  if (!rightPane) return;
+  // Hide standard children
+  Array.from(rightPane.children).forEach(c => {
+    if (c.id === 'right-pane-kg-inline') return;
+    c.dataset.rpHidden = '1';
+    c.style.display = 'none';
+  });
+  // Auto-close floating KG window if it's open (mount about to move)
+  if (state.graphWinOpen) toggleGraphWindow();
+  // Ensure inline container exists
+  let inline = document.getElementById('right-pane-kg-inline');
+  if (!inline) {
+    inline = document.createElement('div');
+    inline.id = 'right-pane-kg-inline';
+    inline.className = 'right-pane-kg-inline';
+    rightPane.appendChild(inline);
+  }
+  inline.style.display = '';
+  // Reparent #kg-3d-mount into the inline container
+  const mount = document.getElementById('kg-3d-mount');
+  if (mount && mount.parentElement !== inline) {
+    inline.appendChild(mount);
+  }
+  // W8 Section 0 Part 2 — resize cache. Only call three.js .width/.height when dimensions change.
+  // Repeated resize on same w/h caused micro canvas-blank flashes on every render().
+  if (KG_STATE.graph && inline.clientWidth) {
+    const w = inline.clientWidth;
+    const h = inline.clientHeight || 600;
+    if (KG_STATE._lastInlineW !== w || KG_STATE._lastInlineH !== h) {
+      KG_STATE.graph.width(w).height(h);
+      KG_STATE._lastInlineW = w;
+      KG_STATE._lastInlineH = h;
+    }
+  }
+}
+
+function paintRightPaneStandard() {
+  const rightPane = document.getElementById('right-pane');
+  if (!rightPane) return;
+  // Restore standard children
+  Array.from(rightPane.children).forEach(c => {
+    if (c.id === 'right-pane-kg-inline') {
+      c.style.display = 'none';
+      return;
+    }
+    if (c.dataset.rpHidden === '1') {
+      c.style.display = '';
+      delete c.dataset.rpHidden;
+    }
+  });
+  // Move #kg-3d-mount back into the floating window body
+  // W8 Section 0 Part 2 — only resize on actual reparent (already guarded by mount.parentElement check).
+  const mount = document.getElementById('kg-3d-mount');
+  const floatingBody = document.querySelector('#kg-floating-window .kg-fw-body');
+  if (mount && floatingBody && mount.parentElement !== floatingBody) {
+    floatingBody.appendChild(mount);
+    if (KG_STATE.graph) {
+      const w = floatingBody.clientWidth || 460;
+      const h = floatingBody.clientHeight || 320;
+      KG_STATE.graph.width(w).height(h);
+      KG_STATE._lastInlineW = null; // invalidate inline cache — next inline mount must re-apply
+      KG_STATE._lastInlineH = null;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -3543,19 +4245,35 @@ const KG_STATE = {
   newlyAddedNodes: new Set(),   // W6 — green halo on freshly-grown nodes
 };
 
-// ── W6 — KG growth nodes/edges (added 10s after Lim diagnosis-confirmed click) ──
-const KG_GROWTH_NODES = [
-  { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern',  layer: 'L4', x:   5, y: -90, z:  35, canonical: false, isNew: true },
-  { id: 'wong-field-experience-2023',     label: 'Field experience · Wong · Jurong BFP 2023',     layer: 'L3', x:  40, y: -30, z:  25, canonical: false, isNew: true },
-  { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',      layer: 'L1', x: -20, y:  90, z:  50, canonical: false, isNew: true },
+// ── W7 — Bigger KG: Tacit Knowledge cluster + KG Auditor/Updater cluster ──
+// 3-tier visual separation along X: main KG (-100..+100) → Auditor cluster (180..260) → Tacit Knowledge cluster (340..420)
+// Nodes present from cold load; triggerKGGrowth flashes green halo on tacit cluster 10s post-click.
+const KG_TACIT_NODES = [
+  { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern', layer: 'L4', x: 360, y: -90, z:  30, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'wong-field-experience-2023',     label: 'Field experience · Wong · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',     layer: 'L1', x: 400, y:  90, z: -20, canonical: false, isNew: true, cluster: 'tacit' },
 ];
-const KG_GROWTH_EDGES = [
-  { source: 'casing-tacit-knowledge',         target: 'pump-casing-crack-pattern',       canonical: false, isNew: true },
-  { source: 'wong-field-experience-2023',     target: 'casing-rca-jrg-2023',             canonical: false, isNew: true },
-  { source: 'wong-field-experience-2023',     target: 'casing-tacit-knowledge',          canonical: false, isNew: true },
-  { source: 'bfp-casing-inspection-protocol', target: 'casing-bfp-3a',                   canonical: false, isNew: true },
-  { source: 'bfp-casing-inspection-protocol', target: 'sop-bfp-vibration-investigation', canonical: false, isNew: true },
+const KG_AUDITOR_NODES = [
+  { id: 'kg-auditor-agent',      label: 'KG Auditor Agent · validates new nodes',    layer: 'L1', x: 200, y:  90, z:   0, canonical: false, cluster: 'auditor' },
+  { id: 'kg-updater-agent',      label: 'KG Updater Agent · re-wires graph',         layer: 'L4', x: 230, y: -90, z:   0, canonical: false, cluster: 'auditor' },
+  { id: 'workflow-rewire-agent', label: 'Workflow Re-wire Agent · SOP updates',      layer: 'L1', x: 240, y:  90, z: -40, canonical: false, cluster: 'auditor' },
 ];
+KG_NODES.push(...KG_TACIT_NODES, ...KG_AUDITOR_NODES);
+
+// W7 cluster-flow edges: tacit → auditor (3) · auditor → main KG (3) · auditor internal cohesion (1)
+const KG_CLUSTER_FLOW_EDGES = [
+  { source: 'casing-tacit-knowledge',         target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
+  { source: 'wong-field-experience-2023',     target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
+  { source: 'bfp-casing-inspection-protocol', target: 'workflow-rewire-agent', canonical: false, cluster: 'tk-to-auditor' },
+  { source: 'kg-auditor-agent',               target: 'pump-casing-crack-pattern',          canonical: false, cluster: 'auditor-to-main' },
+  { source: 'kg-updater-agent',               target: 'casing-rca-jrg-2023',                canonical: false, cluster: 'auditor-to-main' },
+  { source: 'workflow-rewire-agent',          target: 'sop-bfp-vibration-investigation',    canonical: false, cluster: 'auditor-to-main' },
+  { source: 'kg-auditor-agent',               target: 'kg-updater-agent',                   canonical: false, cluster: 'auditor-internal' },
+];
+KG_EDGES.push(...KG_CLUSTER_FLOW_EDGES);
+
+// Tacit cluster node IDs flashed (green halo) 10s after Lim diagnosis-confirmed click — W6 behavior preserved.
+const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 
 // ── W3.5: helpers for billboarded canvas-based sprites ──
 function roundRect(ctx, x, y, w, h, r) {
@@ -3725,18 +4443,21 @@ function startAutoRotate() {
   if (!KG_STATE.graph) return;
   if (KG_STATE.autoRotateTimer) return;
   let angle = KG_STATE.lastAngle || 0;
+  // W7 — orbit center shifted to x=200 to fit 3-tier KG (main + auditor + tacit clusters)
+  const orbitCenter = { x: 200, y: 0, z: 0 };
   KG_STATE.autoRotateTimer = setInterval(() => {
     angle += 0.003;  // gentle spin
     KG_STATE.lastAngle = angle;
-    // W3.7 Section A — preserve user's chosen zoom (X/Z plane radius) + Y tilt
     const cam = KG_STATE.graph.camera();
-    const radiusXZ = Math.sqrt(cam.position.x * cam.position.x + cam.position.z * cam.position.z) || 280;
+    const dx = cam.position.x - orbitCenter.x;
+    const dz = cam.position.z - orbitCenter.z;
+    const radiusXZ = Math.sqrt(dx * dx + dz * dz) || 480;
     const currentY = cam.position.y;
     KG_STATE.graph.cameraPosition({
-      x: radiusXZ * Math.sin(angle),
+      x: orbitCenter.x + radiusXZ * Math.sin(angle),
       y: currentY,
-      z: radiusXZ * Math.cos(angle),
-    }, { x: 0, y: 0, z: 0 }, 0);
+      z: orbitCenter.z + radiusXZ * Math.cos(angle),
+    }, orbitCenter, 0);
   }, 40);
 }
 
@@ -3787,9 +4508,14 @@ function initKG3D() {
         const sphere = new THREE.Mesh(sphereGeo, sphereMat);
         group.add(sphere);
         // White halo — thicker back-face shell (W3.6b: deeper border)
-        // W6 — newly-grown nodes (Section J) wear Sembcorp-green halo for 4s
+        // W7 — cluster ring colors:
+        //   newly-grown (green halo flash, 4s) > tacit cluster (amber) > auditor cluster (blue) > default (white)
         const isNewlyAdded = KG_STATE.newlyAddedNodes && KG_STATE.newlyAddedNodes.has(node.id);
-        const ringColor = isNewlyAdded ? 0x00A651 : 0xFFFFFF;
+        let ringColor;
+        if (isNewlyAdded)               ringColor = 0x00A651;   // Sembcorp green
+        else if (node.cluster === 'auditor') ringColor = 0x3B82F6;   // blue
+        else if (node.cluster === 'tacit')   ringColor = 0xF59E0B;   // amber
+        else                            ringColor = 0xFFFFFF;
         const ringRadius = isNewlyAdded ? radius * 1.55 : radius * 1.30;
         const ringGeo = new THREE.SphereGeometry(ringRadius, 32, 20);
         const ringMat = new THREE.MeshBasicMaterial({
@@ -3836,8 +4562,8 @@ function initKG3D() {
     if (graph.d3Force('charge')) graph.d3Force('charge').strength(-80);
     if (graph.d3Force('link'))   graph.d3Force('link').distance(35);
 
-    // W3.7 Section B — recenter camera (legend moved to HTML chip-row above 3D mount)
-    graph.cameraPosition({ x: 0, y: 0, z: 280 }, { x: 0, y: 0, z: 0 }, 0);
+    // W7 — widen camera + offset lookAt to fit main KG + auditor + tacit clusters (3-tier X spread).
+    graph.cameraPosition({ x: 100, y: 0, z: 480 }, { x: 200, y: 0, z: 0 }, 0);
 
     // W3.5: hide node labels when camera zoomed far out (reduces clutter)
     if (typeof graph.onAfterRender === 'function') {
@@ -3946,13 +4672,15 @@ const LOG_SOURCE_COLORS = {
 
 const AGENT_DISPLAY_NAMES = {
   orchestrator:        'Orchestrator',
-  inspection:          'Sensor Anomaly Inspector',
-  triage:              'Turbine Diagnostic Agent',
-  'diag-hrsg':         'HRSG · Boiler Diagnostic Agent',
-  'diag-electrical':   'Generator · Electrical Diagnostic Agent',
-  playbook:            'BFP Maintenance Playbook Agent',
-  'wo-prefill':        'Work Order Pre-fill Agent',
-  workflow:            'Workflow Agent',
+  inspection:            'Sensor Anomaly Inspector',
+  triage:                'Turbine Diagnostic Agent',
+  'diag-hrsg':           'HRSG · Boiler Diagnostic Agent',
+  'diag-electrical':     'Generator · Electrical Diagnostic Agent',
+  playbook:              'BFP Maintenance Playbook Agent',
+  'sop-action':          'SOP Action Agent',
+  'audio-transcription': 'Audio-transcription Agent',
+  'wo-prefill':          'Work Order Pre-fill Agent',
+  workflow:              'A2A Coordination Agent',
   learning:            'Learning Engine',
   'critic-power-gen':  'Critic · Power Gen',
   'critic-renewables': 'Critic · Renewables',

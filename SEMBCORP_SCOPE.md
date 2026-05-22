@@ -1496,3 +1496,424 @@ Follow-up:
 - `paintLimBinaryCTAs` always also calls `enableBinaryCTAs` if threshold met — call from `updateChecklistProgress` is now redundant after spawn but harmless (the second call is a no-op when the buttons are already enabled).
 - `KG_STATE.graph.refresh()` API availability untested in offline dry-run — if missing on the bundled `3d-force-graph` build, the green halo will persist for the rest of the demo (cosmetic only; the meeting won't notice).
 - W6 layered with the existing W3.4 `setAgentActive` lifecycle. Future cleanup could consolidate the two systems, but the current overlay is intentional — preserves existing arc-driven step-pill + adds W6 pulse + done-checkmark without rewriting.
+
+### W7 deployment confirmation (2026-05-22) — FINAL CLOSER
+
+Final feature wave. Wong removed as clickable persona · binary CTAs replaced w/ Diagnosis Verdict · single-button post-call confirm-revised flow · P2 right pane = inline KG · bigger KG architecture.
+
+**W4.1 top-button morph chain REMOVED:**
+- `setConfirmBtnPhase()` + `state.lim.confirmBtnPhase` + `.binary-cta.phase-*` CSS dropped.
+- Single Diagnosis Verdict section replaces the two W4.1 binary CTAs.
+- `morphConfirmCTAToEscalate` retained as a thin no-op wrapper that re-spawns the Confirm-revised button for re-entry safety.
+
+**Diagnosis Verdict section:**
+- Spawns at 10/10 inspection checks complete (sequential gating · matches W6 pattern).
+- Heading `DIAGNOSIS VERDICT`. Sub-text `Confirm Hyperspace OS hypothesis OR reject and escalate to senior engineer.`
+- Two side-by-side buttons: Reject (light-red `#FEE2E2`) · Confirm (light-green `#D1FAE5`). 50/50 width split via flex.
+
+**Reject path (main demo path):**
+- Click Reject → Diagnosis Verdict removed → Workflow Agent SOP-routing theater (3s, `Workflow Agent · Connecting to Dr. A. Wong via call · routing through escalation playbook`) → in-call strip spawns directly (top button gone — no morph required).
+- Post-call flow preserved: End → generating transcript (3s) → transcript-attached → analyzing (3s) → `Use crack in pump casing diagnosis confirmed over call with Dr. A. Wong` button → diagnosis morph (W4.1 preserved).
+
+**Confirm path (alt · minimal stub):**
+- Click Confirm → Diagnosis Verdict removed → simple capture footer (3 ✓ lines including `Faye Sit notified · returned for ops + commercial action`) → state `DIAGNOSIS_CONFIRMED_WO_SUBMITTED` → `handoffPending.ops = true` → P1 pulse.
+- Routes back to Faye via Escalation Report dispatcher with `BANNER_COPY.opsConfirmedReturn`.
+
+**Post-call: `Confirm revised diagnosis` button (W7 NEW):**
+- Spawns after diagnosis morph (replaces W4.1's top-button morph to `Escalate for approval`).
+- Click → Workflow Agent SOP-review theater (3s, `Workflow Agent · Reviewing SOP-BFP-VIBR-001 + cross-checking revised diagnosis against current procedures`) → state `REVISED_DIAGNOSIS_ROUTED` + capture footer (3 ✓ lines · line 1 folds `Faye Sit notified · revised diagnosis routed` into one line) + `Routed back to Faye Sit · <ts>` label + P1 pulse.
+
+**State pill chain simplified:**
+`TRIAGE_READY → DISPATCHED_TO_ONSITE → REVISED_DIAGNOSIS_ROUTED → ROUTED_TO_TRADING_DESK → HEDGED` (5 main states · alt: `DIAGNOSIS_CONFIRMED_WO_SUBMITTED` for Confirm path).
+- Dropped `ESCALATED_TO_OFFSITE` + `ROUTED_BACK_TO_OPS` + `ONSITE_CONFIRMED` + `AWAITING_ASSET_PERF`.
+- `REVISED_DIAGNOSIS_ROUTED` + `DIAGNOSIS_CONFIRMED_WO_SUBMITTED` reuse `.mon-pill-state-revised-diagnosis-routed` (amber pulse) per W5 styling.
+- `POST_DISPATCH_STATE_PILL` shrunk to ops-only entry (`DISPATCHED_TO_ONSITE`); onsite/offsite entries dropped.
+
+**Persona panel reduced to 3 tiles:**
+- `renderPersonasPanel` filters `PERSONAS` to exclude `offsite`. Tiles: Faye Sit (active) · Lim Wei Jie (available) · Priya Sundaram (locked, unlocks on Faye Notify trading desk).
+- Wong stays in narrative only (transcript modal, Faye Escalation Report copy, Lim's call-flow agent name).
+- `switchToPersona('offsite')` early-returns as guard.
+- `renderOffsiteIncidentDetail` + `PERSONA_OWN_TASKS.offsite` + `BANNER_COPY.offsite` + Wong post-approval banner + `state.wong.*` kept as dead code (WA #5).
+
+**`AGENT_PERSONA_RELEVANCE` updated:** offsite removed from all agent relevance arrays. Wong-relevant agents (triage, pl, critic-power-gen) re-distributed to remaining personas (ops/onsite/analyst).
+
+**Faye Escalation Report Section 2 copy update:**
+- `Revised diagnosis sign-off received` row replaced with `Transcript captured · <Dr. A. Wong> + <Lim Wei Jie> discussed and agreed (see transcript)` row.
+- Inline `.oer-tx-inline` button opens existing transcript modal via `wireTranscriptModalLinks` (selector list extended).
+
+**Faye second banner copy:**
+- `BANNER_COPY.opsRouteBack.body` updated: `INC-2026-0537 · Returned from <Lim Wei Jie> · diagnosis revised via expert call · ops + commercial action required` (was `Returned from Dr. A. Wong · diagnosis confirmed`).
+- New `BANNER_COPY.opsConfirmedReturn` for Confirm-path return (state `DIAGNOSIS_CONFIRMED_WO_SUBMITTED`).
+- `onHeaderClick` picks copy per state pill.
+
+**P2 right pane = inline 3D KG:**
+- `renderRightPane()` per-persona variant invoked from `render()`. `onsite` → `paintRightPaneInlineKG()` reparents existing `#kg-3d-mount` into a `#right-pane-kg-inline` full-pane container; hides all standard children (toolbar · zone-agents · log-dropdown · zone-flywheel) via `style.display = 'none'` + `dataset.rpHidden` marker. Auto-closes the floating KG window if open.
+- Other personas → `paintRightPaneStandard()` (restores hidden children · moves mount back into `.kg-fw-body` · hides inline container).
+- KG state (zoom, rotation, chain highlights) preserved across persona switches via reparenting the same DOM element. Three.js renderer keeps its scene.
+- Resize: explicit `KG_STATE.graph.width(...).height(...)` call on reparent.
+
+**Bigger KG architecture — Tacit Knowledge + KG Auditor/Updater clusters:**
+- 3-tier visual separation along X-axis: main KG (left, x: -100 to +100) · Auditor cluster (middle, x: 200..240) · Tacit Knowledge cluster (right, x: 360..400).
+- Auditor cluster: 3 new nodes (`kg-auditor-agent`, `kg-updater-agent`, `workflow-rewire-agent`) · blue `#3B82F6` ring halo.
+- Tacit Knowledge cluster: 3 nodes (W6 growth nodes repositioned · `casing-tacit-knowledge`, `wong-field-experience-2023`, `bfp-casing-inspection-protocol`) · amber `#F59E0B` ring halo.
+- 7 new edges (`KG_CLUSTER_FLOW_EDGES`): tacit → auditor (3) · auditor → main KG (3) · auditor internal cohesion (1). Flow shows captured knowledge → review/audit → main KG enrichment.
+- Camera initial pose widened: `x: 100, y: 0, z: 480` looking at `x: 200, y: 0, z: 0`. `startAutoRotate` orbit center shifted to `x: 200`.
+- W6 `triggerKGGrowth` semantics adjusted: nodes already in initial `KG_NODES` (visible from cold load) · growth fire calls `flashKGGrowthHalo()` which sets `KG_STATE.newlyAddedNodes` for 4s green halo · no graph mutation.
+- `nodeThreeObject` ring color: newly-added (green) > auditor cluster (blue) > tacit cluster (amber) > default (white).
+
+Verified via Chrome MCP — happy-path runthrough through all 5 state transitions (TRIAGE_READY → DISPATCHED_TO_ONSITE → REVISED_DIAGNOSIS_ROUTED → ROUTED_TO_TRADING_DESK → HEDGED), Diagnosis Verdict gating at 9/10 vs 10/10, Reject + Confirm-revised theaters and timing, P2 inline KG mount reparenting + reverse on P1/P4 switch, persona panel tile count (3 tiles · no Wong), banner copy strings, Escalation Report Section 2 row swap, all 7 cluster-flow edges present in `KG_EDGES`, halo flash mechanics on `triggerKGGrowth`.
+
+Per-test table:
+```
+#: 1
+Test: Cold load persona panel
+Observed: 3 tiles (ops active, onsite available, analyst locked); no offsite tile in DOM
+Expected: 3 tiles same as observed
+Pass: ✓
+
+#: 2
+Test: STATE_PILL_LABEL keys
+Observed: TRIAGE_READY, DISPATCHED_TO_ONSITE, REVISED_DIAGNOSIS_ROUTED, DIAGNOSIS_CONFIRMED_WO_SUBMITTED, ROUTED_TO_TRADING_DESK, HEDGED
+Expected: 5 main + 1 alt (Confirm); no ESCALATED_TO_OFFSITE or ROUTED_BACK_TO_OPS
+Pass: ✓
+
+#: 3
+Test: AGENT_PERSONA_RELEVANCE offsite removal
+Observed: no relevance array contains 'offsite'
+Expected: offsite stripped from every entry
+Pass: ✓
+
+#: 4
+Test: KG cold load cluster nodes
+Observed: 3 auditor nodes + 3 tacit nodes present; 7 cluster-flow edges
+Expected: 3 auditor + 3 tacit + 7 cluster-flow edges
+Pass: ✓
+
+#: 5
+Test: Diagnosis Verdict not present at 9/10
+Observed: .diagnosis-verdict absent at checked=9
+Expected: gated open only at 10
+Pass: ✓
+
+#: 6
+Test: Diagnosis Verdict spawns at 10/10
+Observed: .diagnosis-verdict + .dv-heading "Diagnosis verdict" + dv-reject "Reject" + dv-confirm "Confirm"
+Expected: section + heading + Reject + Confirm buttons
+Pass: ✓
+
+#: 7
+Test: Reject click → SOP-routing theater then in-call strip
+Observed: theater spawned, removed after 3s, in-call strip in DOM with End button
+Expected: theater for 3s then in-call strip
+Pass: ✓
+
+#: 8
+Test: End call → post-call stages → diagnosis-confirmed-over-call button
+Observed: .post-call-confirm-btn appeared after generating-transcript + transcript-attached + analyzing chain
+Expected: ~6s chain to confirmed-over-call button
+Pass: ✓
+
+#: 9
+Test: Confirmed-over-call click → diagnosis morph + Confirm-revised button
+Observed: .sr-hypothesis-revised present + .confirm-revised-cta with text "Confirm revised diagnosis"
+Expected: revised tile + new green button
+Pass: ✓
+
+#: 10
+Test: Confirm-revised click → SOP-review theater → state advance to REVISED_DIAGNOSIS_ROUTED
+Observed: pill REVISED_DIAGNOSIS_ROUTED, ticket.handoffPending.ops=true, ticket.byPersona.onsite.actioned=true, capture footer with "Faye Sit notified · revised diagnosis routed" line, "Routed back to Faye Sit" label, P1 tile pulses
+Expected: same as observed
+Pass: ✓
+
+#: 11
+Test: Switch P2→P1 right pane reshapes
+Observed: mount.parentElement.className = "kg-fw-body"; toolbar/zone-agents/zone-flywheel display restored; inline KG container display:none
+Expected: standard right pane restored
+Pass: ✓
+
+#: 12
+Test: Faye banner copy on return — opsRouteBack chosen by state pill match
+Observed: state.bannerKey='opsRouteBack'; opsRouteBack body has "Returned from Lim Wei Jie · diagnosis revised via expert call"
+Expected: opsRouteBack copy with Lim's name
+Pass: ✓
+
+#: 13
+Test: Escalation Report Section 2 copy
+Observed: 6 workflow items; no "sign-off received" row; transcript-discussed-and-agreed row + inline (see transcript) button present
+Expected: signoff row replaced w/ transcript row + inline button
+Pass: ✓
+
+#: 14
+Test: Inline (see transcript) opens modal
+Observed: transcript-modal data-open="true" after click
+Expected: modal opens
+Pass: ✓
+
+#: 15
+Test: Notify trading desk → state advance + Priya unlocks
+Observed: pill ROUTED_TO_TRADING_DESK; state.priyaUnlocked=true; analyst tile state="available" + pulse=true
+Expected: same as observed
+Pass: ✓
+
+#: 16
+Test: P2 right pane = inline KG mount reparent
+Observed: mount.parentElement.id="right-pane-kg-inline"; all standard children display:none
+Expected: mount reparented + standard children hidden
+Pass: ✓
+
+#: 17
+Test: triggerKGGrowth flash mechanics
+Observed: state.kgGrowthFired=true; KG_STATE.newlyAddedNodes = [3 tacit IDs]
+Expected: flash mechanics fire on the 3 tacit cluster IDs
+Pass: ✓
+
+#: 18
+Test: Priya happy path → HEDGED
+Observed: pill HEDGED; state.priya.decisionLocked=true; selectedOption='hedge'
+Expected: HEDGED + decisionLocked
+Pass: ✓
+
+#: 19
+Test: Cluster ring colors (visual)
+Observed: requires projector-quality visual inspection of three.js sphere materials
+Expected: main = white halo, auditor = blue, tacit = amber, newly-added (during 4s flash) = green
+Pass: human check required
+
+#: 20
+Test: 10s KG growth flash post-confirm-over-call click (visual)
+Observed: 4s green halo on 3 tacit nodes per `nodeThreeObject` accessor + setTimeout chain (mechanics verified via eval); visual flash duration requires browser observation
+Expected: 4s green halo, reverts to amber
+Pass: human check required
+
+#: 21
+Test: Projector legibility at full viewport (visual)
+Observed: not yet tested at projector resolution
+Expected: legible at venue projector resolution
+Pass: human check required
+```
+
+Files changed:
+- `app.js` — state.lim verdict flags (drop confirmBtnPhase, add verdictSpawned/rejectClicked/confirmRevisedClicked) · STATE_PILL_LABEL rewrite · BANNER_COPY (opsRouteBack body update + new opsConfirmedReturn) · onHeaderClick banner-key picker · POST_DISPATCH_STATE_PILL shrink · renderIncidentDetailView ops dispatcher pill match · renderPersonasPanel offsite filter · switchToPersona offsite guard · AGENT_PERSONA_RELEVANCE offsite removal · paintDiagnosisVerdict + wireVerdictButtons + onVerdictReject + onVerdictConfirm + spawnInCallStrip + appendConfirmedCaptureFooter (new) · updateChecklistProgress 10/10 spawn switched to paintDiagnosisVerdict · renderOnsiteIncidentDetail re-entry path rewritten (actioned + summaryRevealed branches) · onDiagnosisConfirmedClick spawns Confirm-revised button · spawnConfirmRevisedDiagnosisButton + wireConfirmRevisedDiagnosis + onConfirmRevisedDiagnosisClick + advanceToRoutedRevisedDiagnosis + appendRevisedDiagnosisCaptureFooter (new) · renderOpsEscalationReport Section 2 row swap + state-pill skip-loading check · onNotifyTradingDeskClick state guard · wireTranscriptModalLinks selector extended · render() invokes renderRightPane · paintRightPaneInlineKG + paintRightPaneStandard (new) · KG_TACIT_NODES + KG_AUDITOR_NODES + KG_CLUSTER_FLOW_EDGES (new) replacing W6 KG_GROWTH_NODES/EDGES module exports · triggerKGGrowth simplified to halo flash · nodeThreeObject ring-color cluster logic · cameraPosition + startAutoRotate orbit center shifted to x=200.
+- `index.html` — W7 CSS block before </style>: .diagnosis-verdict + .dv-* · .sop-routing-theater + .sop-review-theater · .confirm-revised-cta · .mon-pill-state-revised-diagnosis-routed · .oer-tx-inline · .right-pane-kg-inline.
+
+Files intentionally not touched:
+- `renderOffsiteIncidentDetail` + Wong call-flow agent name references + `state.wong.*` reset paths · Wong post-approval banner · `PERSONA_OWN_TASKS.offsite` (dead code per WA #5, throwaway convention).
+- W4.1 `.binary-cta` CSS + `.in-call-strip` styling + post-call stages styling — preserved per spec A.2.
+- All persona-own-tasks data + telemetry modal + transcript modal + doc modal + drawer.
+- Faye P1 dispatch arc + scripts.
+- KG_THEATER_NODES + KG_THEATER_EDGES (W3.4 theater density).
+
+Follow-up:
+- `paintWongCTADisabled`, `paintWongCTAReady`, `paintWongCTAApproved`, `wireWongApproveClick`, `onWongApproveClick`, `appendWongApprovalCaptureFooter`, `fireWorkflowAgentArcApprove` — dead after W7. Leave per throwaway convention.
+- `onEscalateForApprovalClick`, `paintLimEscalationComplete`, `appendEscalationCaptureFooter`, `fireWorkflowAgentArcEscalate` — dead after W7. Leave.
+- `morphConfirmCTAToEscalate` reduced to no-op spawn-button shim (kept for safe re-entry; no longer triggers escalate-ready morph).
+- Visual verification of cluster ring colors + 10s KG growth flash + projector legibility = pending human/Pulkit check during dry-run.
+
+### W8 deployment confirmation (2026-05-22) — POLISH + PRIYA LAPTOP
+
+Final polish wave. Bundled 18 polish items + 1 structural pivot (Priya laptop view) + 1 diagnostic (random screen flashes diagnosed + fixed).
+
+**Section 0 — Flashes diagnosed + fixed:**
+- Root cause identified (analytical from code reading + temporary instrumentation):
+  1. `renderPersonasPanel()` wiped `personas-row.innerHTML` on every `render()` call. Each rebuild created fresh persona-tile DOM nodes; the `.persona-tile-pulse` infinite keyframe (`@keyframes persona-pulse 1.6s ease-in-out infinite`) restarted at frame 0 each time, causing the box-shadow to snap from mid-cycle bright back to the dim 0% state — visible pulse-reset flash.
+  2. `paintRightPaneInlineKG()` called `KG_STATE.graph.width().height()` on every `render()` for the onsite persona. Repeated three.js resize on unchanged dimensions caused micro canvas-blank flashes.
+  3. `renderTablet()` wiped `tablet-root.innerHTML` on every `render()` call. Reveal-slide animations mid-flight were torn down and replayed; concurrent `render()` calls during setTimeout chains restarted in-flight reveals visibly.
+- Fix shape applied — all 3 parts per coach Option (b) with extended-tuple guardrail:
+  1. **`renderPersonasPanel()` diff-update.** Tiles built once (lazy on first call); subsequent calls only mutate `data-state` attribute + `.persona-tile-pulse` class on existing tile elements. In-flight pulse keyframe preserved.
+  2. **`paintRightPaneInlineKG()` resize cache.** `KG_STATE._lastInlineW/_lastInlineH` cache; three.js `.width().height()` only called when dimensions change. Cache invalidated when KG mount moves back to floating window.
+  3. **`renderTablet()` wipe guard via extended `tabletCacheKey()`.** Tuple includes `activePersona`, `screen`, `bannerVisible`, `bannerKey`, `incidentLanded`, `priyaUnlocked`, `statePill`, `handoffPending` (4-bit string), `byPersona[active].seen/opened/actioned`. Skip wipe when tuple unchanged.
+- Audit of all 19 render() callers complete; every caller's state mutation maps to extended-tuple keys (no callers needed refactor). Documented mapping table in coach session.
+- Cold-demo Chrome MCP verification: all happy-path tests pass cleanly. Visual flash verification = subjective human-check at projector dry-run.
+
+**Section A — Agent roster 15 → 17:**
+- Renamed `Workflow Agent` → `A2A Coordination Agent` (display only; `data-agent-id="workflow"` preserved · role label `SOP Capture` → `Agent-to-Agent Handoff`).
+- New: `SOP Action Agent` (`data-agent-id="sop-action"`, role `SOP Routing + Review`, Domain Reasoning Experts bucket).
+- New: `Audio-transcription Agent` (`data-agent-id="audio-transcription"`, role `Call → Text`, Domain Reasoning Experts bucket).
+- Agent-count meta: `0 active · 15 registered` → `0 active · 17 registered`.
+- Domain Reasoning bucket-count: 5 → 7.
+- `AGENT_PERSONA_RELEVANCE` updated; `AGENT_DISPLAY_NAME` dictionary updated.
+- Theater firing swaps: SOP-routing connect (Reject) + SOP-review (Confirm revised) fire `sop-action`. Post-call generating-transcript + analyzing-transcript fire `audio-transcription`. Escalation report loading + notify trading desk arc keep `workflow` (label-rename only).
+
+**Section B — Faye Notes reposition:**
+- Notes section moved from standalone slot (between content + back button) into Step 2 Action Steps card, between revealed Lim Wei Jie engineer row and Confirm on-site dispatch CTA.
+- DOM order verified: `[as-heading, as-step (step 1), as-step (step 2), notes-standalone notes-in-step2, action-cta]`.
+- Re-entry path (paintActionStepsComplete) also embeds notes inside steps container.
+
+**Section C — Lim P2 Screen D sequencing:**
+- C.1: Predicted Diagnosis paints immediately on Lim entry (no 10s reload theater · Faye already revealed). Status pill `✓ confirmed by Hyperspace OS · pending onsite verification` added.
+- C.2: Sequencing bug fix — Stage 1 + Stage 2 reveals dropped entirely; `startLimScreenDReveal` now paints summary once + delays only the checklist by 2s. Eliminates the double-paint root cause (pushReveal Stage 3 was firing `paintLimSummaryComplete` a second time after the section was already painted).
+- C.3: 12px top margin added to Lim's notes-standalone wrapper (separates from metrics 2×2 above).
+- C.4: Notes record affordance dropped for Lim. New display-only structure: heading `Note from <Faye Sit>` + incoming chip (`incoming · 02:48 SGT`) + body text. No mic button, no textarea. CSS class `notes-section-display`.
+- C.5: Inspection groups truncate to header-only `✓ <label> · N/N completed` at 10/10 complete. New helper `truncateInspectionGroupsToCompleted()` + CSS class `.ic-group-label-completed` (green-soft bg + 3px green-vivid left border).
+
+**Section D — Wong-call + post-call polish:**
+- D.1: SOP-routing connect theater 3s → 6s. `fireAgentCardLifecycle('sop-action', 6000)`. Timeout to spawn in-call strip also 6000ms.
+- D.2: In-call strip `max-width: 70%` (margin auto). Verified narrower in browser.
+- D.3: Transcript modal `max-width: 70%` (capped at 520px). Narrower modal.
+- D.4: Call-ended strip fades + removes (`opacity 0.3s` + `setTimeout 320ms`) when `Transcript attached` stage paints.
+- D.5 + D.6: Audio-transcription Agent fires during generating + analyzing transcript stages. SOP Action Agent fires during SOP routing + SOP review stages. Log line `source` tokens + `reveal-agent` text updated.
+
+**Section E — Revise diagnosis TILE:**
+- Standalone `confirm-revised-cta` button REMOVED (function + CSS + selectors deleted).
+- New `.revise-diagnosis-tile` containing icon block + heading `REVISE DIAGNOSIS` + body explanatory text + inline `.rdt-confirm-btn` button on right.
+- Tile spawns automatically at end of post-call Analyzing-transcript stage (E.4 — `onDiagnosisConfirmedClick` called from setTimeout completion, no user click required).
+- The post-call `diagnosis-confirmed-button` stage retired (returns empty markup); `wireDiagnosisConfirmedButton` deleted.
+- Inline button click → existing W7 Section F flow: SOP Action Agent SOP-review theater (3s) → state `REVISED_DIAGNOSIS_ROUTED` + capture footer + Faye notified + P1 pulse.
+
+**Section F — Dyn-name on green:**
+- New `.dyn-name-on-green` CSS variant: `rgba(255,255,255,0.20)` translucent-white bg + white text + white border + drop shadow. Defined as sibling to `.dyn-name`.
+- Applied to:
+  - Faye Escalation Report `Notify trading desk · route to <Priya Sundaram>` CTA — Priya span.
+  - Wong-approve dead-path CTA `Approve escalation and route back to <Faye Sit>` — Faye span (W7 dead but consistent).
+
+**Section G — Priya laptop view (STRUCTURAL PIVOT):**
+- LEFT pane swaps tablet bezel for MacBook-style laptop chrome when `state.activePersona === 'analyst'`.
+- New `#laptop-frame` sibling to `#tablet` in `index.html` (display=none by default).
+- Laptop chrome: 1100px max-width · titlebar w/ traffic-light dots + URL pill `sembcorp.energy-trading · Singapore` · content area `#laptop-content` w/ light-stage bg · subtle 14px keyboard-hint at bottom.
+- Trader dashboard built lazily on first laptop render. 3 zones:
+  - Zone 1 — Portfolio Overview · Singapore Market (5 cards: Jurong CCGT 1,600 MW · Tuas Cogen 860 MW · Senoko 560 MW · Solar 200 MWp · Battery 100 MW/200 MWh)
+  - Zone 2 — Market Snapshot (3 cards: SG Power Price $112.45 +18.30 · Reserve Margin 28% comfortable · Market Regime NORMAL)
+  - Zone 3 — Active Tasks (3 TRD- rows from `PERSONA_OWN_TASKS.analyst`)
+- Top bar: Sembcorp Energy Trading branding (left) + Priya Sundaram persona block (center) + notification bell w/ count badge (top-right).
+- Notification bell behavior: count=0 + no pulse cold load. When statePill=`ROUTED_TO_TRADING_DESK` AND `!decisionLocked`: count=1 + `td-bell-pulse` keyframe (green halo · 1.6s). Click bell → opens trader modal. After lock: count=0 + pulse stops.
+- 60% center modal w/ backdrop-blur dim. Header: green-soft bg + `INC-2026-0537 · Trading Desk Action Required` + close (×) button. Body: hosts existing W5 analyst-screen-d content (Market Intelligence Agent 5s loading → 4 decision options + Lock CTA).
+- Analyst-screen-d content REUSED unmodified (option cards, lock CTA, transcript link wiring, reveal helpers all keyed off existing CSS selectors). New `paintAnalystContentIntoModal(container)` mounts the same structure inside `.trader-modal-body`.
+- Lock decision → 900ms hold (user sees Decision locked CTA briefly) → `render()` → `syncLaptopModalState()` removes modal · `updateLaptopDemoEndBanner()` adds persistent banner above zones (`✓ Cycle complete · <option> locked · revenue exposure neutralized · INC-2026-0537 closed · 03:01 SGT`).
+- Persona switch out of analyst tears down any open trader modal + restores tablet display.
+- Right pane during Priya = standard agent buckets + log + flywheel (W7 lock preserved · no inline KG for P4).
+- `render()` updated to branch via `renderLeftPane()` which handles tablet vs laptop visibility + paint dispatch.
+- `appendLockDecisionCaptureFooter` finds `#incident-detail-view` (now lives inside `.trader-modal-body`; ID re-used) — capture footer paints inside modal body for completeness.
+
+**Files changed (W8):**
+- `app.js` — agent relevance + name dictionary updates; new functions `tabletCacheKey`, `renderLeftPane`, `renderLaptopContent`, `paintLaptopDashboard`, `wireLaptopBellClick`, `onLaptopBellClick`, `updateLaptopBellState`, `updateLaptopDemoEndBanner`, `syncLaptopModalState`, `openTraderModal`, `paintAnalystContentIntoModal`, `closeTraderModal`, `spawnReviseDiagnosisTile`, `wireReviseDiagnosisTile`, `truncateInspectionGroupsToCompleted`, `insertOpsNotesIntoStep2`; existing `renderTablet`/`renderPersonasPanel`/`paintRightPaneInlineKG` refactored for cache + diff-update; `onVerdictReject` / `onCallEnd` / `onDiagnosisConfirmedClick` / `onConfirmRevisedDiagnosisClick` / `onLockDecisionClick` updated for new agent firings + theater durations + auto-trigger; `startLimScreenDReveal` reduced to immediate paint; `paintLimSummaryComplete` adds W8 status pill; `paintActionStepsComplete` + `unlockActionStep2` embed notes in step-2 container; `buildLimNotesSection` rewritten display-only; `paintLimChecklistComplete` calls `truncateInspectionGroupsToCompleted`; `postCallStageHTML` updated to fire audio-transcription + diagnosis-confirmed-button stage retired; `appendLockDecisionCaptureFooter` works inside modal body. Dead functions removed: `spawnConfirmRevisedDiagnosisButton`, `wireConfirmRevisedDiagnosis`, `wireDiagnosisConfirmedButton`. Workflow Agent display-name replaced w/ A2A Coordination Agent in DCF strings + reveal-agent text + dictionary.
+- `index.html` — agent-count text 15 → 17; Domain Reasoning bucket-count 5 → 7; Workflow Agent card renamed (data-id preserved); 2 new agent cards added; new `#laptop-frame` markup + extensive CSS for laptop chrome, dashboard, bell, 60% modal, notes-incoming + display-only notes, ic-group-label-completed, sr-hyp-status-pill, revise-diagnosis-tile + rdt-*, dyn-name-on-green; in-call-strip max-width 70%; transcript-modal-card max-width 70% / 520px.
+
+**Files intentionally not touched (W8):**
+- `renderAnalystIncidentDetail` and `spawnAnalystScreenContent` (left intact · renderTablet path for analyst is unreachable post-W8 since `renderLeftPane` routes analyst to laptop · keep as dead code per WA #5).
+- `paintRightPaneStandard` reparent path · floating KG window logic · KG_STATE growth pipeline.
+- All Faye P1 dispatch arc scripts · banner copy · INC row markup.
+- Lim inspection checklist content (5 + 3 + 2 items unchanged).
+- Wong dead-code paths (other than dyn-name-on-green rename).
+
+**Verified via Chrome MCP — per-test observed-vs-expected table:**
+
+#: 1 · Test: agent-count text · Observed: `0 active · 17 registered` · Expected: 17 registered · Pass: ✓
+#: 2 · Test: Domain Reasoning bucket-count · Observed: 7 · Expected: 7 · Pass: ✓
+#: 3 · Test: sop-action card present · Observed: true · Expected: true · Pass: ✓
+#: 4 · Test: audio-transcription card present · Observed: true · Expected: true · Pass: ✓
+#: 5 · Test: Workflow card display name · Observed: `A2A Coordination Agent` · Expected: `A2A Coordination Agent` · Pass: ✓
+#: 6 · Test: persona-tile diff-update (Part 1) · Observed: `personas-row` `data-built=1` after render, 3 tiles, in-place state mutations · Expected: row no longer wiped per render · Pass: ✓
+#: 7 · Test: Faye Notes inside Step 2 · Observed: DOM order `[as-heading, as-step×2, notes-in-step2, action-cta]` · Expected: notes between Lim row + Confirm CTA · Pass: ✓
+#: 8 · Test: Lim Predicted Diagnosis paints immediately · Observed: `.sr-hypothesis` present at t+500ms · Expected: no 10s reload · Pass: ✓
+#: 9 · Test: Lim status pill · Observed: `✓ confirmed by Hyperspace OS · pending onsite verification` · Expected: same · Pass: ✓
+#: 10 · Test: Lim notes display-only · Observed: no mic, no textarea, body+chip present, 12px margin-top · Expected: same · Pass: ✓
+#: 11 · Test: Inspection groups truncate at 10/10 · Observed: all 3 groups `data-collapsed=true` w/ `✓ N/N completed` label · Expected: same · Pass: ✓
+#: 12 · Test: Diagnosis Verdict spawns at 10/10 · Observed: `.diagnosis-verdict` present · Expected: same · Pass: ✓
+#: 13 · Test: Reject → SOP Action Agent SOP-routing theater 6s · Observed: theater visible until t+6.5s · Expected: 6s · Pass: ✓
+#: 14 · Test: SOP Action Agent firing during routing · Observed: `data-state=active` · Expected: same · Pass: ✓
+#: 15 · Test: in-call strip max-width 70% · Observed: `maxWidth: 70%` · Expected: same · Pass: ✓
+#: 16 · Test: in-call strip removed when transcript-attached · Observed: `.in-call-strip` absent post-D.4 · Expected: same · Pass: ✓
+#: 17 · Test: Audio-transcription Agent fires post-call · Observed: agent-state advances to active then done · Expected: same · Pass: ✓
+#: 18 · Test: Revise diagnosis tile spawns automatically · Observed: `.revise-diagnosis-tile` present after analyzing-transcript, no user click required · Expected: same · Pass: ✓
+#: 19 · Test: Revise tile heading `REVISE DIAGNOSIS` + inline button · Observed: heading + body + `.rdt-confirm-btn` present · Expected: same · Pass: ✓
+#: 20 · Test: Inline Confirm → SOP-review SOP Action Agent · Observed: state advances to `REVISED_DIAGNOSIS_ROUTED`, capture footer, P1 pulse · Expected: same · Pass: ✓
+#: 21 · Test: Faye Escalation Report A2A Coordination Agent rename · Observed: `Workflow Agent` display name now `A2A Coordination Agent` in agent card · Expected: same · Pass: ✓
+#: 22 · Test: Notify trading desk CTA has dyn-name-on-green · Observed: `.oer-cta .dyn-name-on-green` present · Expected: same · Pass: ✓
+#: 23 · Test: P4 unlock + pulse after Notify · Observed: analyst tile `data-state=available pulse=true` · Expected: same · Pass: ✓
+#: 24 · Test: Priya laptop frame swap · Observed: `#tablet display=none`, `#laptop-frame display=` (visible) · Expected: same · Pass: ✓
+#: 25 · Test: Trader dashboard zones · Observed: 3 zones, 5 portfolio cards, 3 market cards, 3 task rows · Expected: same · Pass: ✓
+#: 26 · Test: Notification bell pulse · Observed: count=1 + `.td-bell-pulse` class · Expected: same · Pass: ✓
+#: 27 · Test: Bell click opens 60% modal · Observed: backdrop present, heading `INC-2026-0537 · Trading Desk Action Required`, max-width 720px (~60% of 1100px laptop) · Expected: same · Pass: ✓
+#: 28 · Test: Market Intelligence Agent fires in modal · Observed: agent transitions through active → done within 5s · Expected: same · Pass: ✓
+#: 29 · Test: 4 decision options + Lock CTA inside modal · Observed: 4 option cards, lock CTA present + disabled · Expected: same · Pass: ✓
+#: 30 · Test: Lock decision closes modal + persistent banner · Observed: state=HEDGED, modal removed, `.td-demo-end-banner` painted w/ `Forward Q3 capacity hedge locked` · Expected: same · Pass: ✓
+#: 31 · Test: Bell badge count + pulse cleared post-Lock · Observed: count=0, pulse class removed · Expected: same · Pass: ✓
+#: 32 · Test: app.js parses clean · Observed: `node -c` exits 0 · Expected: clean parse · Pass: ✓
+#: 33 · Test: No `console.log` instrumentation remaining · Observed: zero `[render]`/`[fireAgent]`/etc. logs in source · Expected: clean · Pass: ✓
+#: 34 · Test: Visual flash absence · Observed: subjective walkthrough no longer shows persona-pulse-reset flashes · Expected: same · Pass: human-check required (flagged per coach sign-off)
+#: 35 · Test: E2E happy path Faye → Lim → Faye Round 2 → Priya → HEDGED · Observed: full sequence completes w/ correct state transitions + agent firings + UI changes · Expected: same · Pass: ✓
+
+Follow-up (W8):
+- `renderAnalystIncidentDetail`, `spawnAnalystScreenContent`, `revealAnalystScreenInstant`, `startAnalystScreenDReveal` — unreachable post-W8 via tablet path (analyst now routes through laptop). Left intact per WA #5 throwaway convention; the modal path reuses the same content-building helpers (`spawnAnalystScreenContent`, `revealAnalystScreenInstant`, `startAnalystScreenDReveal`, `wireDecisionOptions`, `wireLockDecisionCTA`) by leveraging the shared `#incident-detail-view` ID inside the modal body.
+- Pre-existing TS6133 unused-variable lint warnings noted on lines 1139, 4734, 4916, 4946, 5180, 5263 — all in code unmodified by W8. Karpathy rule 3: not touched.
+- Visual + projector-legibility verification = pending human-check during dry-run.
+
+### W9 deployment confirmation (2026-05-22) — LIM POLISH + PRIYA SOPHISTICATION
+
+Post-W8 review pass: 3 Lim Screen D polish items + Priya dashboard enhancement + modal redesign (Singapore/SEA trader sophistication — USEP forward curve, reserve margin donut gauge, 30-min HH settlement KPI strip, monthly target KPI card, sparklines + $ chips + delta-vs-target chips per option). No state-machine changes. No new agents. Visual-only.
+
+**Section A — Lim Screen D polish:**
+- A.1: `.ic-group-label-completed` (W8 C.5 completed-group header). Dropped `background: var(--green-soft)` + `border-left: 3px solid var(--green-vivid)` → `background: transparent` + `border-left: none`. Group-label text neutralized `var(--green-soft-text)` → `var(--text-secondary)`. `✓ N/N completed` status kept in `var(--green-vivid)` (green tick + status text remain green for completion cue).
+- A.2: `.in-call-strip` centering fix. Root cause: W4.1 override block at index.html line ~2966 set `margin: 0 !important; width: auto;` — overrode W8 D.2 `margin: 14px auto; max-width: 70%` so flex container shrank to content width + lost auto-centering. Fix: removed W4.1 override (kept only `.call-ended` sub-rules); W8 rule extended with `width: 70%; box-sizing: border-box; align-self: center`. Verified: strip width 490px (= 70% of 700px parent), margin 105px both sides, center delta 0.0px.
+- A.3: `.post-call-stage[data-stage="transcript-attached"]` restyled. Dropped `border-left-color: var(--green-vivid)` + `background: var(--green-soft)` → `background: transparent` + `border-left: none` + `justify-content: center` + `font-style: italic` + `margin: 14px auto; max-width: 70%`. `.post-call-msg` italic + `var(--text-muted)`. `.post-call-transcript-link` re-styled inline: `var(--text-secondary)` + `font-style: normal` + underline (link readable as link; row reads as muted italic note).
+
+**Section B — Priya dashboard enhancement:**
+- B.1: Sembcorp logo. Inline SVG (42×42 viewBox, 36×36 rendered) of 2-curve wave/wing mark (`stroke="#00A651"`, second curve `opacity="0.65"`) replaces the W8 `.td-brand-dot` square. Brand text-block now `Sembcorp` (15px, 800 weight, `--green-vivid`) + `Energy Trading · Singapore` sub (10px uppercase, `--text-muted`).
+- B.2 + B.3: `.td-kpi-strip` inserted between `.td-topbar` and zones. 2-card grid (`1.4fr 1fr`). Card 1 `.td-kpi-headline` (amber-left border) — `Next settlement period · HH18 · 09:00–09:30 SGT` clock-glyph label + 3 rows (PSO commitment 50 MW @ SGD 120/MWh · Settlement value SGD 6,000 · At risk if no action SGD 6,000 · 4 periods (HH18–HH21) — amber text) + right-aligned `AT RISK · awaiting decision` status pill (amber-soft bg). Card 2 `.td-kpi-secondary` (green-left border) — `May 2026 target · revenue at risk hedged` target-glyph label + animated progress bar (`width: 74%`) + stats row (`SGD 3.1M MTD (74%)` · `Target SGD 4.2M`) + delta footer (`INC-2026-0537 unlock: +SGD 240k · +5.7% toward target` in green).
+- B.4: Reserve margin gauge (`.td-mk-gauge`). SVG donut, 96×96. Background ring `stroke="#E5E7EB"` 10px. Foreground arc `stroke="#00A651"` 10px, `stroke-dasharray="81 289"` (28% of circumference 2π·46≈289), rotated -90° to start at 12 o'clock, `stroke-linecap="round"`. Center labels `28%` (22px 800-weight `#0F1B3D`) + `COMFORTABLE` (9px 600-weight `#64748B`).
+- B.5: USEP forward curve (`.td-mk-curve`). SVG 240×60, `preserveAspectRatio="none"`. Headline row above chart: `$112.45` (22px 800-weight) + `SGD/MWh` uppercase unit + right-aligned green delta `+18.30 (19.4%)`. 24-point trending-up path `stroke="#00A651"` 2px + closed-area variant filled with vertical `#td-curve-gradient` linearGradient (green 0.8 → 0.0 opacity, 20% opacity overlay). NOW indicator: dashed grey vertical line at x=120 + `NOW` text label. Axis row below: `00:00 | 06:00 | 12:00 | 18:00 | 24:00`.
+- B.6: `.td-market` grid restructured `repeat(auto-fit, minmax(220px, 1fr))` → `1.4fr 1fr 1fr`. 3 cards in fixed order: USEP curve card · Reserve margin gauge card · Market Regime card (preserved W8 markup).
+
+**Section C — Priya modal redesign:**
+- C.1: Operational context section converted from 3-row table (Diagnosis · Recommendation · Exposure) to single Exposure-only block. New `.ac-section-context` shell: amber-soft bg + amber-vivid 3px left border + 14px padding. New `.ac-context-exposure` row: 80px `EXPOSURE` label (amber-soft-text, 800-weight, 0.08em letter-spacing) + content block with `.ac-ctx-primary` (`50 MW derate · SGD 240k revenue at risk`, 14px 700-weight navy) + `.ac-ctx-secondary` (`4× 30-min settlement periods · HH18 (09:00 SGT) → HH21 (10:30 SGT) · PSO commitment window`, 11.5px slate-700). `View source transcript` button preserved (existing W5 wiring `.ac-transcript-link`).
+- C.2 + C.3 + C.4 + C.5: 4 decision option cards rebuilt. `.ac-decision-list` flex column → 2×2 grid (`grid-template-columns: 1fr 1fr; gap: 14px`). Each `.ac-option-card` now column-flex w/ 2 sections: (a) `.ac-opt-header` (bullet + body title/detail, top half) (b) `.ac-opt-viz` (sparkline + chip stack, bottom half, separated by 1px dashed top border).
+  - hedge: title `Hedge forward · 4×HH PSO window` · detail `Lock SGD 120/MWh forward · 50 MW × 4 settlement periods` · sparkline rising-line path `M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5` (green) · `+SGD 240k` positive amount chip · `+5.7% toward May target` positive delta chip.
+  - cross-site: title `Cross-site balance · Sakra-CCGT-1 standby` · detail `Dispatch Sakra standby capacity · cover BFP-3A derate` · sparkline step-up path `M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8` (green) · `+SGD 198k` · `+4.7% toward May target`.
+  - spot: title `Sell-back to spot · USEP arbitrage` · detail `Sell uncommitted MW into spot market · capture forecast +20% USEP spike` · sparkline spike path `M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8` (green) · `+SGD 156k` · `+3.7% toward May target`.
+  - curtailment: title `Curtail · accept PSO penalty` · detail `Accept 4×HH curtailment penalty · preserve BFP for full inspection` · sparkline flat→cliff path `M 0 14 L 60 14 L 70 32 L 120 32` (RED `#DC2626`) · `-SGD 88k` negative amount chip (red bg) · `-2.1% toward May target` negative delta chip (red bg).
+- C.6 + C.7: Single-select + Lock decision logic preserved unchanged. `wireDecisionOptions` + `restoreSelectedOptionUI` + `onLockDecisionClick` untouched (still flip `data-selected` + bullet `○` → `✓` + populate `state.priya.selectedOption` + enable Lock CTA on first selection). W8 G.8 900ms laptop-modal hold preserved. `PRIYA_OPTION_LABEL` + `PRIYA_LAPTOP_OPTION_LABEL` dictionaries preserved unchanged per plan C.4 (footer/banner labels stay W5).
+
+**Files changed (W9):**
+- `index.html` — `.ic-group-label-completed` restyle (A.1); `.in-call-strip` extended with `width: 70%; box-sizing: border-box; align-self: center` (A.2); W4.1 in-call-strip override block deleted; `.post-call-stage[data-stage="transcript-attached"]` restyle + nested `.post-call-msg` / `.post-call-transcript-link` overrides (A.3); new `.td-brand-mark` / `.td-brand-text-block` / `.td-brand-text-sub` CSS (B.1); new `.td-kpi-strip` + `.td-kpi-card` + `.td-kpi-headline` + `.td-kpi-secondary` + `.td-kpi-label` + `.td-kpi-icon` + `.td-kpi-rows` + `.td-kpi-row` + `.td-kpi-amber` + `.td-kpi-status` + `.td-kpi-status-pill` + `.td-kpi-status-at-risk` + `.td-kpi-target-bar` + `.td-kpi-target-fill` + `.td-kpi-target-stats` + `.td-kpi-target-mtd` + `.td-kpi-target-pct` + `.td-kpi-target-goal` + `.td-kpi-target-delta` + `.td-kpi-target-delta-amt` + `.td-kpi-target-delta-pct` CSS (B.2 + B.3); `.td-market` grid template `1.4fr 1fr 1fr` (B.6); new `.td-mk-gauge-wrap` + `.td-mk-gauge` (B.4); new `.td-mk-headline` + `.td-mk-headline-value` + `.td-mk-headline-unit` + `.td-mk-headline-delta` + `.td-mk-delta-up` + `.td-mk-curve` + `.td-mk-curve-axis` (B.5); `.ac-decision-list` flex-column → 2-col grid; `.ac-option-card` flex-row → flex-column + larger padding + 2px selected border; `.ac-opt-header` / `.ac-opt-viz` / `.ac-opt-spark` / `.ac-opt-stats` / `.ac-opt-amt-chip` / `.ac-opt-amt-positive` / `.ac-opt-amt-negative` / `.ac-opt-delta-chip` / `.ac-opt-delta-positive` / `.ac-opt-delta-negative` (C.2-C.5); new `.ac-section-context` + `.ac-context-exposure` + `.ac-ctx-label` + `.ac-ctx-content` + `.ac-ctx-primary` + `.ac-ctx-secondary` (C.1).
+- `app.js` — `paintLaptopDashboard` markup rewritten: `.td-brand` swapped logo SVG + brand-text-block; new `.td-kpi-strip` (headline + secondary cards) inserted between topbar and zone 1; Zone 2 Market Snapshot zone restructured to USEP curve card (sparkline + headline + axis) + Reserve gauge card (SVG donut) + Market Regime card preserved. `spawnAnalystScreenContent` markup rewritten: operational context simplified to Exposure-only; 4 decision option cards rebuilt with `.ac-opt-header` + `.ac-opt-viz` structure (per-option sparkline SVG + amount chip + delta chip).
+
+**Files intentionally not touched (W9):**
+- All state-machine / lifecycle / agent-firing logic (`onVerdictReject` / `onCallEnd` / `onDiagnosisConfirmedClick` / `onConfirmRevisedDiagnosisClick` / `onLockDecisionClick` / `fireAgentCardLifecycle` / `triggerGroupTheater` / `updateChecklistProgress` / `paintDiagnosisVerdict`).
+- All agent roster + relevance mapping (17 agents preserved across 5 buckets).
+- KG, log dropdown, floating window, flywheel — no right-pane changes.
+- `PRIYA_OPTION_LABEL` + `PRIYA_LAPTOP_OPTION_LABEL` dictionaries (W5 / W8 labels preserved per plan C.4).
+- `wireDecisionOptions` / `restoreSelectedOptionUI` / `wireLockDecisionCTA` / `appendLockDecisionCaptureFooter` (option-card markup changed but selectors `.ac-option-card`, `.ac-opt-bullet`, `data-option`, `.ac-lock-cta` preserved so existing wiring still binds).
+- All Faye P1 dispatch + banner + INC row markup.
+- Lim inspection checklist content (5 + 3 + 2 items unchanged).
+- Wong dead-code paths.
+
+**Verified via Chrome MCP — per-test observed-vs-expected table:**
+
+#: 1 · Test: A.1 completed-group bg transparent · Observed: bg `rgba(0,0,0,0)` for all 3 groups (Safety / Instrument / Root cause isolation) · Expected: transparent · Pass: ✓
+#: 2 · Test: A.1 completed-group border-left removed · Observed: `border-left-width: 0px; border-left-style: none` · Expected: no left border · Pass: ✓
+#: 3 · Test: A.1 group-label text neutral · Observed: `color: rgb(51,65,85)` (`--text-secondary`) · Expected: `--text-secondary` · Pass: ✓
+#: 4 · Test: A.1 group-label status `✓ N/N completed` green · Observed: `color: rgb(0,166,81)` (`--green-vivid`) · text `✓ 5/5 completed` / `✓ 3/3 completed` / `✓ 2/2 completed` · Expected: green-vivid + correct counts · Pass: ✓
+#: 5 · Test: A.2 in-call strip width 70% · Observed: width 490px, max-width 70%, parent width 700px (490/700 = 70%) · Expected: 70% · Pass: ✓
+#: 6 · Test: A.2 in-call strip centered · Observed: margin-left 105px, margin-right 105px, center-delta 0.0px · Expected: centered · Pass: ✓
+#: 7 · Test: A.2 W4.1 override removed · Observed: no `margin: 0 !important` rule remaining (margin computed 14px auto from W8 D.2 rule) · Expected: removed · Pass: ✓
+#: 8 · Test: A.3 transcript-attached bg transparent · Observed: `background-color: rgba(0,0,0,0)` · Expected: transparent · Pass: ✓
+#: 9 · Test: A.3 transcript-attached border-left removed · Observed: `border-left-width: 0px; border-left-style: none` · Expected: no left border · Pass: ✓
+#: 10 · Test: A.3 transcript-attached centered + italic · Observed: `justify-content: center`, message font-style italic, `width: 490px` (70% of parent), margin-left/right 105px · Expected: centered + italic · Pass: ✓
+#: 11 · Test: A.3 transcript message muted · Observed: `color: rgb(100,116,139)` (`--text-muted`) · Expected: `--text-muted` · Pass: ✓
+#: 12 · Test: A.3 transcript link non-italic + underline · Observed: `font-style: normal`, text-decoration `underline`, color `rgb(51,65,85)` (`--text-secondary`) · Expected: link readable · Pass: ✓
+#: 13 · Test: B.1 Sembcorp logo SVG present · Observed: `.td-brand-mark` SVG with 2 path elements both `stroke="#00A651"` · Expected: 2-curve wave mark in green · Pass: ✓
+#: 14 · Test: B.1 brand text + sub present · Observed: `Sembcorp` headline + `Energy Trading · Singapore` sub, headline color `rgb(0,166,81)` · Expected: same · Pass: ✓
+#: 15 · Test: B.2 KPI strip present · Observed: `.td-kpi-strip` with 2 cards (headline + secondary) · Expected: 2-card strip between topbar and zones · Pass: ✓
+#: 16 · Test: B.2 headline KPI content · Observed: contains `HH18 · 09:00–09:30 SGT`, `50 MW @ SGD 120/MWh`, `SGD 6,000`, `4 periods (HH18–HH21)`, status pill `AT RISK · awaiting decision` (amber-soft bg `rgb(254,243,199)`) · Expected: same · Pass: ✓
+#: 17 · Test: B.3 monthly target KPI content · Observed: contains `May 2026 target`, `SGD 3.1M MTD (74%)`, `Target SGD 4.2M`, `INC-2026-0537 unlock: +SGD 240k · +5.7% toward target`; progress-bar fill `style="width: 74%"` · Expected: same · Pass: ✓
+#: 18 · Test: B.4 reserve margin gauge present · Observed: SVG donut, 2 circles (bg `#E5E7EB`, fg `#00A651` with `stroke-dasharray="81 289"`), center text `28%` + `COMFORTABLE` · Expected: same · Pass: ✓
+#: 19 · Test: B.5 USEP forward curve present · Observed: SVG curve with 2 paths (filled area + 24-point stroked line `stroke="#00A651"`), `#td-curve-gradient` defined, NOW indicator line at `x=120`, axis labels `00:00 | 06:00 | 12:00 | 18:00 | 24:00`, headline `$112.45` + `+18.30 (19.4%)` · Expected: same · Pass: ✓
+#: 20 · Test: B.6 Market Snapshot 3-col grid · Observed: `.td-market` grid-template-columns `408.8px 292px 292px` (ratio ≈1.4 : 1 : 1), 3 child cards (curve / gauge / regime) · Expected: 3 cards in `1.4fr 1fr 1fr` grid · Pass: ✓
+#: 21 · Test: C.1 Modal exposure-only context · Observed: `.ac-section-context` with `EXPOSURE` label + primary `50 MW derate · SGD 240k revenue at risk` + secondary `4× 30-min settlement periods · HH18 (09:00 SGT) → HH21 (10:30 SGT) · PSO commitment window`; no Diagnosis row, no Recommendation row; `View source transcript` button present · Expected: same · Pass: ✓
+#: 22 · Test: C.1 context block amber-callout · Observed: `background: rgb(254,243,199)` (`--amber-soft`), left border `rgb(217,119,6)` (`--amber-vivid`) · Expected: amber-soft callout · Pass: ✓
+#: 23 · Test: C.2 4 decision option cards · Observed: 4 `.ac-option-card` buttons (hedge / cross-site / spot / curtailment), grid `317px 317px` (2×2 layout) · Expected: 2×2 grid · Pass: ✓
+#: 24 · Test: C.3 sparklines per option · Observed: hedge `M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 ...` green; cross-site `M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 ...` green; spot `M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 ...` green; curtailment `M 0 14 L 60 14 L 70 32 L 120 32` RED `#DC2626` · Expected: distinct paths per option, curtailment in red · Pass: ✓
+#: 25 · Test: C.4 amount chips · Observed: hedge `+SGD 240k` (green positive), cross-site `+SGD 198k` (green positive), spot `+SGD 156k` (green positive), curtailment `-SGD 88k` (red negative, `color: rgb(220,38,38)`) · Expected: same · Pass: ✓
+#: 26 · Test: C.5 delta-vs-target chips · Observed: hedge `+5.7% toward May target` (positive), cross-site `+4.7%` (positive), spot `+3.7%` (positive), curtailment `-2.1%` (negative, `.ac-opt-delta-negative` class) · Expected: same · Pass: ✓
+#: 27 · Test: C.6 single-select works · Observed: clicking hedge → `data-selected="true"`, bullet `✓`; cross-site stays `data-selected="false"`; `state.priya.selectedOption === "hedge"`; Lock CTA enabled (`disabled=false`) · Expected: same · Pass: ✓
+#: 28 · Test: C.7 Lock decision → HEDGED + modal close + banner + bell cleared · Observed: state pill `HEDGED`, `decisionLocked: true`, modal removed (`#trader-modal-backdrop` absent), `.td-demo-end-banner` painted with `✓ Cycle complete · Forward Q3 capacity hedge locked · revenue exposure neutralized · INC-2026-0537 closed · 03:01 SGT`, bell `data-count=0`, pulse class removed · Expected: same · Pass: ✓
+#: 29 · Test: app.js parses clean · Observed: `node -c app.js` exits 0 · Expected: clean parse · Pass: ✓
+
+Human-check items (subjective; flagged not auto-asserted):
+- Projector legibility of new sparklines + chips at meeting-room distance — confirm during dry-run.
+- Sembcorp wave-mark logo readability at small size — visual inspection.
+- KPI strip information density vs scroll-fold position on default viewport — confirm none of the headline KPI clips below fold.
+
+Follow-up (W9):
+- Banner label after Lock decision pulls from `PRIYA_LAPTOP_OPTION_LABEL` (e.g. hedge → `Forward Q3 capacity hedge`), which is the W5/W8 label NOT the new W9 card title (`Hedge forward · 4×HH PSO window`). Visually divergent but plan C.4 explicitly preserves PRIYA_*_OPTION_LABEL maps; flagged for human-check whether the banner should be updated post-W9 to match new card titles.
+- `renderAnalystIncidentDetail` still in code (W8 follow-up flagged it as unreachable). `spawnAnalystScreenContent` modified by W9 but reachable only via the modal path (not the tablet path); the tablet-path render remains dead code per WA #5.
