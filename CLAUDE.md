@@ -63,7 +63,7 @@ Use only canonical Sembcorp / P&U industrial vocabulary (see SEMBCORP_SCOPE.md f
 - **Plant IDs:** Jurong-CCGT-1, Jurong-CCGT-2, Sakra-CCGT-1, Banyan-CHP, Tuas-Power
 - **Standards:** IEEE 1159 (power quality), ISO 50001 (energy management), ISO 10816-7 (industrial pumps — mechanical vibration), ISO 20816-1 (general machinery vibration), API 670 (machinery protection systems), IEC 61850 (substation automation), NERC reliability standards, ASME PTC (performance test codes)
 - **Vendors:** GE 9HA gas turbines, Siemens SGT-800, Mitsubishi Power M701F, Sulzer (BFP — Swiss multi-stage centrifugal), Bently Nevada 3500 series (Emerson — machinery protection / vibration monitoring), SKF (bearings), ABB drives (ACS series), Honeywell Experion DCS, Emerson Ovation, OSIsoft PI System
-- **Engineer names (Sembcorp Singapore-flavored):** R. Kumar (Ops Control Tower), Lim Wei Jie (Onsite Eng / Maint), Dr. A. Wong (Offsite Expert), Priya Sundaram (Asset Perf Analyst). Backup roster: J. Tan, S. Ibrahim, M. Lim, P. Subramaniam
+- **Engineer names (Sembcorp Singapore-flavored):** R. Kumar (Ops Control Tower), Lim Wei Jie (Onsite Eng / Maint), Dr. A. Ismail (Offsite Expert), Priya Sundaram (Asset Perf Analyst). Backup roster: J. Tan, S. Ibrahim, M. Lim, P. Subramaniam
 
 NEVER invent fake standards, fake vendor model numbers, or generic "AI says check the system" copy. The 6 ITP attendees will pattern-match instantly. Joubert was Alstom Power CEO — he knows every gas turbine made in the last 30 years. Asherson ran Rolls-Royce SEA. Get a model number wrong and credibility collapses.
 
@@ -164,7 +164,7 @@ Quick summary of the light-theme essentials:
 
 The demo presents ONE product with TWO surfaces:
 
-- **LEFT pane (tablet)** = real production app. Used by Sembcorp operators / engineers doing the work (R. Kumar / Lim Wei Jie / Dr. Wong / P. Sundaram). Polished customer-facing UX.
+- **LEFT pane (tablet)** = real production app. Used by Sembcorp operators / engineers doing the work (R. Kumar / Lim Wei Jie / Dr. Ismail / P. Sundaram). Polished customer-facing UX.
 - **RIGHT pane** = back-end ops console. Used by the team that MAINTAINS the agentic system + monitors performance. Observability + control. NOT used by frontline workers.
 
 Decouple "sausage making" (right) from "doing your job" (left). Design implications:
@@ -197,7 +197,7 @@ NDE bearing race spalling (early-stage). 78% confidence. Pattern-matched against
 - Impeller imbalance · 19%
 
 **Actual root cause (W4 reveal — DO NOT spoil in P1/P2/P3 broadcast):**
-Bent shaft on BFP-3A. Lim discovers via dial-indicator runout test during onsite inspection. Offsite senior engineer (Dr. A. Wong) confirms via remote vibration phase analysis (1×RPM dominant + ~180° NDE-DE phase shift = textbook bent shaft signature).
+Bent shaft on BFP-3A. Lim discovers via dial-indicator runout test during onsite inspection. Offsite senior engineer (Dr. A. Ismail) confirms via remote vibration phase analysis (1×RPM dominant + ~180° NDE-DE phase shift = textbook bent shaft signature).
 
 **Operational impact:**
 BFP-3A trip risk → HRSG-3 feedwater starvation → ST-3 derate ~50 MW. PSO commitment window 09:00–18:00 SGT affected. Revenue at risk ~SGD 240k (50 MW × 4h × SGD 120/MWh peak — illustrative). Action required within 45 min.
@@ -205,7 +205,7 @@ BFP-3A trip risk → HRSG-3 feedwater starvation → ST-3 derate ~50 MW. PSO com
 **Resolution arc:**
 1. **Faye (P1)** verifies metrics + dispatches Lim onsite (W3.9).
 2. **Lim (P2)** follows BFP vibration SOP + safety procedures + dial-indicator runout test → discovers shaft bow (W4).
-3. **Lim (P2)** calls offsite senior engineer (Dr. A. Wong) for remote confirmation — phase analysis seals diagnosis (W4).
+3. **Lim (P2)** calls offsite senior engineer (Dr. A. Ismail) for remote confirmation — phase analysis seals diagnosis (W4).
 4. **Asset Perf (P4)** long-term WO + revenue protection writeback (W5 / W7).
 
 ## 4-persona workflow (locked)
@@ -216,7 +216,7 @@ Same canonical incident flows through 4 personas. Personas panel is an EXTERNAL 
 |---|---|---|---|
 | 1 | Ops Control Tower | R. Kumar | Incident detection + cross-asset visibility + triage. Hands off to Onsite. |
 | 2 | Onsite Eng / Maint | Lim Wei Jie | Mobile-style step-by-step guidance. On-site verification. Immediate remediation. Hands off to Offsite. |
-| 3 | Offsite Expert | Dr. A. Wong | Diagnosis confirmation + WO pre-fill + remediation approval + risk escalation. Hands off to Asset Perf. |
+| 3 | Offsite Expert | Dr. A. Ismail | Diagnosis confirmation + WO pre-fill + remediation approval + risk escalation. Hands off to Asset Perf. |
 | 4 | Asset Perf Analyst | Priya Sundaram | P&L impact dashboard. Validates financial impact. Writes correction back into KG. Loop closes. |
 
 ## Out of scope (DO NOT BUILD)
@@ -236,7 +236,7 @@ Same canonical incident flows through 4 personas. Personas panel is an EXTERNAL 
 1. **Open** — Hyperspace OS tablet view shows Ops Control Tower dashboard with `JRG-CCGT-1 · BFP-3A` incident already detected, AMBER severity, `TRIAGE READY` pill. Right pane Agent View: Orchestrator idle, all reasoning + critic agents idle.
 2. **Triage** — Faye clicks the header → Sensor Anomaly Inspector + Turbine Diagnostic Agent + Power Gen Critic fire in right pane. Faye clicks the AMBER row → 2-stage loading theater (Inspection at t=0 → Summary report at t=5s with Triage placeholder → diagnosis hypothesis + alternates + HITL pill at t=10s). Hypothesis: NDE bearing race spalling, 78% confidence. Hands off to Onsite.
 3. **Onsite** — Persona strip greys Ops, activates Onsite. Tablet re-renders for Lim Wei Jie. BFP Maintenance Playbook Agent dispatches (Sulzer BFP procedure). Critic validates. Onsite engineer ticks verification steps + initiates immediate remediation (W4 reveals bent-shaft actual root cause via dial-indicator runout test). Hands off to Offsite.
-4. **Offsite** — Persona strip handoff. Tablet re-renders for Dr. A. Wong (Offsite Expert). Senior engineer confirms bent-shaft via remote vibration phase analysis. Long-term WO pre-fill surfaces. HSE Risk Validator + P&L Impact Validator run. Offsite approves WO + escalation memo. Hands off to Asset Perf.
+4. **Offsite** — Persona strip handoff. Tablet re-renders for Dr. A. Ismail (Offsite Expert). Senior engineer confirms bent-shaft via remote vibration phase analysis. Long-term WO pre-fill surfaces. HSE Risk Validator + P&L Impact Validator run. Offsite approves WO + escalation memo. Hands off to Asset Perf.
 5. **Asset Perf** — Persona strip handoff. Tablet re-renders for Priya Sundaram. P&L dashboard surfaces. $X revenue protected. Learning Engine activates: correction writes back to KG (visible as new green node appearing on L3 bearing-spalling / bent-shaft pattern). Learning Flywheel completes step 5/5.
 6. **Close** — "Next decision sharper" beat lands. Demo ends.
 

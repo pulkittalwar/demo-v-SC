@@ -24,7 +24,7 @@ Use only canonical Sembcorp / P&U industrial vocabulary:
 - **Plant IDs**: Jurong-CCGT-1, Jurong-CCGT-2, Sakra-CCGT-1, Banyan-CHP, Tuas-Power
 - **Standards**: IEEE 1159 (power quality), ISO 50001 (energy management), ISO 10816-7 (industrial pumps — mechanical vibration), ISO 20816-1 (general machinery vibration), API 670 (machinery protection systems), IEC 61850 (substation automation), NERC reliability standards
 - **Vendors**: GE 9HA gas turbines, Siemens SGT-800, Mitsubishi Power M701F, Sulzer (BFP — Swiss multi-stage centrifugal), Bently Nevada 3500 series (Emerson — machinery protection / vibration monitoring), SKF (bearings), ABB drives, Honeywell Experion DCS, Emerson Ovation, OSIsoft PI System
-- **Engineer names**: R. Kumar (Ops Control Tower), Lim Wei Jie (Onsite Eng), Dr. A. Wong (Offsite Expert), Priya Sundaram (Asset Perf Analyst). Backup roster: J. Tan, S. Ibrahim, M. Lim, P. Subramaniam.
+- **Engineer names**: R. Kumar (Ops Control Tower), Lim Wei Jie (Onsite Eng), Dr. A. Ismail (Offsite Expert), Priya Sundaram (Asset Perf Analyst). Backup roster: J. Tan, S. Ibrahim, M. Lim, P. Subramaniam.
 
 Never invent fake standards, fake vendor model numbers, or generic "AI says check the system" copy. Sembcorp ITP leadership will pattern-match instantly and skepticism will spike.
 
@@ -57,7 +57,7 @@ The same canonical incident flows through 4 personas. Top strip of LEFT pane sho
 |---|---|---|---|---|
 | 1 | **Ops Control Tower** | R. Kumar | Incident detection + cross-asset visibility + triage. Sees the alert first, confirms severity, dispatches to Onsite. | → Onsite, with diagnosis hypothesis attached |
 | 2 | **Onsite Eng / Maint** | Lim Wei Jie | Mobile-style step-by-step guidance. On-site verification of diagnosis. Immediate remediation actions. | → Offsite, if expert sign-off needed |
-| 3 | **Offsite Expert** | Dr. A. Wong | Diagnosis confirmation + WO pre-fill + remediation approval + risk escalation. Reviews full audit trail. | → Asset Perf, with WO logged |
+| 3 | **Offsite Expert** | Dr. A. Ismail | Diagnosis confirmation + WO pre-fill + remediation approval + risk escalation. Reviews full audit trail. | → Asset Perf, with WO logged |
 | 4 | **Asset Perf Analyst** | Priya Sundaram | P&L impact dashboard. Validates financial impact. Approves cost recovery / reporting line. Writes correction back into KG. | KG enriched. Loop closes. |
 
 Reference: `briefing/demo_1.png` + `briefing/demo_2.png` swimlane (Operations control tower → Onsite eng/Maint → Offsite eng experts → Asset Perf strat/analysts).
@@ -440,7 +440,7 @@ Per Decision 4a — full scope, parallel coach+operator sessions, aggressive cad
 | **W2.6** | Day 3 | **Screen state machine + monitoring dashboard**: implement `state.screen` = `monitoring \| monitoring-notify \| monitoring-landed \| incident-detail`. Screen A (monitoring dashboard with 3 pre-existing Sembcorp-canonical incidents — `Jurong-CCGT-2 · BFP-2A` GREEN, `Sakra-CCGT-1 · ST-1` AMBER scheduled, `Banyan-CHP · Cooling Tower 2` RED) + Hyperspace OS header band with `cursor: pointer`. Screen B (notification banner slide-in, 3s visible + 0.5s fade) — fired by click on header. Screen C (new INC-2026-0537 lands at top of list with AMBER + TRIAGING + just-now timestamp + teal border highlight; stat row updates `3 → 4 ACTIVE · 0 → 1 AWAITING TRIAGE`). Screen D = existing incident detail, reached via click on AMBER card. Back button → C. Only canonical AMBER incident clickable; other 3 = static. |
 | W3 | Day 3-4 | **Right-pane streaming animations + P1 click-through arc**: dispatch log strip becomes live streaming queue (5 visible lines + roll-up accordion `▾ N earlier steps` for older + slide-in animation + click-pin + hover-KG-chain). Inspection Agent CoT streams concurrently with Screen A→B header-click. Triage Agent + Power Gen Critic activate during Screen B→C transition. Agent cards expand inline with Claude-Code-style task tree (`✓ ● ○` + step counter) when active, collapse with green checkmark when done. Diagnosis surfaces on Screen D arrival via "see full reasoning" expansion. Dispatch to Onsite CTA on Screen D. Surface diagnosis: compressor fouling, humidity-correlated. |
 | W4 | Day 3-4 | **P2 click-through arc**: tablet re-renders for Onsite (Lim Wei Jie) with mobile-style verification checklist (4 steps per CAG pattern) + Playbook Agent dispatch + Power Gen Critic validation + KG L2 (OEM manual + `IGV-3 actuator`) + L1 (Onsite RACI) activation + Confirm Diagnosis terminal action. **IGV actuator drift surfaced as deeper root cause via verification step**. |
-| W5 | Day 4-5 | **P3 click-through arc**: tablet re-renders for Offsite (Dr. A. Wong) with full audit trail + telemetry review + Power Gen Critic + HSE Risk Validator + P&L Impact Validator activations + ROI/ramp model side-by-side decision (wash vs hot shutdown for IGV replacement + Sakra standby unit option declined) + Risk identification + Escalation back to P1. |
+| W5 | Day 4-5 | **P3 click-through arc**: tablet re-renders for Offsite (Dr. A. Ismail) with full audit trail + telemetry review + Power Gen Critic + HSE Risk Validator + P&L Impact Validator activations + ROI/ramp model side-by-side decision (wash vs hot shutdown for IGV replacement + Sakra standby unit option declined) + Risk identification + Escalation back to P1. |
 | W6 | Day 5 | **P1 re-engagement**: incident reopens at P1 with `CAPACITY IMPACT — REQUIRES ROUTING` state + Orchestrator re-route log lines + dispatch to Asset Perf CTA. Persona panel pulse re-targets P1 then P4. |
 | W7 | Day 5-6 | **P4 click-through arc**: tablet re-renders for Asset Perf (Priya Sundaram) with $ impact dashboard (50 MW × 4h shortfall · forwards/futures hedge req) + P&L Impact Validator (financial flavor) + Learning Engine activation + KG L4 writeback animation (new green node: "humidity-fouling + IGV-drift co-factor" pattern). Learning Flywheel reaches step 5/5. |
 | W8 | Day 6 | **Polish + animation timing + persona pulse + narration**: persona-panel highlight pulse on next-persona-to-click + state-pill micro-transitions + final "next decision starts sharper" beat. |
@@ -531,7 +531,7 @@ W3.4 fires the Workflow Agent ONCE — on the P1→P2 dispatch CTA click. W4-W7 
 
 Single product, two audiences:
 
-- **LEFT pane (tablet)** = real production app. Operators / engineers doing the work (R. Kumar, Lim Wei Jie, Dr. Wong, P. Sundaram). Polished customer-facing UX.
+- **LEFT pane (tablet)** = real production app. Operators / engineers doing the work (R. Kumar, Lim Wei Jie, Dr. Ismail, P. Sundaram). Polished customer-facing UX.
 - **RIGHT pane** = back-end ops console. Team maintaining the agentic system. Observability + control. NOT used by frontline workers.
 
 Decouple "sausage making" (right) from "doing your job" (left). Tools live behind toggle buttons. Graph is a draggable inspection window. Logs are a collapsible audit trail. Agent View is the always-visible fleet overview.
@@ -553,7 +553,7 @@ Source: `briefing/demo_1.png` + `briefing/demo_2.png` + high-res `briefing/Scree
 - **W1.P2.3 · Recommended escalation pathways (HyperOS) + Remediation** — Playbook Agent + Power Gen Critic dispatch; remediation options + escalation pathway surface
 - **W1.P2.4 · Remediation short-term (Pending approval) + long-term WO pre-fill** — terminal `Confirm Diagnosis` action; incident moves to `AWAITING EXPERT`; persona pulse moves to P3
 
-### P3 — Offsite Engineering Experts (Dr. A. Wong) — 4 workflow cards
+### P3 — Offsite Engineering Experts (Dr. A. Ismail) — 4 workflow cards
 - **W1.P3.1 · Incident report (diagnosis + confirmed audit trail)** — tablet re-renders for Offsite; full audit trail displayed
 - **W1.P3.2 · Report + telemetry review** — Offsite reviews underlying telemetry + charts + prior cases
 - **W1.P3.3 · Remediation step approval for the site (HyperOS)** — Power Gen Critic + HSE Risk Validator + P&L Impact Validator activate; ROI/ramp model surfaces side-by-side decision (wash now vs hot shutdown for IGV replacement); Sakra-CCGT-1 standby unit option declined (ramp 4h not enough); Offsite approves WO + signs off
@@ -617,7 +617,7 @@ Surface story (W3.9): `JRG-CCGT-1 · Block 2 · BFP-3A` vibration RMS on NDE bea
 
 - **Surface diagnosis (P1 Sensor Anomaly Inspector + Turbine Diagnostic Agent + Power Gen Critic)**: NDE bearing race spalling (early-stage). 78% confidence. Pattern-matched against 3 prior BFP bearing failures (Jurong-CCGT-2 / Sakra-CCGT-1 / Banyan-CHP). Alternatives surfaced view-only: shaft misalignment 52%, coupling wear 31%, impeller imbalance 19%. Recommendation: dispatch Lim onsite for bearing visual + dial-indicator runout.
 - **P2 Onsite verification deepens it (W4 reveal)**: Lim follows BFP vibration SOP. Visual on NDE bearing shows minor pitting but not enough to explain 8.4 mm/s RMS. Lim runs dial-indicator runout test on shaft + coupling per Sulzer BFP manual — runout reads ~0.18 mm at mid-span (spec ≤0.05 mm). Shaft is bowed. Bearing wear is a *symptom*, not the cause.
-- **P3 Offsite confirmation (W4)**: Lim calls senior engineer Dr. A. Wong. Wong pulls remote phase-analysis from Bently Nevada 3500 — 1×RPM dominant on FFT + ~180° phase shift between NDE and DE radial probes = textbook bent shaft signature. Wong confirms diagnosis. Real remediation = BFP-3A shaft replacement (NOT bearing replacement alone).
+- **P3 Offsite confirmation (W4)**: Lim calls senior engineer Dr. A. Ismail. Ismail pulls remote phase-analysis from Bently Nevada 3500 — 1×RPM dominant on FFT + ~180° phase shift between NDE and DE radial probes = textbook bent shaft signature. Ismail confirms diagnosis. Real remediation = BFP-3A shaft replacement (NOT bearing replacement alone).
 - **P3 Offsite consequence (W5)**: BFP-3A shaft replacement requires controlled BFP isolation + HRSG feedwater switchover to BFP-3B (sister pump). ~6h job. PSO commitment window 09:00–18:00 SGT (9h). Switchover bites into peak dispatch window = ~50 MW Block 2 derate. Approve WO. Escalate capacity impact back to P1.
 - **P1 re-engagement (W5)**: incident reopens with new `CAPACITY IMPACT` state. Routes to Asset Perf.
 - **P4 financial action (W7)**: 50 MW × 4h shortfall after BFP-3B coverage. Forwards/futures hedge bought at prevailing wholesale price. Learning Engine writes refined pattern back to KG L4: "bearing-spalling pattern + bent-shaft co-factor — revised confidence model + recommended dial-indicator runout in standard BFP SOP".
@@ -877,7 +877,7 @@ State pill progression (advances on actions, never regresses):
 - After P3 Dispatch CTA: `AWAITING_ASSET_PERF`
 
 Persona panel:
-- P2 (Lim Wei Jie · onsite) + P3 (Dr. A. Wong · offsite) tiles now clickable. `data-state="available"` styling (opacity 0.65, hover restores saturation + lift).
+- P2 (Lim Wei Jie · onsite) + P3 (Dr. A. Ismail · offsite) tiles now clickable. `data-state="available"` styling (opacity 0.65, hover restores saturation + lift).
 - P4 (Priya Sundaram · analyst) stays `data-state="locked"` (opacity 0.30, cursor not-allowed). Click no-op.
 - `switchToPersona(personaKey)` cancels in-progress reveal timers (`state.revealTimers`) + resets `state.screen='monitoring'` + clears history + re-renders.
 - Refactored persona-tile selectors from `.active` / `.inactive` class names to `[data-state="active|available|locked"]` attribute selectors.
@@ -907,7 +907,7 @@ CTA action:
 - New handler `onDispatchCTA()` (replaces old `dispatchToOnsite`). Sets `byPersona[active].actioned=true`, advances `setStatePill(POST_DISPATCH_STATE_PILL[active])`, sets `handoffPending[HANDOFF_NEXT[active]]=true`.
 - Dispatch CTA copy stays `Dispatch for Onsite Inspection` across all personas this wave (W3.7 lock).
 - Sub-label is persona-aware: `<active.name> · routes incident to <next.name> for diagnosis verification`.
-- Capture footer 3-line copy unchanged. `Dispatched to <name>` label resolves per persona via `DISPATCH_LABEL`: Lim Wei Jie / Dr. A. Wong / Priya Sundaram.
+- Capture footer 3-line copy unchanged. `Dispatched to <name>` label resolves per persona via `DISPATCH_LABEL`: Lim Wei Jie / Dr. A. Ismail / Priya Sundaram.
 - For P3 → P4 dispatch: `handoffPending.analyst=true` is set but P4 tile stays locked (no pulse). Banked for W7.
 - Backwards-compat alias `dispatchToOnsite()` retained, routes to new handler.
 
@@ -946,7 +946,7 @@ Verified via Chrome MCP — per-test table:
 | F4 | P3 banner copy | label=`INCOMING HANDOFF · Hyperspace OS`, title=`INC-2026-0537 · Routed from Lim Wei Jie · onsite verification complete` | exact copy | ✓ |
 | G1 | P2 first AMBER click renders Screen D instantly | `byOnsite.opened=true`, `assetChainRevealed/opsImpactRevealed/recommendationRevealed = true`, no pending placeholders, real blocks `display=''`, CTA visible | instant render, no 15s replay | ✓ |
 | H1 | P2 Dispatch advances state | After `onDispatchCTA()`: `statePill='ONSITE_CONFIRMED'`, `handoffPending.offsite=true`, `byOnsite.actioned=true`, P3 tile pulses | state advances + P3 pulse | ✓ |
-| H2 | Capture footer Dispatched-to label per persona | After P2 dispatch: `Dispatched to Dr. A. Wong · 02:47 SGT` | persona-aware label | ✓ |
+| H2 | Capture footer Dispatched-to label per persona | After P2 dispatch: `Dispatched to Dr. A. Ismail · 02:47 SGT` | persona-aware label | ✓ |
 | I1 | Persona pulse on load | P1 tile has `.persona-tile-pulse` class, others do not | P1 pulses | ✓ |
 | I2 | Pulse moves after P1 dispatch | p1Pulse=false, p2Pulse=true after `onDispatchCTA` from P1 | pulse moves | ✓ |
 | I3 | Pulse moves after P2 dispatch | p2Pulse=false, p3Pulse=true after `onDispatchCTA` from P2 | pulse moves | ✓ |
@@ -969,7 +969,7 @@ Persona panel state machine extends beyond linear P1 → P2 → P3 → P4:
 
 Static 4-layer scaffold pre-seeds 30 nodes (zone meta reads `32 nodes seeded` for round-number readability). Layer accent colors map to existing palette tokens:
 
-- **L1 People & Process** (green `--green-vivid`) — 7 nodes: R. Kumar · Ops · Lim Wei Jie · Onsite · Dr. A. Wong · Offsite · P. Sundaram · Asset Perf · BU · Power Gen · RACI · derate ≥40MW · Escalation · PSO window
+- **L1 People & Process** (green `--green-vivid`) — 7 nodes: R. Kumar · Ops · Lim Wei Jie · Onsite · Dr. A. Ismail · Offsite · P. Sundaram · Asset Perf · BU · Power Gen · RACI · derate ≥40MW · Escalation · PSO window
 - **L2 Physical Plant** (blue `--blue-vivid`) — 10 nodes: GT-3 · IGV-3 actuator · HRSG-3 · BFP-3A · BFP-3B · Condenser-3 · Generator-3 · Transformer-3 · Switchyard-A · OEM · GE 9HA manual
 - **L3 Historical State** (amber `--amber-vivid`) — 7 nodes: GT-3 · 90d exhaust temp · RCA-2025-014 · Sakra fouling · RCA-2024-093 · Jurong fouling · RCA-2025-031 · Jurong-2 wash · WO log · 47 prior · PI · 18mo telemetry · Audit trail · ISO 50001
 - **L4 Predictive Intelligence** (pink `--pink-vivid`) — 6 nodes: Pattern · compressor fouling · Pattern · IGV actuator drift · Model · humidity-fouling v3 · Predictor · MW derate · ROI model · wash-cycle · Recommender · OEM playbook
@@ -1040,7 +1040,7 @@ Three coupled changes landed in one wave:
 
 **6. Persona broadcast (folded from archived W3.9 broadcast-only spec):**
 - `state.tickets['INC-2026-0537']` model: `statePill` + `handoffPending.{ops,onsite,offsite,analyst}` + `byPersona.{seen,opened,actioned}`.
-- P2 (Lim Wei Jie · onsite) + P3 (Dr. A. Wong · offsite) tiles clickable. P4 (Priya · analyst) stays locked.
+- P2 (Lim Wei Jie · onsite) + P3 (Dr. A. Ismail · offsite) tiles clickable. P4 (Priya · analyst) stays locked.
 - `switchToPersona()` cancels in-progress reveal timers + resets `state.actionSteps` per-persona + re-renders.
 - Engineer pill swap: FS / LWJ / AW per active persona.
 - Notification dot on incident row when `handoffPending[activePersona] === true`. Cleared on first header click.
@@ -1090,7 +1090,7 @@ Verified via Chrome MCP — per-test observed-vs-expected table in operator stat
 
 ### W4 deployment confirmation (2026-05-22)
 
-Lim + Wong curated Screen Ds landed. Broadcast clones replaced. Bent-shaft narrative reveal arrives via call flow.
+Lim + Ismail curated Screen Ds landed. Broadcast clones replaced. Bent-shaft narrative reveal arrives via call flow.
 
 `renderIncidentDetailView` split into per-persona dispatcher routing to `renderOpsIncidentDetail` / `renderOnsiteIncidentDetail` / `renderOffsiteIncidentDetail`. Each persona's Screen D paints its own curated content using the shared chrome (banner + back chevron + sev pill).
 
@@ -1099,44 +1099,44 @@ Lim + Wong curated Screen Ds landed. Broadcast clones replaced. Bent-shaft narra
 - Metrics 2×2 inherited from W3.9 (vibration RMS NDE/DE · bearing temp · shaft speed).
 - Summary report — 2-stage loading theater: t=0 `Workflow Agent · Loading incident summary for Lim Wei Jie` (5s) → t=5s swap to Summary report shell + embedded `Sensor Anomaly Inspector · Loading diagnosis hypothesis` (5s) → t=10s diagnosis hypothesis tile reveals (`NDE bearing race spalling (early-stage)` — Faye's hypothesis, no confidence chip, no subtitle, collapsible alt-hypotheses).
 - Inspection workflow (NEW · replaces Action Steps): 10 items in 3 groups (Safety 5 / Instrument 3 / Root cause isolation 2). Items user-clickable; each click flips item to `data-checked="true"` (✓ + line-through), increments group count, increments progress counter, and streams a `Workflow Agent · Inspection check · <itemId> · confirmed by Lim Wei Jie` log line.
-- Binary CTAs (NEW): `Confirm diagnosis and repair` + `Diagnosis is wrong — contact Dr. A. Wong (Senior Engineer · Offsite Expert)`. Both disabled until ≥6/10 checks (`LIM_CHECKLIST_THRESHOLD` constant). Threshold-based unlock chosen so demo doesn't require all 10 clicks on stage.
+- Binary CTAs (NEW): `Confirm diagnosis and repair` + `Diagnosis is wrong — contact Dr. A. Ismail (Senior Engineer · Offsite Expert)`. Both disabled until ≥6/10 checks (`LIM_CHECKLIST_THRESHOLD` constant). Threshold-based unlock chosen so demo doesn't require all 10 clicks on stage.
 - Call flow (NEW): Escalate CTA → in-call strip replaces the escalate-cta DOM node (phone icon + animated 7-bar audio wave via `@keyframes audio-bars` + red `End` button). End click → `.call-ended` class greys icon + bars + disables End button + sets text to `Ended`.
 - Post-call stages render in the `lim-ctas-slot` below the in-call strip: 3s `Workflow Agent · Generating transcript...` → swap to `✓ Transcript attached · 7m 23s · [View transcript]` link + 3s `Workflow Agent · Analyzing transcript...` (rendered alongside transcript-attached) → swap analyzing stage to `Use diagnosis confirmed over call` button.
 - Diagnosis morph (NEW): click `Use diagnosis confirmed over call` → diagnosis hypothesis tile re-renders inline (original `NDE bearing race spalling (early-stage)` strikethrough + `SUPERSEDED` flag · new `REVISED DIAGNOSIS · Bent shaft on BFP-3A` + supporting detail `Confirmed via 1×RPM phase analysis (~178° NDE-DE shift) + dial-indicator runout (0.18mm TIR). Bearing damage secondary, caused by uneven load distribution.` + `View call transcript · 02:55 SGT` link). Timestamp captured in `state.lim.revisionTimestamp`.
-- Confirm CTA morphs to `Escalate for approval` (subtitle: `Routed to Dr. A. Wong · Offsite Expert · material impact requires offsite sign-off`); class swap `confirm-cta → escalate-approval-cta`. Green-fill button styling.
-- Escalate-for-approval click → state pill `ESCALATED_TO_OFFSITE` · `byPersona.onsite.actioned = true` · `handoffPending.offsite = true` · Workflow Agent mini-arc (3 log lines) · capture footer (`Hyperspace OS confirms revised diagnosis SOP followed` · `Call transcript routed to Workflow Agent for review` · `Knowledge-Graph · team · incident · revised diagnosis + transcript enriched`) + label `Escalated to Dr. A. Wong · 02:56 SGT` · P3 pulse starts.
+- Confirm CTA morphs to `Escalate for approval` (subtitle: `Routed to Dr. A. Ismail · Offsite Expert · material impact requires offsite sign-off`); class swap `confirm-cta → escalate-approval-cta`. Green-fill button styling.
+- Escalate-for-approval click → state pill `ESCALATED_TO_OFFSITE` · `byPersona.onsite.actioned = true` · `handoffPending.offsite = true` · Workflow Agent mini-arc (3 log lines) · capture footer (`Hyperspace OS confirms revised diagnosis SOP followed` · `Call transcript routed to Workflow Agent for review` · `Knowledge-Graph · team · incident · revised diagnosis + transcript enriched`) + label `Escalated to Dr. A. Ismail · 02:56 SGT` · P3 pulse starts.
 - Notes section pre-filled automatically with Faye-attached note (`Lim — prioritize NDE bearing visual inspection alongside dial-indicator runout test on shaft + coupling...`); no mic press required. Mic button preserved for visual consistency.
 
 **Transcript modal (NEW):**
 - ID `#transcript-modal`. Same modal infrastructure pattern as W3.10 telemetry modal (backdrop + close × + delegated close handler + ESC handler).
-- Content: 6-line dialog between L. Lim and Dr. Wong covering vibration → 1×RPM phase analysis → bent shaft → escalation. Header auto-attribution (`02:48 SGT · 7m 23s · auto-generated via Hyperspace OS`). Footer green-highlighted revised-diagnosis summary.
-- Multiple entry points wired through `wireTranscriptModalLinks()`: `.post-call-transcript-link` (Lim's post-call attached stage), `.sr-hyp-transcript-link` (revised diagnosis tile on Lim's view), `.wong-tx-link` (revised diagnosis tile on Wong's view). All share the same modal markup + close mechanisms.
+- Content: 6-line dialog between L. Lim and Dr. Ismail covering vibration → 1×RPM phase analysis → bent shaft → escalation. Header auto-attribution (`02:48 SGT · 7m 23s · auto-generated via Hyperspace OS`). Footer green-highlighted revised-diagnosis summary.
+- Multiple entry points wired through `wireTranscriptModalLinks()`: `.post-call-transcript-link` (Lim's post-call attached stage), `.sr-hyp-transcript-link` (revised diagnosis tile on Lim's view), `.ismail-tx-link` (revised diagnosis tile on Ismail's view). All share the same modal markup + close mechanisms.
 
-**Dr. A. Wong (P3) curated Screen D:**
+**Dr. A. Ismail (P3) curated Screen D:**
 - Banner reflects state `ESCALATED_TO_OFFSITE` with subtitle `routed from Lim Wei Jie`.
-- No metrics 2×2 (per Pulkit's `super simple` brief — Wong reviews, doesn't re-verify telemetry).
-- Single-stage Summary report loading theater (5s): `P&L Impact Validator · Loading escalation summary for Dr. A. Wong` → forwarded-incident line (`Lim Wei Jie has forwarded this incident · diagnosis revision · escalation for offsite sign-off.`) + revised diagnosis tile (read-only, same morph shape as Lim's post-call) + transcript link + approval-ask line (`Approval requested: shaft replacement scheduling + capacity impact escalation to Asset Performance.`).
+- No metrics 2×2 (per Pulkit's `super simple` brief — Ismail reviews, doesn't re-verify telemetry).
+- Single-stage Summary report loading theater (5s): `P&L Impact Validator · Loading escalation summary for Dr. A. Ismail` → forwarded-incident line (`Lim Wei Jie has forwarded this incident · diagnosis revision · escalation for offsite sign-off.`) + revised diagnosis tile (read-only, same morph shape as Lim's post-call) + transcript link + approval-ask line (`Approval requested: shaft replacement scheduling + capacity impact escalation to Asset Performance.`).
 - Single CTA `Approve escalation` (disabled during 5s loading; enabled after reveal). Green-fill button styling.
 - Approve click → state pill `APPROVED_ROUTED_TO_ASSET_PERF` · `byPersona.offsite.actioned = true` · `handoffPending.analyst = true` (banked for W7; P4 stays locked, no pulse) · Workflow Agent mini-arc (3 log lines) · capture footer (`Hyperspace OS · escalation approval sign-off recorded` · `Approval + transcript routed to Workflow Agent for chain-of-custody` · `Knowledge-Graph · sign-off attached to incident · routed to Asset Performance`) + label `Approval given · returned to Priya Sundaram · 02:58 SGT`.
-- `state.wong.approvalGiven` + `state.wong.approvalTimestamp` set so Wong's monitoring view paints the post-approval banner on re-entry.
+- `state.ismail.approvalGiven` + `state.ismail.approvalTimestamp` set so Ismail's monitoring view paints the post-approval banner on re-entry.
 
-**Post-approval home banner on Wong's monitoring:**
-- After approve fires + user backs out to Wong's monitoring screen: `.wong-post-approval-banner` (green-soft fill + green-vivid left bar + green-circle ✓ icon) renders at top of the priorities list with text `Approval given · returned to Priya Sundaram · <timestamp>`. Persistent across re-renders while `state.wong.approvalGiven === true`.
+**Post-approval home banner on Ismail's monitoring:**
+- After approve fires + user backs out to Ismail's monitoring screen: `.ismail-post-approval-banner` (green-soft fill + green-vivid left bar + green-circle ✓ icon) renders at top of the priorities list with text `Approval given · returned to Priya Sundaram · <timestamp>`. Persistent across re-renders while `state.ismail.approvalGiven === true`.
 
 **State pill machine final after W4:**
-`TRIAGE_READY` → `DISPATCHED_TO_ONSITE` (Faye dispatches Lim) → `ESCALATED_TO_OFFSITE` (Lim escalates after revised diagnosis) → `APPROVED_ROUTED_TO_ASSET_PERF` (Wong signs off). Legacy `ONSITE_CONFIRMED` and `AWAITING_ASSET_PERF` remain in `POST_DISPATCH_STATE_PILL` map but are no longer reached on the W4 happy path; replaced by the escalation chain.
+`TRIAGE_READY` → `DISPATCHED_TO_ONSITE` (Faye dispatches Lim) → `ESCALATED_TO_OFFSITE` (Lim escalates after revised diagnosis) → `APPROVED_ROUTED_TO_ASSET_PERF` (Ismail signs off). Legacy `ONSITE_CONFIRMED` and `AWAITING_ASSET_PERF` remain in `POST_DISPATCH_STATE_PILL` map but are no longer reached on the W4 happy path; replaced by the escalation chain.
 
 **Canonical incident row owner per active persona:**
-- `ROW_OWNER_BY_PERSONA` map drives `buildLandedIncidentRow` owner field per active persona. Faye's view: `Faye Sit / FS`. Lim's view: `Lim Wei Jie / LWJ`. Wong's view: `Dr. A. Wong / AW`. Pre-existing tasks in `PERSONA_OWN_TASKS` retain their static owners.
+- `ROW_OWNER_BY_PERSONA` map drives `buildLandedIncidentRow` owner field per active persona. Faye's view: `Faye Sit / FS`. Lim's view: `Lim Wei Jie / LWJ`. Ismail's view: `Dr. A. Ismail / AW`. Pre-existing tasks in `PERSONA_OWN_TASKS` retain their static owners.
 
 **Banner copy table (final after W4):**
 - ops: `NEW INCIDENT · Hyperspace OS · JRG-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 SGT`
 - onsite: `INCOMING HANDOFF · Hyperspace OS · INC-2026-0537 · Routed from Faye Sit · onsite verification requested`
 - offsite: `INCOMING HANDOFF · Hyperspace OS · INC-2026-0537 · Routed from Lim Wei Jie · diagnosis revision + escalation pending sign-off`
 
-**State slices added (`state.lim` / `state.wong`):**
+**State slices added (`state.lim` / `state.ismail`):**
 - `state.lim = { checked: {}, revealStarted, summaryRevealed, callStarted, callEnded, transcriptAttached, diagnosisRevised, revisionTimestamp }` — tracks Lim's checklist progress + call flow stage + diagnosis revision.
-- `state.wong = { revealStarted, summaryRevealed, approvalGiven, approvalTimestamp }` — tracks Wong's reveal + approval state.
+- `state.ismail = { revealStarted, summaryRevealed, approvalGiven, approvalTimestamp }` — tracks Ismail's reveal + approval state.
 - Neither slice is reset by `switchToPersona()`; demo flow assumes forward progress (audience won't navigate backward mid-call).
 
 Verified via Chrome MCP — per-test observed-vs-expected table:
@@ -1150,45 +1150,45 @@ Verified via Chrome MCP — per-test observed-vs-expected table:
 | C1 | Checklist renders 10 items in 3 groups | groups=3, items=10, progress `0/10 checks complete` | 3 groups · 10 items | ✓ |
 | C2 | Binary CTAs disabled at 0 checks | `.confirm-cta.disabled === true` and `.escalate-cta.disabled === true` | both disabled | ✓ |
 | C3 | Click 6 items → progress `6/10 checks complete` + CTAs enabled | `state.lim.checked` keys = 6; progress text `6/10 checks complete`; `.confirm-cta.disabled === false`; `.escalate-cta.disabled === false` | threshold unlock | ✓ |
-| D1 | Escalate CTA click → in-call strip + audio wave | `.in-call-strip` rendered; label `On call · Dr. A. Wong`; 7 `.in-call-audio-wave span` bars; `.in-call-end-btn` present; `state.lim.callStarted === true` | in-call strip + 7 bars + end btn | ✓ |
+| D1 | Escalate CTA click → in-call strip + audio wave | `.in-call-strip` rendered; label `On call · Dr. A. Ismail`; 7 `.in-call-audio-wave span` bars; `.in-call-end-btn` present; `state.lim.callStarted === true` | in-call strip + 7 bars + end btn | ✓ |
 | E1 | End click → call-ended class + Ended text + post-call stages spawn | `.in-call-strip.call-ended` class set; end btn text `Ended`; `.ended` class set; `state.lim.callEnded === true` | call ends + post-call cascade fires | ✓ |
 | E2 | Post-call cascade reaches diagnosis-confirmed-button (~6s) | `[...post-call-stage].map(s=>s.dataset.stage)` = `['transcript-attached','diagnosis-confirmed-button']`; `state.lim.transcriptAttached === true` | both stages visible after cascade | ✓ |
 | F1 | Diagnosis confirmed click → tile morph | `state.lim.diagnosisRevised === true`; `state.lim.revisionTimestamp === '02:55 SGT'`; `.sr-hyp-flag` = `SUPERSEDED`; original strikethrough = `NDE bearing race spalling (early-stage)`; revised name = `Bent shaft on BFP-3A`; detail text starts with `Confirmed via 1×RPM phase analysis (~178° NDE-DE shift) + dial-indicator runout (0.18mm TIR). Bearing damage secondary,...` | full tile morph | ✓ |
-| G1 | Confirm CTA morphs to Escalate for approval | `.escalate-approval-cta` class set; text starts `Escalate for approval` + subtitle `Routed to Dr. A. Wong · Offsite Expert · material impact requires offsite sign-off` | CTA morph + subtitle | ✓ |
-| G2 | Escalate for approval click → state advance + capture footer | `state.incidentPhase === 'ESCALATED_TO_OFFSITE'`; `byPersona.onsite.actioned === true`; `handoffPending.offsite === true`; offsite tile pulse `true`; capture footer present; label `Escalated to Dr. A. Wong · 02:56 SGT`; 3 capture lines verbatim | full escalation transition | ✓ |
-| H1 | Transcript modal opens via diagnosis tile link | `.sr-hyp-transcript-link` click → `#transcript-modal[data-open=true]`; title `Call transcript`; sub starts `Lim Wei Jie ↔ Dr. A. Wong · 02:48 SGT · 7m 23s · `; 6 tx-lines; first speaker `L. Lim`; footer starts `Revised diagnosis: Bent shaft · BFP-3A · confirmed via 1×RPM phase + dial-indica` | modal opens populated | ✓ |
+| G1 | Confirm CTA morphs to Escalate for approval | `.escalate-approval-cta` class set; text starts `Escalate for approval` + subtitle `Routed to Dr. A. Ismail · Offsite Expert · material impact requires offsite sign-off` | CTA morph + subtitle | ✓ |
+| G2 | Escalate for approval click → state advance + capture footer | `state.incidentPhase === 'ESCALATED_TO_OFFSITE'`; `byPersona.onsite.actioned === true`; `handoffPending.offsite === true`; offsite tile pulse `true`; capture footer present; label `Escalated to Dr. A. Ismail · 02:56 SGT`; 3 capture lines verbatim | full escalation transition | ✓ |
+| H1 | Transcript modal opens via diagnosis tile link | `.sr-hyp-transcript-link` click → `#transcript-modal[data-open=true]`; title `Call transcript`; sub starts `Lim Wei Jie ↔ Dr. A. Ismail · 02:48 SGT · 7m 23s · `; 6 tx-lines; first speaker `L. Lim`; footer starts `Revised diagnosis: Bent shaft · BFP-3A · confirmed via 1×RPM phase + dial-indica` | modal opens populated | ✓ |
 | H2 | Transcript modal close via × button | `#transcript-modal[data-open=false]` after `.transcript-modal-close` click | modal closes | ✓ |
-| I1 | Wong Screen D scaffold paints | banner subtitle `INC-2026-0537 · routed from Lim Wei Jie`; loading text `P&L Impact Validator · Loading escalation summary for Dr. A. Wong`; approve CTA disabled; 0 metric cells | Wong scaffold + loading | ✓ |
-| I2 | Wong Summary content reveals after 5s | `await_text('Bent shaft on BFP-3A')` resolved within 10s; forwarded line text exact; SUPERSEDED flag + revised name `Bent shaft on BFP-3A`; ask text `Approval requested: shaft replacement scheduling + capacity impact escalation to Asset Performance.`; approve CTA enabled; transcript link present | Wong reveal complete + CTA enabled | ✓ |
-| J1 | Wong Approve click → state advance + P4 stays locked | `state.incidentPhase === 'APPROVED_ROUTED_TO_ASSET_PERF'`; `byPersona.offsite.actioned === true`; `handoffPending.analyst === true`; analyst tile `data-state="locked"`; analyst pulse `false`; `state.wong.approvalGiven === true`; approvalTs `02:58 SGT`; capture footer present; label `Approval given · returned to Priya Sundaram · 02:58 SGT`; 3 capture lines verbatim | approval + P4 locked + banked flag | ✓ |
-| J2 | Wong post-approval banner on monitoring re-entry | After back-to-monitoring: `.wong-post-approval-banner` present with text `✓ Approval given · returned to Priya Sundaram · 02:58 SGT`; INC row pill `APPROVED · ROUTED TO ASSET PERF · routed to Priya Sundaram ·` | persistent banner + INC row pill | ✓ |
-| K1 | Canonical row owner swaps per persona | Faye view: row owner `FSFaye Sit`; Lim view: row owner `LWJLim Wei Jie`; Wong view: row owner `AWDr. A. Wong` | per-persona owner swap | ✓ |
+| I1 | Ismail Screen D scaffold paints | banner subtitle `INC-2026-0537 · routed from Lim Wei Jie`; loading text `P&L Impact Validator · Loading escalation summary for Dr. A. Ismail`; approve CTA disabled; 0 metric cells | Ismail scaffold + loading | ✓ |
+| I2 | Ismail Summary content reveals after 5s | `await_text('Bent shaft on BFP-3A')` resolved within 10s; forwarded line text exact; SUPERSEDED flag + revised name `Bent shaft on BFP-3A`; ask text `Approval requested: shaft replacement scheduling + capacity impact escalation to Asset Performance.`; approve CTA enabled; transcript link present | Ismail reveal complete + CTA enabled | ✓ |
+| J1 | Ismail Approve click → state advance + P4 stays locked | `state.incidentPhase === 'APPROVED_ROUTED_TO_ASSET_PERF'`; `byPersona.offsite.actioned === true`; `handoffPending.analyst === true`; analyst tile `data-state="locked"`; analyst pulse `false`; `state.ismail.approvalGiven === true`; approvalTs `02:58 SGT`; capture footer present; label `Approval given · returned to Priya Sundaram · 02:58 SGT`; 3 capture lines verbatim | approval + P4 locked + banked flag | ✓ |
+| J2 | Ismail post-approval banner on monitoring re-entry | After back-to-monitoring: `.ismail-post-approval-banner` present with text `✓ Approval given · returned to Priya Sundaram · 02:58 SGT`; INC row pill `APPROVED · ROUTED TO ASSET PERF · routed to Priya Sundaram ·` | persistent banner + INC row pill | ✓ |
+| K1 | Canonical row owner swaps per persona | Faye view: row owner `FSFaye Sit`; Lim view: row owner `LWJLim Wei Jie`; Ismail view: row owner `AWDr. A. Ismail` | per-persona owner swap | ✓ |
 | K2 | Offsite banner copy (new W4 text) | onsite banner copy unchanged; offsite banner consumed during E2E sequence (handoff flag cleared post-click) | new W4 phrasing replaces W3.9 placeholder | ✓ (via BANNER_COPY constant change) |
 
 Lim's analyzing-transcript stage was already swapped to diagnosis-confirmed-button by the time the post-End assertion ran (cascade takes ~6s wall-clock; observed both `transcript-attached` and `diagnosis-confirmed-button` together — analyzing stage is fully transient by design). Spec called for visible loading dots between stages; cadence holds: 3s `generating-transcript` → 3s `analyzing-transcript` → reveal `diagnosis-confirmed-button`. Visual cadence pass — human-check at projector recommended.
 
 Files changed:
-- `app.js` — state.lim + state.wong slices; ROW_OWNER_BY_PERSONA; per-persona dispatcher (`renderIncidentDetailView` re-shaped + `renderOpsIncidentDetail` extracted); `renderOnsiteIncidentDetail` (Lim scaffold + reveal + checklist + binary CTAs + call flow + diagnosis morph + escalate); `renderOffsiteIncidentDetail` (Wong scaffold + reveal + approve); transcript modal handlers (`openTranscriptModal` / `closeTranscriptModal` / `wireTranscriptModalLinks` / `initTranscriptModal`); Workflow Agent escalate-arc + approve-arc; post-approval banner injection inside `renderMonitoringView`; new state-pill cases in `buildLandedIncidentRow` (`ESCALATED_TO_OFFSITE` / `APPROVED_ROUTED_TO_ASSET_PERF`); offsite banner copy updated; `init()` wires transcript modal.
-- `index.html` — full W4 CSS block (inspection checklist · binary CTAs · in-call strip + audio bars keyframe · post-call stages · revised diagnosis tile · Wong summary tile + approve CTA · Wong post-approval banner · transcript modal). Transcript modal markup added before `<script src="app.js">`.
+- `app.js` — state.lim + state.ismail slices; ROW_OWNER_BY_PERSONA; per-persona dispatcher (`renderIncidentDetailView` re-shaped + `renderOpsIncidentDetail` extracted); `renderOnsiteIncidentDetail` (Lim scaffold + reveal + checklist + binary CTAs + call flow + diagnosis morph + escalate); `renderOffsiteIncidentDetail` (Ismail scaffold + reveal + approve); transcript modal handlers (`openTranscriptModal` / `closeTranscriptModal` / `wireTranscriptModalLinks` / `initTranscriptModal`); Workflow Agent escalate-arc + approve-arc; post-approval banner injection inside `renderMonitoringView`; new state-pill cases in `buildLandedIncidentRow` (`ESCALATED_TO_OFFSITE` / `APPROVED_ROUTED_TO_ASSET_PERF`); offsite banner copy updated; `init()` wires transcript modal.
+- `index.html` — full W4 CSS block (inspection checklist · binary CTAs · in-call strip + audio bars keyframe · post-call stages · revised diagnosis tile · Ismail summary tile + approve CTA · Ismail post-approval banner · transcript modal). Transcript modal markup added before `<script src="app.js">`.
 
 Files intentionally not touched:
 - `vendor/*.min.js` — three.js / 3d-force-graph preserved.
 - KG state machine, log streaming, floating window, drawer toggle, doc modal, telemetry modal — no changes.
 - Faye's curated Screen D content (`renderOpsIncidentDetail`) — left intact per W3.10 lock.
-- P4 Priya tile + `renderAnalystView` stub — left locked. `handoffPending.analyst = true` flag set on Wong approval but never paints a pulse; banked for W7.
+- P4 Priya tile + `renderAnalystView` stub — left locked. `handoffPending.analyst = true` flag set on Ismail approval but never paints a pulse; banked for W7.
 - `PERSONA_OWN_TASKS` map — unchanged.
 - Onsite/offsite stub functions deleted (no longer reachable via `renderTablet` switch).
 
 Follow-up needed:
 - W3.9 backwards-compat alias `dispatchToOnsite()` still in code but unused outside `onDispatchCTA`; can be deleted at next cleanup wave.
-- `POST_DISPATCH_STATE_PILL.onsite = 'ONSITE_CONFIRMED'` and `.offsite = 'AWAITING_ASSET_PERF'` are now unreachable on W4 happy path (Lim + Wong use direct `setStatePill` calls inside their handlers). Can be pruned or left as legacy.
+- `POST_DISPATCH_STATE_PILL.onsite = 'ONSITE_CONFIRMED'` and `.offsite = 'AWAITING_ASSET_PERF'` are now unreachable on W4 happy path (Lim + Ismail use direct `setStatePill` calls inside their handlers). Can be pruned or left as legacy.
 
 ### W4.1 deployment confirmation (2026-05-22)
 
 Polish + narrative pivot wave. 13 changes.
 
 **Heading + copy rename:**
-- Lim + Wong Summary report → `Predicted diagnosis` heading (Faye Screen D also updated for consistency).
+- Lim + Ismail Summary report → `Predicted diagnosis` heading (Faye Screen D also updated for consistency).
 - Inspection workflow card heading → `Inspection workflow (INC-2026-0537 · per the SOP)`. Sub: `Complete safety + instrument + root-cause checks sequentially.`
 
 **Stage-gated inspection checklist:**
@@ -1200,7 +1200,7 @@ Polish + narrative pivot wave. 13 changes.
 
 **Binary CTAs reorder + rename:**
 - Top: `Confirm diagnosis and submit WO` (centered, single-line).
-- Bottom: phone icon + `Diagnosis not confirmed — contact Senior Engineer <Dr. A. Wong>` (Dr. A. Wong wrapped in `.dyn-name`).
+- Bottom: phone icon + `Diagnosis not confirmed — contact Senior Engineer <Dr. A. Ismail>` (Dr. A. Ismail wrapped in `.dyn-name`).
 
 **Layout:**
 - Notes section moved from bottom of Lim Screen D to between metrics 2×2 card and Predicted diagnosis card.
@@ -1214,19 +1214,19 @@ Polish + narrative pivot wave. 13 changes.
 - Implemented via `setConfirmBtnPhase('confirm-ready' | 'awaiting-call' | 'escalate-ready')` driving phase classes + button text in place. `.confirm-cta` class retained throughout (no class swap to `.escalate-approval-cta`).
 
 **Diagnosis confirmed button dynamic copy:**
-- `Use <crack in pump casing> diagnosis confirmed over call with <Dr. A. Wong>` — both names wrapped in `.dyn-name`.
+- `Use <crack in pump casing> diagnosis confirmed over call with <Dr. A. Ismail>` — both names wrapped in `.dyn-name`.
 
 **Dynamic-name highlight (`.dyn-name`):**
 - New CSS class — teal pill `rgba(0,165,168,0.10)` bg + `#007A8A` text + `rgba(0,165,168,0.25)` border + 4px radius.
-- Applied across: binary CTA (Dr. A. Wong), diagnosis-confirmed button (diagnosis + Dr. name), revised diagnosis tile (asset name + timestamp), capture footer dispatched-to labels (Lim → Faye, Wong → Lim, Wong → Priya), Lim notes header (Faye Sit), banner subtitles (Faye Sit / Lim Wei Jie), Wong forwarded-line (Lim Wei Jie), Wong approve CTA (Priya Sundaram).
+- Applied across: binary CTA (Dr. A. Ismail), diagnosis-confirmed button (diagnosis + Dr. name), revised diagnosis tile (asset name + timestamp), capture footer dispatched-to labels (Lim → Faye, Ismail → Lim, Ismail → Priya), Lim notes header (Faye Sit), banner subtitles (Faye Sit / Lim Wei Jie), Ismail forwarded-line (Lim Wei Jie), Ismail approve CTA (Priya Sundaram).
 
-**Wong Screen D updates:**
+**Ismail Screen D updates:**
 - Predicted diagnosis heading.
 - Revised diagnosis tile shows pump casing crack (narrative pivot, see below).
-- Approve CTA copy: `Approve escalation and route to <Priya Sundaram>` with dyn-name. Wong → Priya routing unchanged (W5 will swap to route-back-to-Faye).
+- Approve CTA copy: `Approve escalation and route to <Priya Sundaram>` with dyn-name. Ismail → Priya routing unchanged (W5 will swap to route-back-to-Faye).
 
 **Narrative pivot — bent shaft → crack in pump casing:**
-- Transcript modal body rewritten (6 lines · Lim ↔ Wong casing crack reasoning · prior Jurong-CCGT-2 BFP casing failure 2023 referenced · no phase analysis / bent shaft / dial-indicator references).
+- Transcript modal body rewritten (6 lines · Lim ↔ Ismail casing crack reasoning · prior Jurong-CCGT-2 BFP casing failure 2023 referenced · no phase analysis / bent shaft / dial-indicator references).
 - Diagnosis morph copy: `Bent shaft on BFP-3A` → `Crack in pump casing on BFP-3A`. Detail: `60mm hairline discontinuity, 4-o'clock on volute, near discharge weld`. Bearing damage secondary.
 - Notes preload (Faye → Lim): updated to seed casing weld inspection without spoiling the reveal.
 - KG nodes: `bent-shaft-pattern` (L4) renamed → `pump-casing-crack-pattern`. Added `casing-bfp-3a` (L2 — pump casing assembly) and `casing-rca-jrg-2023` (L3 — prior Jurong-CCGT-2 casing failure 2023). New edges: `casing-bfp-3a → bfp-3a`, `casing-rca-jrg-2023 → pump-casing-crack-pattern`, `pump-casing-crack-pattern → sop-bfp-vibration-investigation`. All existing edges referencing `bent-shaft-pattern` renamed.
@@ -1238,37 +1238,37 @@ Verified via Chrome MCP. Per-test table:
 | # | Test | Observed | Expected | Pass |
 |---|---|---|---|---|
 | A1 | Lim heading | `Predicted diagnosis` | `Predicted diagnosis` | ✓ |
-| A2 | Wong heading | `Predicted diagnosis` | `Predicted diagnosis` | ✓ |
+| A2 | Ismail heading | `Predicted diagnosis` | `Predicted diagnosis` | ✓ |
 | B1 | Inspection workflow heading + sub | `Inspection workflow (INC-2026-0537 · per the SOP)` + `Complete safety + instrument + root-cause checks sequentially.` | per spec | ✓ |
 | C1 | Initial stage-gate | Safety `data-locked="false"`, Instrument + Root cause `data-locked="true"` | per spec | ✓ |
 | C2 | Safety 5/5 fires Instrument theater | At 5th click: Instrument still locked + Instrument theater placeholder present | per spec | ✓ |
 | C3 | Instrument 3/3 fires Root cause theater | At 3rd Instrument click: Root cause still locked + Root cause theater placeholder | per spec | ✓ |
 | C4 | Root cause 2/2 enables CTAs | confirm-cta + escalate-cta both enabled; phase=confirm-ready | per spec | ✓ |
 | E1 | Confirm CTA copy | `Confirm diagnosis and submit WO` | per spec | ✓ |
-| E2 | Escalate CTA copy | `Diagnosis not confirmed — contact Senior Engineer Dr. A. Wong` w/ phone icon | per spec | ✓ |
+| E2 | Escalate CTA copy | `Diagnosis not confirmed — contact Senior Engineer Dr. A. Ismail` w/ phone icon | per spec | ✓ |
 | F1 | Notes position | Order: inc-header → metrics-card → notes-standalone → summary-slot → checklist-slot → ctas-slot | per spec | ✓ |
 | G1 | Strip width = CTA width | 668px == 668px | width parity | ✓ |
 | H1 | End click visual | call-ended class applied · End button removed · label `Call ended · transcript captured · <ts>` · pointer-events:none · bg slate `rgb(229,231,235)` | per spec | ✓ |
 | I1 | Phase 2 morph | After escalate-cta click: confirm-cta text `Awaiting diagnosis confirmation` · disabled · phase class `phase-awaiting-call` | per spec | ✓ |
 | I2 | Phase 3 morph | After diagnosis-confirmed click: confirm-cta text `Escalate for approval` · enabled · phase class `phase-escalate-ready` | per spec | ✓ |
-| J1 | Diagnosis-confirmed dyn copy | `Use crack in pump casing diagnosis confirmed over call with Dr. A. Wong` · 2 dyn-name spans | per spec | ✓ |
+| J1 | Diagnosis-confirmed dyn copy | `Use crack in pump casing diagnosis confirmed over call with Dr. A. Ismail` · 2 dyn-name spans | per spec | ✓ |
 | K1 | dyn-name CSS | bg `rgba(0,165,168,0.1)` · color `rgb(0,122,138)` · border-radius `4px` | per spec | ✓ |
-| L1 | Wong approve CTA dyn-name | `Approve escalation and route to Priya Sundaram` · 1 dyn-name span on Priya | per spec | ✓ |
-| L2 | Wong forwarded-line dyn-name | dyn-name on `Lim Wei Jie` | per spec | ✓ |
+| L1 | Ismail approve CTA dyn-name | `Approve escalation and route to Priya Sundaram` · 1 dyn-name span on Priya | per spec | ✓ |
+| L2 | Ismail forwarded-line dyn-name | dyn-name on `Lim Wei Jie` | per spec | ✓ |
 | M1 | Transcript content | All 6 lines casing crack narrative · footer `Crack in pump casing · BFP-3A …` · no bent shaft / phase analysis references | per spec | ✓ |
 | M2 | Diagnosis morph copy | Revised name `Crack in pump casing on BFP-3A` · superseded `NDE bearing race spalling (early-stage)` · detail `60mm hairline discontinuity, 4-o'clock on volute, near discharge weld` | per spec | ✓ |
 | M3 | Notes preload | `Lim — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.` | per spec | ✓ |
 | M4 | KG nodes | `bent-shaft-pattern` undefined; `pump-casing-crack-pattern` (L4), `casing-bfp-3a` (L2), `casing-rca-jrg-2023` (L3) present; 6 edges reference pump-casing-crack-pattern; 1 edge each from casing-bfp-3a and casing-rca-jrg-2023 | per spec | ✓ |
-| M5 | Wong revised diagnosis | `Crack in pump casing on BFP-3A` (not bent shaft) | per spec | ✓ |
-| E2E | Full P1 → P2 → P3 happy path | Cold load → Faye dispatch → Lim Screen D → checklist 10/10 → Escalate → call → End → diagnosis morph → Escalate for approval → ESCALATED_TO_OFFSITE → Wong Screen D → Approve → APPROVED_ROUTED_TO_ASSET_PERF · handoffPending.analyst=true | per spec | ✓ |
+| M5 | Ismail revised diagnosis | `Crack in pump casing on BFP-3A` (not bent shaft) | per spec | ✓ |
+| E2E | Full P1 → P2 → P3 happy path | Cold load → Faye dispatch → Lim Screen D → checklist 10/10 → Escalate → call → End → diagnosis morph → Escalate for approval → ESCALATED_TO_OFFSITE → Ismail Screen D → Approve → APPROVED_ROUTED_TO_ASSET_PERF · handoffPending.analyst=true | per spec | ✓ |
 
 Files changed:
-- `app.js` — state.lim slice (`safetyTheaterFired` / `instrumentTheaterFired` / `rciTheaterFired` / `confirmBtnPhase`); `PRELOAD_NOTE` + `LIM_INCOMING_NOTE`; `LIM_CHECKLIST_THRESHOLD` 6→10; `GROUP_THEATER_AGENT` + `GROUP_LOCKED_HINT` constants; `BANNER_COPY` dyn-name wraps; `buildLimDetailScaffold` re-ordered (notes between metrics + summary); `buildLimNotesSection` notes-title dyn-name; `paintLimChecklist` stage-gating logic; `wireInspectionChecklist` locked-group guard; `updateChecklistProgress` next-group theater triggers; `triggerGroupTheater` new function; `paintLimBinaryCTAs` new CTA copy + phone icon; `enableBinaryCTAs` triggers `setConfirmBtnPhase('confirm-ready')`; `setConfirmBtnPhase` new function; `onEscalateCTAClick` triggers awaiting-call phase; `onCallEnd` full grey + remove End button + ts label; `replaceEscalateCTAWithInCallStrip` re-entry mid-flow ended visual; `postCallStageHTML('diagnosis-confirmed-button')` dyn-name copy; `morphConfirmCTAToEscalate` simplified to setConfirmBtnPhase escalate-ready; `onDiagnosisConfirmedClick` log line pump casing crack; `buildRevisedDiagnosisTileHTML` casing crack content + dyn-name; `paintWongSummaryComplete` dyn-name forwarded line + casing crack revised; `paintWongCTADisabled` / `paintWongCTAReady` Priya routing copy + dyn-name; capture footer labels dyn-name (Faye/Wong/Lim); `fireWorkflowAgentArcEscalate` + `fireWorkflowAgentArcApprove` log lines + nodeChain casing crack; KG_NODES: `bent-shaft-pattern` → `pump-casing-crack-pattern` rename + `casing-bfp-3a` (L2) + `casing-rca-jrg-2023` (L3) added; KG_EDGES: new edges (casing-bfp-3a→bfp-3a, casing-rca-jrg-2023→pump-casing-crack-pattern, pump-casing-crack-pattern→sop-bfp-vibration-investigation); all existing `bent-shaft-pattern` references renamed.
+- `app.js` — state.lim slice (`safetyTheaterFired` / `instrumentTheaterFired` / `rciTheaterFired` / `confirmBtnPhase`); `PRELOAD_NOTE` + `LIM_INCOMING_NOTE`; `LIM_CHECKLIST_THRESHOLD` 6→10; `GROUP_THEATER_AGENT` + `GROUP_LOCKED_HINT` constants; `BANNER_COPY` dyn-name wraps; `buildLimDetailScaffold` re-ordered (notes between metrics + summary); `buildLimNotesSection` notes-title dyn-name; `paintLimChecklist` stage-gating logic; `wireInspectionChecklist` locked-group guard; `updateChecklistProgress` next-group theater triggers; `triggerGroupTheater` new function; `paintLimBinaryCTAs` new CTA copy + phone icon; `enableBinaryCTAs` triggers `setConfirmBtnPhase('confirm-ready')`; `setConfirmBtnPhase` new function; `onEscalateCTAClick` triggers awaiting-call phase; `onCallEnd` full grey + remove End button + ts label; `replaceEscalateCTAWithInCallStrip` re-entry mid-flow ended visual; `postCallStageHTML('diagnosis-confirmed-button')` dyn-name copy; `morphConfirmCTAToEscalate` simplified to setConfirmBtnPhase escalate-ready; `onDiagnosisConfirmedClick` log line pump casing crack; `buildRevisedDiagnosisTileHTML` casing crack content + dyn-name; `paintIsmailSummaryComplete` dyn-name forwarded line + casing crack revised; `paintIsmailCTADisabled` / `paintIsmailCTAReady` Priya routing copy + dyn-name; capture footer labels dyn-name (Faye/Ismail/Lim); `fireWorkflowAgentArcEscalate` + `fireWorkflowAgentArcApprove` log lines + nodeChain casing crack; KG_NODES: `bent-shaft-pattern` → `pump-casing-crack-pattern` rename + `casing-bfp-3a` (L2) + `casing-rca-jrg-2023` (L3) added; KG_EDGES: new edges (casing-bfp-3a→bfp-3a, casing-rca-jrg-2023→pump-casing-crack-pattern, pump-casing-crack-pattern→sop-bfp-vibration-investigation); all existing `bent-shaft-pattern` references renamed.
 - `index.html` — appended W4.1 CSS block (.dyn-name pill · stage-gated locked groups · group-theater placeholder · binary-cta layout overrides · top-button phase classes · in-call strip width + full-grey ended state · phone icon). Transcript modal body 6-line rewrite + footer rewrite (casing crack narrative). Static kg-static scaffold node label updated `Pattern · bent shaft (phase sig)` → `Pattern · pump casing crack`.
 
 Files intentionally not touched:
 - Faye's curated Screen D (`renderOpsIncidentDetail`) functional flow unchanged (heading rename only).
-- Wong → Priya routing unchanged (W5 will swap to route-back-to-Faye + Priya activation).
+- Ismail → Priya routing unchanged (W5 will swap to route-back-to-Faye + Priya activation).
 - Drawer, telemetry modal, floating KG window, doc modal, agent roster, log streaming, KG render layer — all untouched.
 - P4 Priya tile + `renderAnalystView` stub — left locked.
 
@@ -1277,18 +1277,18 @@ Follow-up:
 
 ### W5 deployment confirmation (2026-05-22)
 
-Final arc wave — Wong routes back to Faye · Faye Escalation Report · Priya activation · demo close.
+Final arc wave — Ismail routes back to Faye · Faye Escalation Report · Priya activation · demo close.
 
 **State pill chain (FINAL):**
 `TRIAGE_READY` → `DISPATCHED_TO_ONSITE` → `ESCALATED_TO_OFFSITE` → `ROUTED_BACK_TO_OPS` → `ROUTED_TO_TRADING_DESK` → `HEDGED`.
 
-W4's `APPROVED_ROUTED_TO_ASSET_PERF` replaced by `ROUTED_BACK_TO_OPS` (Wong no longer direct-routes to Priya). `STATE_PILL_LABEL` map added (canonical label lookup, all rows in `buildLandedIncidentRow` switch now reference it).
+W4's `APPROVED_ROUTED_TO_ASSET_PERF` replaced by `ROUTED_BACK_TO_OPS` (Ismail no longer direct-routes to Priya). `STATE_PILL_LABEL` map added (canonical label lookup, all rows in `buildLandedIncidentRow` switch now reference it).
 
-**Wong approve flow re-targeted:**
-- `onWongApproveClick` sets `statePill = 'ROUTED_BACK_TO_OPS'`, `handoffPending.ops = true`, `handoffPending.analyst = false`. Resets `byPersona.ops.seen` and `.opened` to false to trigger second unread for Faye. Preserves `byPersona.ops.actioned = true`.
+**Ismail approve flow re-targeted:**
+- `onIsmailApproveClick` sets `statePill = 'ROUTED_BACK_TO_OPS'`, `handoffPending.ops = true`, `handoffPending.analyst = false`. Resets `byPersona.ops.seen` and `.opened` to false to trigger second unread for Faye. Preserves `byPersona.ops.actioned = true`.
 - CTA copy updated: `Approve escalation and route back to Faye Sit` (was `Priya Sundaram`).
 - Capture footer third line updated: `... routed back to Site Operations Manager`. Dispatched-to label: `Routed back to <Faye Sit>` (dyn-name).
-- Wong post-approval home banner on offsite monitoring: `Approval given · returned to <Faye Sit> · <ts>` (was `Priya Sundaram`).
+- Ismail post-approval home banner on offsite monitoring: `Approval given · returned to <Faye Sit> · <ts>` (was `Priya Sundaram`).
 - `fireWorkflowAgentArcApprove` log lines re-narrated for route-back (3 lines · sign-off recorded · P3 → P1 trace · KG enriched + Faye Sit routing).
 
 **Faye state-driven Screen D dispatcher:**
@@ -1296,7 +1296,7 @@ W4's `APPROVED_ROUTED_TO_ASSET_PERF` replaced by `ROUTED_BACK_TO_OPS` (Wong no l
 - Faye's first ticket experience untouched.
 
 **Faye second-banner + row update:**
-- New `BANNER_COPY.opsRouteBack`: `ROUTED BACK · Hyperspace OS · INC-2026-0537 · Returned from Dr. A. Wong · diagnosis confirmed · ops + commercial action required`.
+- New `BANNER_COPY.opsRouteBack`: `ROUTED BACK · Hyperspace OS · INC-2026-0537 · Returned from Dr. A. Ismail · diagnosis confirmed · ops + commercial action required`.
 - `onHeaderClick` picks `opsRouteBack` vs `ops` based on `statePill === 'ROUTED_BACK_TO_OPS'`.
 - INC row state pill renders `ROUTED BACK · ACTION REQUIRED` (amber-soft + amber border + `state-pill-pulse` keyframe).
 - Row gate stays `seen OR opened OR actioned`. Dot rule extended to `handoffPending[active] === true OR (seen && !opened)`.
@@ -1305,7 +1305,7 @@ W4's `APPROVED_ROUTED_TO_ASSET_PERF` replaced by `ROUTED_BACK_TO_OPS` (Wong no l
 **`renderOpsEscalationReport()` (NEW view):**
 - 4-section layout fitting without scroll. 5s loading theater (`Workflow Agent · Loading escalation report for <Faye Sit>`).
 - Section 1: Correct diagnosis — `Crack in pump casing on BFP-3A` (dyn-name) + detail (60mm hairline, 4-o'clock volute, near discharge weld).
-- Section 2: Lim Wei Jie's completed workflow (6 ✓ rows: 5/5 Safety · 3/3 Instrument · 2/2 Root cause · bearing hypothesis rejected · Wong call w/ transcript · sign-off received).
+- Section 2: Lim Wei Jie's completed workflow (6 ✓ rows: 5/5 Safety · 3/3 Instrument · 2/2 Root cause · bearing hypothesis rejected · Ismail call w/ transcript · sign-off received).
 - Section 3: Source button → opens existing transcript modal (`oer-transcript-link` selector added to `wireTranscriptModalLinks`).
 - Section 4: Amber-tinted action card — Recommendation (shutdown BFP-3A · isolate Block 2 feedwater) + Impact (50 MW derate · PSO 4h peak · ~SGD 240k · curtailment/hedge eligible).
 - CTA: `Notify trading desk · route to <Priya Sundaram>` (dyn-name). Disabled during loading; enabled after reveal. Post-action paints `✓ Trading desk notified · routed to Priya Sundaram` greyed-out state.
@@ -1345,13 +1345,13 @@ Verified via Chrome MCP. Per-test table:
 |---|---|---|---|---|
 | A1 | STATE_PILL_LABEL map | `ROUTED_BACK_TO_OPS:"ROUTED BACK · ACTION REQUIRED"` · `ROUTED_TO_TRADING_DESK:"ROUTED TO TRADING DESK"` · `HEDGED:"HEDGED · CLOSED"` | per spec | ✓ |
 | A2 | PRIYA_OPTION_LABEL map | 4 options labeled · `cross-site` = `Cross-site balance · Sakra-CCGT-1 standby` | per spec | ✓ |
-| B1 | Wong approve → ROUTED_BACK_TO_OPS | `pill=ROUTED_BACK_TO_OPS · handoffPending.ops=true · byPersona.ops.seen=false · opened=false · actioned=true · handoffPending.analyst=false` | per spec | ✓ |
-| B2 | Wong capture footer + label | Third line `Knowledge-Graph · sign-off attached to incident · routed back to Site Operations Manager`; label `Routed back to Faye Sit · 02:58 SGT` | per spec | ✓ |
-| B3 | Wong post-approval banner copy | DOM updated to `returned to Faye Sit` (dyn-name span) | per spec | ✓ |
-| C1 | Faye state-driven dispatcher | After Wong approve + INC row click: `.ops-escalation-report` rendered (no `.summary-slot`) | per spec | ✓ |
+| B1 | Ismail approve → ROUTED_BACK_TO_OPS | `pill=ROUTED_BACK_TO_OPS · handoffPending.ops=true · byPersona.ops.seen=false · opened=false · actioned=true · handoffPending.analyst=false` | per spec | ✓ |
+| B2 | Ismail capture footer + label | Third line `Knowledge-Graph · sign-off attached to incident · routed back to Site Operations Manager`; label `Routed back to Faye Sit · 02:58 SGT` | per spec | ✓ |
+| B3 | Ismail post-approval banner copy | DOM updated to `returned to Faye Sit` (dyn-name span) | per spec | ✓ |
+| C1 | Faye state-driven dispatcher | After Ismail approve + INC row click: `.ops-escalation-report` rendered (no `.summary-slot`) | per spec | ✓ |
 | C2 | Original Faye Screen D unchanged | Cold-load + open INC → `.summary-slot` + `#summary-slot` + `#action-steps-slot` rendered, no `.ops-escalation-report` | per spec | ✓ |
-| D1 | Red dot reappears on Faye row after Wong route-back | `dotVisible=true` immediately on persona switch | per spec | ✓ |
-| D2 | State pill on row | Text `ROUTED BACK · ACTION REQUIRED · returned by Dr. A. Wong · 02:58 SGT`; class `mon-pill-state-routed-back-to-ops` | per spec | ✓ |
+| D1 | Red dot reappears on Faye row after Ismail route-back | `dotVisible=true` immediately on persona switch | per spec | ✓ |
+| D2 | State pill on row | Text `ROUTED BACK · ACTION REQUIRED · returned by Dr. A. Ismail · 02:58 SGT`; class `mon-pill-state-routed-back-to-ops` | per spec | ✓ |
 | D3 | Faye second banner key | After header click: `state.bannerKey='opsRouteBack'` | per spec | ✓ |
 | E1 | Escalation Report layout | `.ops-escalation-report` rendered · heading `Escalation report` · 4 sections after reveal | per spec | ✓ |
 | E2 | Escalation Report reveal at 5s | 4 sections visible · diagnosis `Crack in pump casing on BFP-3A` · 6 workflow items · CTA enabled | per spec | ✓ |
@@ -1370,26 +1370,26 @@ Verified via Chrome MCP. Per-test table:
 | J4 | Lock CTA enables after select | `lockDisabled=false` after any selection | per spec | ✓ |
 | K1 | Lock decision CTA fires | `pill=HEDGED · byPersona.analyst.actioned=true · handoffPending.analyst=false · decisionLocked=true · decisionTimestamp=03:01 SGT · demoEndBannerShown=true`; capture footer 3rd line `Knowledge-Graph · trading outcome attached · cycle complete`; label `Decision locked · Cross-site balance · Sakra-CCGT-1 standby · 03:01 SGT`; CTA text `✓ Decision locked · Cross-site balance · Sakra-CCGT-1 standby` | per spec | ✓ |
 | K2 | Demo-end banner on Priya monitoring | `.demo-end-banner` present; text `✓ Cycle complete · Cross-site balance · Sakra-CCGT-1 standby locked · revenue exposure neutralized · INC-2026-0537 closed · 03:01 SGT` | per spec | ✓ |
-| K3 | Page reload resets | After reload: pill=TRIAGE_READY · p4 tile locked · priyaUnlocked=false · priya state defaults · wongApproved=false · opsActioned=false | per spec | ✓ |
+| K3 | Page reload resets | After reload: pill=TRIAGE_READY · p4 tile locked · priyaUnlocked=false · priya state defaults · ismailApproved=false · opsActioned=false | per spec | ✓ |
 
 Subjective items (human-check required):
 - Per-test E5 — escalation report fits without scroll at projector resolution: visual confirmation pending dry-run.
 - Pulse animation feel on `ROUTED_BACK_TO_OPS` state pill: needs human eyeball on actual projector.
 
 Files changed:
-- `app.js` — `state.priyaUnlocked` + `state.priya` slice added; `BANNER_COPY` opsRouteBack + analyst entries; `STATE_PILL_LABEL` + `PRIYA_OPTION_LABEL` maps; `PERSONA_OWN_TASKS.analyst` populated; `renderPersonasPanel` analyst data-state respects priyaUnlocked + pulse no longer skips analyst; `onPersonaTileClick` analyst guard via priyaUnlocked; `renderIncidentDetailView` state-driven ops branch + analyst case; `buildLandedIncidentRow` switch references STATE_PILL_LABEL + 3 new state cases (ROUTED_BACK_TO_OPS, ROUTED_TO_TRADING_DESK, HEDGED); row gate simplified to seen|opened|actioned (handoffPending → dot only); `renderMonitoringView` hdrClickable allows analyst + wong-post-approval banner text `Faye Sit`; demo-end banner injected on analyst monitoring; `onHeaderClick` analyst-allowed + opsRouteBack banner picker; `renderTablet` incident-detail branch simplified; `onWongApproveClick` re-target to ROUTED_BACK_TO_OPS + handoffPending.ops=true + reset ops seen/opened; `appendWongApprovalCaptureFooter` route-back wording; `fireWorkflowAgentArcApprove` log lines re-narrated; Wong CTA copy updated to `route back to Faye Sit`; new functions: `renderOpsEscalationReport`, `revealEscalationReportInstant`, `paintEscalationReportCTAActioned`, `startEscalationReportReveal`, `wireNotifyTradingDeskCTA`, `onNotifyTradingDeskClick`, `appendNotifyTradingDeskCaptureFooter`, `fireWorkflowAgentArcNotify`, `renderAnalystIncidentDetail`, `revealAnalystScreenInstant`, `startAnalystScreenDReveal`, `wireDecisionOptions`, `restoreSelectedOptionUI`, `wireLockDecisionCTA`, `onLockDecisionClick`, `paintAnalystLockedCTA`, `appendLockDecisionCaptureFooter`, `fireWorkflowAgentArcLock`; `wireTranscriptModalLinks` selector list extended with `.oer-transcript-link, .ac-transcript-link`.
+- `app.js` — `state.priyaUnlocked` + `state.priya` slice added; `BANNER_COPY` opsRouteBack + analyst entries; `STATE_PILL_LABEL` + `PRIYA_OPTION_LABEL` maps; `PERSONA_OWN_TASKS.analyst` populated; `renderPersonasPanel` analyst data-state respects priyaUnlocked + pulse no longer skips analyst; `onPersonaTileClick` analyst guard via priyaUnlocked; `renderIncidentDetailView` state-driven ops branch + analyst case; `buildLandedIncidentRow` switch references STATE_PILL_LABEL + 3 new state cases (ROUTED_BACK_TO_OPS, ROUTED_TO_TRADING_DESK, HEDGED); row gate simplified to seen|opened|actioned (handoffPending → dot only); `renderMonitoringView` hdrClickable allows analyst + ismail-post-approval banner text `Faye Sit`; demo-end banner injected on analyst monitoring; `onHeaderClick` analyst-allowed + opsRouteBack banner picker; `renderTablet` incident-detail branch simplified; `onIsmailApproveClick` re-target to ROUTED_BACK_TO_OPS + handoffPending.ops=true + reset ops seen/opened; `appendIsmailApprovalCaptureFooter` route-back wording; `fireWorkflowAgentArcApprove` log lines re-narrated; Ismail CTA copy updated to `route back to Faye Sit`; new functions: `renderOpsEscalationReport`, `revealEscalationReportInstant`, `paintEscalationReportCTAActioned`, `startEscalationReportReveal`, `wireNotifyTradingDeskCTA`, `onNotifyTradingDeskClick`, `appendNotifyTradingDeskCaptureFooter`, `fireWorkflowAgentArcNotify`, `renderAnalystIncidentDetail`, `revealAnalystScreenInstant`, `startAnalystScreenDReveal`, `wireDecisionOptions`, `restoreSelectedOptionUI`, `wireLockDecisionCTA`, `onLockDecisionClick`, `paintAnalystLockedCTA`, `appendLockDecisionCaptureFooter`, `fireWorkflowAgentArcLock`; `wireTranscriptModalLinks` selector list extended with `.oer-transcript-link, .ac-transcript-link`.
 - `index.html` — appended W5 CSS block: state-pill-pulse keyframe + `.mon-pill-state-routed-back-to-ops/-routed-to-trading-desk/-hedged/-dispatched` pill colors; `.ops-escalation-report`, `.oer-card`, `.oer-heading`, `.oer-section`, `.oer-diagnosis`, `.oer-workflow-list`, `.oer-transcript-link`, `.oer-section-action`, `.oer-recommendation`, `.oer-impact`, `.oer-cta` (+ `:not(:disabled)` + `.oer-cta-actioned`); `.analyst-card`, `.ac-heading`, `.ac-loading`, `.ac-section`, `.ac-ctx-row`, `.ac-transcript-link`, `.ac-decision-list`, `.ac-option-card` (+ `[data-selected="true"]`), `.ac-opt-bullet`, `.ac-opt-body`, `.ac-opt-title`, `.ac-opt-detail`, `.ac-lock-cta` (+ `:not(:disabled)` + `.ac-lock-cta-actioned`); `.demo-end-banner` + `.deb-ic` + `.deb-txt` + `.deb-ts`.
 
 Files intentionally not touched:
 - Lim curated Screen D (`renderOnsiteIncidentDetail` + checklist + call-flow) — W4.1 lock preserved.
-- Wong curated Screen D content (summary card + revised diagnosis tile) — only the approve CTA copy, capture footer, post-approval banner, and Workflow Agent log lines changed.
+- Ismail curated Screen D content (summary card + revised diagnosis tile) — only the approve CTA copy, capture footer, post-approval banner, and Workflow Agent log lines changed.
 - Faye's original Screen D (`renderOpsIncidentDetail`) — untouched; only the dispatcher routes to a different renderer.
 - Drawer, telemetry modal, floating KG window, doc modal, agent roster, KG schema (no new node IDs added W5), log streaming plumbing.
 - `renderAnalystView` stub — left in place as dead code (incident-detail no longer routes to it; trivial cleanup deferred).
 
 Follow-up:
 - `renderAnalystView` stub function now unused — can be deleted at next cleanup pass.
-- Unreferenced `ticket.handoffPending.p1` mirror set in `onWongApproveClick` (kept for any legacy reader; can be dropped).
+- Unreferenced `ticket.handoffPending.p1` mirror set in `onIsmailApproveClick` (kept for any legacy reader; can be dropped).
 
 ### W6 deployment confirmation (2026-05-22) — CLOSER
 
@@ -1398,7 +1398,7 @@ Final feature wave. Four areas landed: vertical-flow sequential gating across al
 **Vertical-flow sequential gating (Section A):**
 - Faye Screen D — Action Steps card slot empty at t=0; spawns at t=10s via existing `paintActionStepsInitial` (no rework needed, already deferred per W3.9).
 - Lim Screen D — Binary CTAs moved out of `startLimScreenDReveal` stage 3. Spawn now happens inside `updateChecklistProgress` once `checked >= LIM_CHECKLIST_THRESHOLD`. Re-entry path in `renderOnsiteIncidentDetail` repaints binary CTAs only when threshold already reached or call/diagnosis already advanced.
-- Wong Screen D — `paintWongCTADisabled` call removed from `startWongScreenDReveal`. CTA now spawns only at t=5s via `paintWongCTAReady` inside the reveal callback. Initial paint shows loading-only.
+- Ismail Screen D — `paintIsmailCTADisabled` call removed from `startIsmailScreenDReveal`. CTA now spawns only at t=5s via `paintIsmailCTAReady` inside the reveal callback. Initial paint shows loading-only.
 - Faye Escalation Report — `renderOpsEscalationReport` initial markup contains only heading + loading. New `spawnEscalationReportContent` helper injects the 4-section content + CTA at reveal time via `revealEscalationReportInstant`.
 - Priya Screen D — `renderAnalystIncidentDetail` initial markup contains only heading + loading. New `spawnAnalystScreenContent` helper injects operational context + decision options + Lock CTA at reveal time via `revealAnalystScreenInstant`.
 
@@ -1419,12 +1419,12 @@ Final feature wave. Four areas landed: vertical-flow sequential gating across al
 **Right-pane agent firing sync (Section E):**
 - New `fireAgentCardLifecycle(agentId, durationMs)` helper drives `idle → active (pulse) → done (checkmark)` via `data-state` attribute + `.agent-card-pulse` class. CSS keyframe `agent-w6-pulse` (1.4s ease-in-out infinite) pulses border-color box-shadow. Done state shows `::after` green ✓ in card top-right.
 - `fireAgentCardsParallel(ids, ms)` convenience wrapper for parallel firings.
-- Per-theater wiring: Faye Loading #1 → `inspection` (5s) · Faye Loading #2 → `triage` + `critic-power-gen` parallel (5s) · Faye Step 1 → `pl` (2s) · Faye Step 2 → `workflow` (5s) · Lim Loading #1 → `workflow` (5s) · Lim Loading #2 → `inspection` (5s) · Lim Safety theater → `hse` (3s) · Lim Instrument theater → `inspection` (3s) · Lim Root cause theater → `inspection` + `triage` parallel (3s) · Lim End-call Generating + Analyzing → `workflow` (3s each) · Wong Loading → `triage` + `critic-power-gen` parallel (5s) · Faye Escalation Report Loading → `workflow` (5s) · Priya Loading → `market-intelligence` (5s) · plus Escalate-for-approval / Approve / Notify / Lock action arcs all fire `workflow` (3s) alongside existing `setAgentActive`.
+- Per-theater wiring: Faye Loading #1 → `inspection` (5s) · Faye Loading #2 → `triage` + `critic-power-gen` parallel (5s) · Faye Step 1 → `pl` (2s) · Faye Step 2 → `workflow` (5s) · Lim Loading #1 → `workflow` (5s) · Lim Loading #2 → `inspection` (5s) · Lim Safety theater → `hse` (3s) · Lim Instrument theater → `inspection` (3s) · Lim Root cause theater → `inspection` + `triage` parallel (3s) · Lim End-call Generating + Analyzing → `workflow` (3s each) · Ismail Loading → `triage` + `critic-power-gen` parallel (5s) · Faye Escalation Report Loading → `workflow` (5s) · Priya Loading → `market-intelligence` (5s) · plus Escalate-for-approval / Approve / Notify / Lock action arcs all fire `workflow` (3s) alongside existing `setAgentActive`.
 - `initAgentCardStates()` seeds every card with `data-state="idle"` on init.
 
 **Virtual source → existing card alias (Section F+G+H):**
 - `GROUP_THEATER_AGENT` extended with `cardAgentIds` field per entry. Safety → `['hse']` · Instrument → `['inspection']` · Root cause isolation → `['inspection', 'triage']` (parallel fire).
-- Wong Screen D loading reveal updated: display name changed from `P&L Impact Validator` → `Turbine Diagnostic Agent`, loading text changed to `Loading institutional rotating-machinery knowledge for Dr. A. Wong`, and fires `triage` + `critic-power-gen` cards in parallel for 5s synced with the loading theater.
+- Ismail Screen D loading reveal updated: display name changed from `P&L Impact Validator` → `Turbine Diagnostic Agent`, loading text changed to `Loading institutional rotating-machinery knowledge for Dr. A. Ismail`, and fires `triage` + `critic-power-gen` cards in parallel for 5s synced with the loading theater.
 - Lim Safety/Instrument/Root-cause theater log lines preserve W4.1 display names (`HSE Agent · ...`, `Instrument Diagnostic Agent · ...`, `Sensor Anomaly Inspector + Turbine Diagnostic Agent · ...`) — the card visual lights up the relevant existing card (no virtual source orphans).
 
 **Workflow Agent always-fires-on-state-transition (Section I):**
@@ -1433,10 +1433,10 @@ Final feature wave. Four areas landed: vertical-flow sequential gating across al
 
 **KG growth animation (Section J+K):**
 - Trigger: `setTimeout(triggerKGGrowth, 10000)` scheduled at the end of `onDiagnosisConfirmedClick` (Lim's pump casing crack diagnosis-confirmed-over-call button). `state.kgGrowthFired` guards single fire per page load.
-- New nodes (3): `casing-tacit-knowledge` (L4) · `wong-field-experience-2023` (L3) · `bfp-casing-inspection-protocol` (L1). All `canonical: false` · `isNew: true`.
-- New edges (5): tacit-knowledge → pump-casing-crack-pattern · wong-field-experience-2023 → casing-rca-jrg-2023 · wong-field-experience-2023 → casing-tacit-knowledge · bfp-casing-inspection-protocol → casing-bfp-3a · bfp-casing-inspection-protocol → sop-bfp-vibration-investigation.
+- New nodes (3): `casing-tacit-knowledge` (L4) · `ismail-field-experience-2023` (L3) · `bfp-casing-inspection-protocol` (L1). All `canonical: false` · `isNew: true`.
+- New edges (5): tacit-knowledge → pump-casing-crack-pattern · ismail-field-experience-2023 → casing-rca-jrg-2023 · ismail-field-experience-2023 → casing-tacit-knowledge · bfp-casing-inspection-protocol → casing-bfp-3a · bfp-casing-inspection-protocol → sop-bfp-vibration-investigation.
 - `growKG()` pushes nodes/edges into module-level `KG_NODES`/`KG_EDGES` (runtime mutation — does not survive reload) and into the live `KG_STATE.graph.graphData()`. Visual treatment via `KG_STATE.newlyAddedNodes` Set checked inside `nodeThreeObject` — new nodes get Sembcorp-green halo ring at `radius * 1.55` instead of the standard white halo at `radius * 1.30`.
-- Workflow Agent log line: `Tacit knowledge captured from Dr. A. Wong's expert collaboration · 3 KG nodes + 5 edges enriched · BFP casing patterns codified`. Workflow Agent card briefly pulses (2s).
+- Workflow Agent log line: `Tacit knowledge captured from Dr. A. Ismail's expert collaboration · 3 KG nodes + 5 edges enriched · BFP casing patterns codified`. Workflow Agent card briefly pulses (2s).
 - After 4s post-growth, the `newlyAddedNodes` set clears and `KG_STATE.graph.refresh()` re-renders to revert the halo to white.
 - KG window does NOT auto-open (Q4 lock preserved). New nodes visible only if window is open OR user opens it post-event.
 
@@ -1447,7 +1447,7 @@ Verified via Chrome MCP — per-test observed-vs-expected table:
 | A1 | Faye Action Steps gated at t=0 | screen=`incident-detail`, `actionStepsCard`=false, `action-steps-slot` empty, summary-slot has reveal-pending | per spec | ✓ |
 | A2 | Lim Inspection Workflow card gated | `checklistInDOM`=false, `binaryCTAsInDOM`=false, loading stage `lim-summary` | per spec | ✓ |
 | A3 | Lim Binary CTAs gated until 10/10 | At reveal: `checklistInDOM`=true, `binaryCTAsInDOM`=false. After 10/10 clicks: `binaryCTAsInDOM`=true · confirm+escalate enabled | per spec | ✓ |
-| A4 | Wong CTA + summary gated | At t=0: `wongCTAInDOM`=false, `wongSummaryInDOM`=false. At t=5s: both present, CTA enabled | per spec | ✓ |
+| A4 | Ismail CTA + summary gated | At t=0: `ismailCTAInDOM`=false, `ismailSummaryInDOM`=false. At t=5s: both present, CTA enabled | per spec | ✓ |
 | A5 | Faye Escalation Report gated | At t=0: `oerContent`=false, `oerCTA`=false, `oerHeading`=true, `oerLoading`=true. At t=5s: content + CTA present (4 sections), CTA enabled | per spec | ✓ |
 | A6 | Priya Screen D gated | At t=0: `acContent`=false, `acLockCTA`=false, `optionCards`=0, `acLoading`=true. At t=5s: 4 option cards present, Lock CTA disabled until selection | per spec | ✓ |
 | B1 | Locked groups header-only on Lim | Safety unlocked w/ 5 items · Instrument locked w/ 0 items + label class `ic-group-label ic-group-label-locked` · Root cause locked w/ 0 items + same label class | per spec | ✓ |
@@ -1457,7 +1457,7 @@ Verified via Chrome MCP — per-test observed-vs-expected table:
 | C2 | Agent roster total = 15 | `agent-count` text `0 active · 15 registered` · validator bucket-count `3` · total `.agent-card` elements = 15 | per spec | ✓ |
 | D1 | Faye-active dimming | Dimmed = `learning`, `hse`, `market-intelligence`. Active = orchestrator, inspection, triage, playbook, wo-prefill, workflow, pl, critic-power-gen. Standby preserved (hrsg, electrical, renewables, networks) | per spec | ✓ |
 | D2 | Lim-active dimming | Dimmed = `wo-prefill`, `learning`, `pl`, `market-intelligence`. Active = orchestrator, inspection, triage, playbook, workflow, hse, critic-power-gen | per spec | ✓ |
-| D3 | Wong-active dimming | Dimmed = `inspection`, `playbook`, `wo-prefill`, `learning`, `hse`, `market-intelligence`. Active = orchestrator, triage, workflow, pl, critic-power-gen | per spec | ✓ |
+| D3 | Ismail-active dimming | Dimmed = `inspection`, `playbook`, `wo-prefill`, `learning`, `hse`, `market-intelligence`. Active = orchestrator, triage, workflow, pl, critic-power-gen | per spec | ✓ |
 | D4 | Priya-active dimming | Dimmed = `inspection`, `triage`, `playbook`, `wo-prefill`, `critic-power-gen`, `hse`. Active = orchestrator, workflow, pl, learning, market-intelligence | per spec | ✓ |
 | E1 | Faye Loading #1 fires Sensor Anomaly Inspector | On AMBER click: inspection card `data-state="active"` + `agent-card-pulse` class present. At t=5s: state="done" | per spec | ✓ |
 | E2 | Faye Loading #2 fires Turbine Diagnostic + Power Gen Critic | At t=5s (loading swap): triage + critic-power-gen both `active` w/ pulse. At t=10s: both `done` | per spec | ✓ |
@@ -1465,13 +1465,13 @@ Verified via Chrome MCP — per-test observed-vs-expected table:
 | E4 | Faye Step 2 fires Workflow Agent | On Step 2 finding-engineer: `workflow` card `active` for 5s | per spec | ✓ |
 | E5 | Lim Screen D Loading #1 fires Workflow | On Lim AMBER click: workflow `active` w/ pulse | per spec | ✓ |
 | E6 | Lim Safety theater fires HSE Validator | On checklist spawn: `hse` `active` for 3s (sync w/ Safety theater) | per spec | ✓ |
-| E10 | Wong Loading fires Turbine Diagnostic + Power Gen Critic | On Wong AMBER click: triage + critic-power-gen `active` w/ pulse, loading text reads `Turbine Diagnostic Agent · Loading institutional rotating-machinery knowledge` | per spec | ✓ |
+| E10 | Ismail Loading fires Turbine Diagnostic + Power Gen Critic | On Ismail AMBER click: triage + critic-power-gen `active` w/ pulse, loading text reads `Turbine Diagnostic Agent · Loading institutional rotating-machinery knowledge` | per spec | ✓ |
 | E11 | Faye Escalation Report Loading fires Workflow | On second AMBER click (post route-back): workflow `active` w/ pulse for 5s | per spec | ✓ |
 | E12 | Priya Loading fires Market Intelligence | On Priya AMBER click: `market-intelligence` card `active` w/ pulse for 5s | per spec | ✓ |
 | J1 | KG growth fires 10s after Lim diagnosis-confirmed | Pre-click: 84 nodes / 106 links. 11s post-click: 87 nodes / 111 links. `state.kgGrowthFired`=true | per spec | ✓ |
-| J2 | KG growth log line + 3 new node IDs | Workflow Agent log line `Tacit knowledge captured from Dr. A. Wong's expert collaboration · 3 KG nodes + 5 edges enriched · BFP casing patterns codified` streamed. All 3 IDs (`casing-tacit-knowledge`, `wong-field-experience-2023`, `bfp-casing-inspection-protocol`) present in `graphData().nodes` | per spec | ✓ |
+| J2 | KG growth log line + 3 new node IDs | Workflow Agent log line `Tacit knowledge captured from Dr. A. Ismail's expert collaboration · 3 KG nodes + 5 edges enriched · BFP casing patterns codified` streamed. All 3 IDs (`casing-tacit-knowledge`, `ismail-field-experience-2023`, `bfp-casing-inspection-protocol`) present in `graphData().nodes` | per spec | ✓ |
 | K1 | KG window does NOT auto-open | Window remained closed throughout test sequence (no automatic open trigger fired) | per spec | ✓ |
-| E2E | Complete 4-persona happy path | Cold load → Faye dispatch (with sync'd right-pane firings + dimming) → Lim escalate (sequential-gated inspection workflow + locked-group header-only display + right-pane sync) → Wong approve → Faye Escalation Report → Priya Lock decision (Market Intelligence Agent fires). 10s after Lim diagnosis-confirmed: KG growth fires (+3 nodes / +5 edges). Demo concludes at `HEDGED` pill | per spec | ✓ |
+| E2E | Complete 4-persona happy path | Cold load → Faye dispatch (with sync'd right-pane firings + dimming) → Lim escalate (sequential-gated inspection workflow + locked-group header-only display + right-pane sync) → Ismail approve → Faye Escalation Report → Priya Lock decision (Market Intelligence Agent fires). 10s after Lim diagnosis-confirmed: KG growth fires (+3 nodes / +5 edges). Demo concludes at `HEDGED` pill | per spec | ✓ |
 
 Subjective items (human-check required at projector dry-run):
 - Per-test E2E — 4-section escalation report fits without scroll at projector resolution.
@@ -1480,7 +1480,7 @@ Subjective items (human-check required at projector dry-run):
 - Done-state ✓ glyph readability against light card background (`::after` content `'✓'` w/ `green-vivid` color).
 
 Files changed:
-- `app.js` — `state.kgGrowthFired` flag added; `AGENT_PERSONA_RELEVANCE` const map; `fireAgentCardLifecycle` / `fireAgentCardsParallel` / `updateAgentDimmingForActivePersona` / `initAgentCardStates` helpers; `switchToPersona` + `init` call `updateAgentDimmingForActivePersona` + `initAgentCardStates`; `GROUP_THEATER_AGENT` entries extended with `cardAgentIds`; `buildLimGroupHTML` extracted from `paintLimChecklist` (locked groups render header-only); `triggerGroupTheater` end-callback now spawns full item rows + fires card lifecycle; `paintLimBinaryCTAs` no longer paints during reveal stage 3 — spawned by `updateChecklistProgress` at 10/10; `renderOnsiteIncidentDetail` re-entry path checks threshold before painting CTAs; `startWongScreenDReveal` no longer paints disabled CTA upfront — loading-only at t=0 + Turbine Diagnostic Agent alias display name + fires triage+critic-power-gen card pulse; `renderOpsEscalationReport` initial markup heading+loading only; new `spawnEscalationReportContent` injects 4-section content + CTA at reveal; `renderAnalystIncidentDetail` initial markup heading+loading only; new `spawnAnalystScreenContent` injects operational context + decision options + Lock CTA at reveal; `startScreenDRevealW39` fires `inspection` (5s) + `triage`+`critic-power-gen` parallel (5s); `startActionStep1` fires `pl` (2s); `unlockActionStep2` fires `workflow` (5s); `startLimScreenDReveal` fires `workflow` (5s) + `inspection` (5s); `onCallEnd` fires `workflow` for both generating + analyzing stages (3s each); `startEscalationReportReveal` fires `workflow` (5s); `startAnalystScreenDReveal` fires `market-intelligence` (5s); `fireWorkflowAgentArc{Escalate, Approve, Notify, Lock}` all layer `fireAgentCardLifecycle('workflow', 3000)`; `onDiagnosisConfirmedClick` schedules `triggerKGGrowth` 10s out; new `triggerKGGrowth` + `growKG` + `KG_GROWTH_NODES` + `KG_GROWTH_EDGES`; `KG_STATE.newlyAddedNodes` Set; `nodeThreeObject` checks set for green-halo treatment on freshly-grown nodes.
+- `app.js` — `state.kgGrowthFired` flag added; `AGENT_PERSONA_RELEVANCE` const map; `fireAgentCardLifecycle` / `fireAgentCardsParallel` / `updateAgentDimmingForActivePersona` / `initAgentCardStates` helpers; `switchToPersona` + `init` call `updateAgentDimmingForActivePersona` + `initAgentCardStates`; `GROUP_THEATER_AGENT` entries extended with `cardAgentIds`; `buildLimGroupHTML` extracted from `paintLimChecklist` (locked groups render header-only); `triggerGroupTheater` end-callback now spawns full item rows + fires card lifecycle; `paintLimBinaryCTAs` no longer paints during reveal stage 3 — spawned by `updateChecklistProgress` at 10/10; `renderOnsiteIncidentDetail` re-entry path checks threshold before painting CTAs; `startIsmailScreenDReveal` no longer paints disabled CTA upfront — loading-only at t=0 + Turbine Diagnostic Agent alias display name + fires triage+critic-power-gen card pulse; `renderOpsEscalationReport` initial markup heading+loading only; new `spawnEscalationReportContent` injects 4-section content + CTA at reveal; `renderAnalystIncidentDetail` initial markup heading+loading only; new `spawnAnalystScreenContent` injects operational context + decision options + Lock CTA at reveal; `startScreenDRevealW39` fires `inspection` (5s) + `triage`+`critic-power-gen` parallel (5s); `startActionStep1` fires `pl` (2s); `unlockActionStep2` fires `workflow` (5s); `startLimScreenDReveal` fires `workflow` (5s) + `inspection` (5s); `onCallEnd` fires `workflow` for both generating + analyzing stages (3s each); `startEscalationReportReveal` fires `workflow` (5s); `startAnalystScreenDReveal` fires `market-intelligence` (5s); `fireWorkflowAgentArc{Escalate, Approve, Notify, Lock}` all layer `fireAgentCardLifecycle('workflow', 3000)`; `onDiagnosisConfirmedClick` schedules `triggerKGGrowth` 10s out; new `triggerKGGrowth` + `growKG` + `KG_GROWTH_NODES` + `KG_GROWTH_EDGES`; `KG_STATE.newlyAddedNodes` Set; `nodeThreeObject` checks set for green-halo treatment on freshly-grown nodes.
 - `index.html` — appended W6 CSS block (`.agent-card[data-state="active"]` border + box-shadow; `.agent-card[data-state="done"]` border + bg tint + `::after` ✓ glyph; `.agent-card-pulse` + `@keyframes agent-w6-pulse`; `.agent-card.agent-dim` 35% opacity + saturate(0.4); `.agent-card.standby.agent-dim` standby-preserved override; `.ic-group[data-locked="true"] .ic-group-label.ic-group-label-locked` pill style + `.ic-group-label-status` italic muted text). Market Intelligence Agent card markup added inside `data-bucket="validator"` `.bucket-body`. Validators `bucket-count` 2 → 3. Agent count meta `0 active · 14 registered` → `0 active · 15 registered`.
 
 Files intentionally not touched:
@@ -1488,7 +1488,7 @@ Files intentionally not touched:
 - W4.1 `.ic-group[data-locked="true"] .ic-item { opacity: 0.4; ... }` rule left in place as dead code (items no longer rendered for locked groups so the rule never applies) — pruning deferred to next cleanup pass.
 - Faye P1 dispatch arc (`dispatchP1Arc` + INSPECTION/TRIAGE/POWER_GEN_CRITIC scripts) — preserved unchanged. The W6 fire helper layers data-state pulse on top; existing arc agent-active class + step-pill logic untouched.
 - Lim curated Screen D narrative content (transcript modal lines, revised diagnosis copy, capture footer wording) — preserved per W4.1 + W5 locks.
-- Wong / Priya capture footer wording, state pill machine, route-back logic — preserved per W5 lock.
+- Ismail / Priya capture footer wording, state pill machine, route-back logic — preserved per W5 lock.
 - Drawer, telemetry modal, floating KG window auto-open behavior, doc modal — untouched.
 
 Follow-up:
@@ -1499,7 +1499,7 @@ Follow-up:
 
 ### W7 deployment confirmation (2026-05-22) — FINAL CLOSER
 
-Final feature wave. Wong removed as clickable persona · binary CTAs replaced w/ Diagnosis Verdict · single-button post-call confirm-revised flow · P2 right pane = inline KG · bigger KG architecture.
+Final feature wave. Ismail removed as clickable persona · binary CTAs replaced w/ Diagnosis Verdict · single-button post-call confirm-revised flow · P2 right pane = inline KG · bigger KG architecture.
 
 **W4.1 top-button morph chain REMOVED:**
 - `setConfirmBtnPhase()` + `state.lim.confirmBtnPhase` + `.binary-cta.phase-*` CSS dropped.
@@ -1512,8 +1512,8 @@ Final feature wave. Wong removed as clickable persona · binary CTAs replaced w/
 - Two side-by-side buttons: Reject (light-red `#FEE2E2`) · Confirm (light-green `#D1FAE5`). 50/50 width split via flex.
 
 **Reject path (main demo path):**
-- Click Reject → Diagnosis Verdict removed → Workflow Agent SOP-routing theater (3s, `Workflow Agent · Connecting to Dr. A. Wong via call · routing through escalation playbook`) → in-call strip spawns directly (top button gone — no morph required).
-- Post-call flow preserved: End → generating transcript (3s) → transcript-attached → analyzing (3s) → `Use crack in pump casing diagnosis confirmed over call with Dr. A. Wong` button → diagnosis morph (W4.1 preserved).
+- Click Reject → Diagnosis Verdict removed → Workflow Agent SOP-routing theater (3s, `Workflow Agent · Connecting to Dr. A. Ismail via call · routing through escalation playbook`) → in-call strip spawns directly (top button gone — no morph required).
+- Post-call flow preserved: End → generating transcript (3s) → transcript-attached → analyzing (3s) → `Use crack in pump casing diagnosis confirmed over call with Dr. A. Ismail` button → diagnosis morph (W4.1 preserved).
 
 **Confirm path (alt · minimal stub):**
 - Click Confirm → Diagnosis Verdict removed → simple capture footer (3 ✓ lines including `Faye Sit notified · returned for ops + commercial action`) → state `DIAGNOSIS_CONFIRMED_WO_SUBMITTED` → `handoffPending.ops = true` → P1 pulse.
@@ -1531,18 +1531,18 @@ Final feature wave. Wong removed as clickable persona · binary CTAs replaced w/
 
 **Persona panel reduced to 3 tiles:**
 - `renderPersonasPanel` filters `PERSONAS` to exclude `offsite`. Tiles: Faye Sit (active) · Lim Wei Jie (available) · Priya Sundaram (locked, unlocks on Faye Notify trading desk).
-- Wong stays in narrative only (transcript modal, Faye Escalation Report copy, Lim's call-flow agent name).
+- Ismail stays in narrative only (transcript modal, Faye Escalation Report copy, Lim's call-flow agent name).
 - `switchToPersona('offsite')` early-returns as guard.
-- `renderOffsiteIncidentDetail` + `PERSONA_OWN_TASKS.offsite` + `BANNER_COPY.offsite` + Wong post-approval banner + `state.wong.*` kept as dead code (WA #5).
+- `renderOffsiteIncidentDetail` + `PERSONA_OWN_TASKS.offsite` + `BANNER_COPY.offsite` + Ismail post-approval banner + `state.ismail.*` kept as dead code (WA #5).
 
-**`AGENT_PERSONA_RELEVANCE` updated:** offsite removed from all agent relevance arrays. Wong-relevant agents (triage, pl, critic-power-gen) re-distributed to remaining personas (ops/onsite/analyst).
+**`AGENT_PERSONA_RELEVANCE` updated:** offsite removed from all agent relevance arrays. Ismail-relevant agents (triage, pl, critic-power-gen) re-distributed to remaining personas (ops/onsite/analyst).
 
 **Faye Escalation Report Section 2 copy update:**
-- `Revised diagnosis sign-off received` row replaced with `Transcript captured · <Dr. A. Wong> + <Lim Wei Jie> discussed and agreed (see transcript)` row.
+- `Revised diagnosis sign-off received` row replaced with `Transcript captured · <Dr. A. Ismail> + <Lim Wei Jie> discussed and agreed (see transcript)` row.
 - Inline `.oer-tx-inline` button opens existing transcript modal via `wireTranscriptModalLinks` (selector list extended).
 
 **Faye second banner copy:**
-- `BANNER_COPY.opsRouteBack.body` updated: `INC-2026-0537 · Returned from <Lim Wei Jie> · diagnosis revised via expert call · ops + commercial action required` (was `Returned from Dr. A. Wong · diagnosis confirmed`).
+- `BANNER_COPY.opsRouteBack.body` updated: `INC-2026-0537 · Returned from <Lim Wei Jie> · diagnosis revised via expert call · ops + commercial action required` (was `Returned from Dr. A. Ismail · diagnosis confirmed`).
 - New `BANNER_COPY.opsConfirmedReturn` for Confirm-path return (state `DIAGNOSIS_CONFIRMED_WO_SUBMITTED`).
 - `onHeaderClick` picks copy per state pill.
 
@@ -1555,13 +1555,13 @@ Final feature wave. Wong removed as clickable persona · binary CTAs replaced w/
 **Bigger KG architecture — Tacit Knowledge + KG Auditor/Updater clusters:**
 - 3-tier visual separation along X-axis: main KG (left, x: -100 to +100) · Auditor cluster (middle, x: 200..240) · Tacit Knowledge cluster (right, x: 360..400).
 - Auditor cluster: 3 new nodes (`kg-auditor-agent`, `kg-updater-agent`, `workflow-rewire-agent`) · blue `#3B82F6` ring halo.
-- Tacit Knowledge cluster: 3 nodes (W6 growth nodes repositioned · `casing-tacit-knowledge`, `wong-field-experience-2023`, `bfp-casing-inspection-protocol`) · amber `#F59E0B` ring halo.
+- Tacit Knowledge cluster: 3 nodes (W6 growth nodes repositioned · `casing-tacit-knowledge`, `ismail-field-experience-2023`, `bfp-casing-inspection-protocol`) · amber `#F59E0B` ring halo.
 - 7 new edges (`KG_CLUSTER_FLOW_EDGES`): tacit → auditor (3) · auditor → main KG (3) · auditor internal cohesion (1). Flow shows captured knowledge → review/audit → main KG enrichment.
 - Camera initial pose widened: `x: 100, y: 0, z: 480` looking at `x: 200, y: 0, z: 0`. `startAutoRotate` orbit center shifted to `x: 200`.
 - W6 `triggerKGGrowth` semantics adjusted: nodes already in initial `KG_NODES` (visible from cold load) · growth fire calls `flashKGGrowthHalo()` which sets `KG_STATE.newlyAddedNodes` for 4s green halo · no graph mutation.
 - `nodeThreeObject` ring color: newly-added (green) > auditor cluster (blue) > tacit cluster (amber) > default (white).
 
-Verified via Chrome MCP — happy-path runthrough through all 5 state transitions (TRIAGE_READY → DISPATCHED_TO_ONSITE → REVISED_DIAGNOSIS_ROUTED → ROUTED_TO_TRADING_DESK → HEDGED), Diagnosis Verdict gating at 9/10 vs 10/10, Reject + Confirm-revised theaters and timing, P2 inline KG mount reparenting + reverse on P1/P4 switch, persona panel tile count (3 tiles · no Wong), banner copy strings, Escalation Report Section 2 row swap, all 7 cluster-flow edges present in `KG_EDGES`, halo flash mechanics on `triggerKGGrowth`.
+Verified via Chrome MCP — happy-path runthrough through all 5 state transitions (TRIAGE_READY → DISPATCHED_TO_ONSITE → REVISED_DIAGNOSIS_ROUTED → ROUTED_TO_TRADING_DESK → HEDGED), Diagnosis Verdict gating at 9/10 vs 10/10, Reject + Confirm-revised theaters and timing, P2 inline KG mount reparenting + reverse on P1/P4 switch, persona panel tile count (3 tiles · no Ismail), banner copy strings, Escalation Report Section 2 row swap, all 7 cluster-flow edges present in `KG_EDGES`, halo flash mechanics on `triggerKGGrowth`.
 
 Per-test table:
 ```
@@ -1697,14 +1697,14 @@ Files changed:
 - `index.html` — W7 CSS block before </style>: .diagnosis-verdict + .dv-* · .sop-routing-theater + .sop-review-theater · .confirm-revised-cta · .mon-pill-state-revised-diagnosis-routed · .oer-tx-inline · .right-pane-kg-inline.
 
 Files intentionally not touched:
-- `renderOffsiteIncidentDetail` + Wong call-flow agent name references + `state.wong.*` reset paths · Wong post-approval banner · `PERSONA_OWN_TASKS.offsite` (dead code per WA #5, throwaway convention).
+- `renderOffsiteIncidentDetail` + Ismail call-flow agent name references + `state.ismail.*` reset paths · Ismail post-approval banner · `PERSONA_OWN_TASKS.offsite` (dead code per WA #5, throwaway convention).
 - W4.1 `.binary-cta` CSS + `.in-call-strip` styling + post-call stages styling — preserved per spec A.2.
 - All persona-own-tasks data + telemetry modal + transcript modal + doc modal + drawer.
 - Faye P1 dispatch arc + scripts.
 - KG_THEATER_NODES + KG_THEATER_EDGES (W3.4 theater density).
 
 Follow-up:
-- `paintWongCTADisabled`, `paintWongCTAReady`, `paintWongCTAApproved`, `wireWongApproveClick`, `onWongApproveClick`, `appendWongApprovalCaptureFooter`, `fireWorkflowAgentArcApprove` — dead after W7. Leave per throwaway convention.
+- `paintIsmailCTADisabled`, `paintIsmailCTAReady`, `paintIsmailCTAApproved`, `wireIsmailApproveClick`, `onIsmailApproveClick`, `appendIsmailApprovalCaptureFooter`, `fireWorkflowAgentArcApprove` — dead after W7. Leave per throwaway convention.
 - `onEscalateForApprovalClick`, `paintLimEscalationComplete`, `appendEscalationCaptureFooter`, `fireWorkflowAgentArcEscalate` — dead after W7. Leave.
 - `morphConfirmCTAToEscalate` reduced to no-op spawn-button shim (kept for safe re-entry; no longer triggers escalate-ready morph).
 - Visual verification of cluster ring colors + 10s KG growth flash + projector legibility = pending human/Pulkit check during dry-run.
@@ -1746,7 +1746,7 @@ Final polish wave. Bundled 18 polish items + 1 structural pivot (Priya laptop vi
 - C.4: Notes record affordance dropped for Lim. New display-only structure: heading `Note from <Faye Sit>` + incoming chip (`incoming · 02:48 SGT`) + body text. No mic button, no textarea. CSS class `notes-section-display`.
 - C.5: Inspection groups truncate to header-only `✓ <label> · N/N completed` at 10/10 complete. New helper `truncateInspectionGroupsToCompleted()` + CSS class `.ic-group-label-completed` (green-soft bg + 3px green-vivid left border).
 
-**Section D — Wong-call + post-call polish:**
+**Section D — Ismail-call + post-call polish:**
 - D.1: SOP-routing connect theater 3s → 6s. `fireAgentCardLifecycle('sop-action', 6000)`. Timeout to spawn in-call strip also 6000ms.
 - D.2: In-call strip `max-width: 70%` (margin auto). Verified narrower in browser.
 - D.3: Transcript modal `max-width: 70%` (capped at 520px). Narrower modal.
@@ -1764,7 +1764,7 @@ Final polish wave. Bundled 18 polish items + 1 structural pivot (Priya laptop vi
 - New `.dyn-name-on-green` CSS variant: `rgba(255,255,255,0.20)` translucent-white bg + white text + white border + drop shadow. Defined as sibling to `.dyn-name`.
 - Applied to:
   - Faye Escalation Report `Notify trading desk · route to <Priya Sundaram>` CTA — Priya span.
-  - Wong-approve dead-path CTA `Approve escalation and route back to <Faye Sit>` — Faye span (W7 dead but consistent).
+  - Ismail-approve dead-path CTA `Approve escalation and route back to <Faye Sit>` — Faye span (W7 dead but consistent).
 
 **Section G — Priya laptop view (STRUCTURAL PIVOT):**
 - LEFT pane swaps tablet bezel for MacBook-style laptop chrome when `state.activePersona === 'analyst'`.
@@ -1793,7 +1793,7 @@ Final polish wave. Bundled 18 polish items + 1 structural pivot (Priya laptop vi
 - `paintRightPaneStandard` reparent path · floating KG window logic · KG_STATE growth pipeline.
 - All Faye P1 dispatch arc scripts · banner copy · INC row markup.
 - Lim inspection checklist content (5 + 3 + 2 items unchanged).
-- Wong dead-code paths (other than dyn-name-on-green rename).
+- Ismail dead-code paths (other than dyn-name-on-green rename).
 
 **Verified via Chrome MCP — per-test observed-vs-expected table:**
 
@@ -1875,7 +1875,7 @@ Post-W8 review pass: 3 Lim Screen D polish items + Priya dashboard enhancement +
 - `wireDecisionOptions` / `restoreSelectedOptionUI` / `wireLockDecisionCTA` / `appendLockDecisionCaptureFooter` (option-card markup changed but selectors `.ac-option-card`, `.ac-opt-bullet`, `data-option`, `.ac-lock-cta` preserved so existing wiring still binds).
 - All Faye P1 dispatch + banner + INC row markup.
 - Lim inspection checklist content (5 + 3 + 2 items unchanged).
-- Wong dead-code paths.
+- Ismail dead-code paths.
 
 **Verified via Chrome MCP — per-test observed-vs-expected table:**
 
@@ -1992,7 +1992,7 @@ Major right-pane rework. Layout shifts to 50/50. KG becomes button-only (no auto
 - W7 tacit cluster (`KG_TACIT_NODES`) + auditor cluster (`KG_AUDITOR_NODES`) + cluster-flow edges (`KG_CLUSTER_FLOW_EDGES`) — preserved.
 - W8 Priya laptop frame (`#laptop-frame` markup + `paintLaptopDashboard` content) + W9 KPI strip + W9 trader modal redesign — left pane untouched.
 - W6 KG growth animation (`triggerKGGrowth`, `flashKGGrowthHalo`) — reused for staging + commercial cluster flash via the same `KG_STATE.newlyAddedNodes` Set + `refreshKGStyles` plumbing.
-- All Faye P1 dispatch arc + banner copy + INC row markup + Lim tablet flow (W4 / W4.1 / W6 / W7 / W8 / W9) + Wong dead-code paths.
+- All Faye P1 dispatch arc + banner copy + INC row markup + Lim tablet flow (W4 / W4.1 / W6 / W7 / W8 / W9) + Ismail dead-code paths.
 - Persistent 17-agent roster (Orchestrator / inspection / triage / diag-hrsg / diag-electrical / playbook / sop-action / audio-transcription / wo-prefill / workflow / learning / critic-power-gen / critic-renewables / critic-networks / hse / pl / market-intelligence) preserved exactly. W6 agent-dim per persona logic + W6 fireAgentCardLifecycle pulse/done lifecycle preserved.
 - `paintRightPaneInlineKG` (W7 reshape mechanic) kept as dead code per WA #5 throwaway convention.
 
@@ -2048,3 +2048,217 @@ Follow-up:
 - `paintRightPaneInlineKG` (W7) + `KG_GROWTH_NODE_IDS` (W6 W7 reuse) + `triggerKGGrowth` (W6) all retained as dead code per throwaway convention.
 - Pre-W10 lint warnings on lines 1139, 4734, 4916, 4946, 5180, 5263 (per W8 follow-up) unchanged — not touched by W10. Karpathy rule 3.
 - W10 = COMPLETE. Demo build = FEATURE COMPLETE for the 2026-05-27 ITP presentation. Remaining work = projector dry-run + narration script + final vocab/legibility sweep.
+
+### W11 deployment confirmation (2026-05-25)
+
+W11 post-W10 review polish wave landed. 9 sections shipped:
+
+**Section A — Learning Flywheel dropped:**
+- `#zone-flywheel` removed from `index.html` right pane. No replacement; right pane vertical flow now: toolbar → per-persona narrative content → permanent Agent View → optional log dropdown.
+
+**Section B — Narrative modal larger:**
+- `.narrative-modal` width 700px → 1000px · height 500px → 680px · max-width 90vw → 95vw · max-height 85vh → 90vh. Inner content scales; existing animation timing preserved across the larger canvas.
+
+**Section C — Continuous-monitoring loop dropped:**
+- `.nv-loop` HTML node deleted from `openNarrativeModal` template. `.nv-loop` CSS rules + `@keyframes nv-loop-spin` removed from `index.html`.
+
+**Section D — KG legend rework:**
+- 3D layer-title sprites (W3.5 spec) were already unmounted (`buildLayerTitle` retained as dead code per WA #5 — never called).
+- Old `.kg-legend` horizontal chip row replaced by `.kg-legend-overlay` HTML overlay positioned absolute at top-middle of `#kg-floating-window` (inside `.kg-fw-body`).
+- Vertical list format: 7 layer rows (L1 / L2 / L3 / L4 / L5 / L6 / L7) + 3 staging items (promoted byte · unpromoted byte · staging agent) + 1 auditor row + 1 commercial row.
+- Overlay is `pointer-events: none` so drag through to canvas still works.
+
+**Section E — P1 Section 2 modal redesigned (Anticipation theater):**
+- Pivoted from 3-bucket pattern → 4-step horizontal storyboard.
+- Step 1 = SOP doc slides in (SOP Retrieval Agent).
+- Step 2 = scrolled-to-Step-7 view with amber highlight (SOP Adherence Critic).
+- Step 3 = empty axis + vibration RMS path stroke-dashoffset auto-draws over 2s (Sensor Anomaly Inspector).
+- Step 4 = tablet-with-chart frame + green "✓ Anticipated · staged for Faye Sit" badge (Telemetry Snapshot Compiler).
+- Arrow connectors `→` activate sequentially with green pulse keyframe.
+- Footer narration: "The agents anticipated. Faye never asked. The snapshot was already waiting."
+- Total animation timeline ~10s. Right-pane persistent-card sync preserved via `fireAgentCardLifecycle`.
+
+**Section F — P1 Section 3 modal redesigned (Parallel-match theater):**
+- Pivoted from 3-bucket pattern → 4×4 candidate matrix.
+- 4 candidates × 4 criteria = 16 cells pulse simultaneously (parallel-execution cue) then resolve to ✓ / ✗ / — with staggered timing in the 2.5s–4s window.
+- Lim Wei Jie row = only candidate passing all 4 gates → highlights green + `GO` badge at t=4.5s.
+- Counter caption: `20-minute phone tag → 2.4 seconds`.
+- Dispatch-fire line at t=6s: `→ A2A Coordination Agent · dispatching to Lim Wei Jie · payload pre-attached`.
+- A2A persistent card pulses on dispatch-fire activation.
+
+**Section G — P2 right pane 3 sections → 2 sections:**
+- Combined Section A (safety + tacit knowledge in one card framed as "two on-site problems solved at once"). Old standalone P2_SECTION_B constant + modal pathway dropped.
+- Section A modal uses new split-canvas template: top banner (`TWO ON-SITE PROBLEMS · ONE PLATFORM`) → 2-col grid (LEFT col = Safety Protocol Enforcement w/ pink-vivid dashed border + 3 HSE agents reveal w/ ✓ check + HSE Risk Validator critic + green `→ Field work UNBLOCKED` outcome; RIGHT col = Tacit Knowledge Capture w/ blue-vivid border + 3 tacit agents + Tacit Relevance Critic + `→ Engineering insight CAPTURED` outcome) → bottom footer.
+- Section B (was C) = `Open KG` button; opens existing floating KG window. No modal.
+- `P2_NARRATIVE_SECTIONS` array trimmed to 2 entries (A combined + B = KG); `wireLimRightPaneButtons` data-action branch now keys on `'B'` for open-kg.
+
+**Section H — P3 laptop redesign:**
+- `#laptop-frame` max-width 920px → 1280px (wider). `.laptop-screen` min-height 90vh → 70vh (shorter).
+- Notification bell DROPPED — `.td-notification-bell` markup + CSS removed; `wireLaptopBellClick` / `onLaptopBellClick` / `updateLaptopBellState` deleted.
+- New 2-col body grid `.td-body-grid` (1.4fr 1fr): LEFT col = portfolio + market zones (preserved); RIGHT col = Active Tasks zone moved to top-right.
+- Active Tasks tile pattern restructured: `.td-task-row` → `.td-task-tile` w/ explicit `.td-task-what` (1-line action) + `.td-task-why` (1-line italic context).
+- URGENT tile (incident-specific): red-amber accent w/ 4px red left border + `URGENT` corner badge + pulse keyframe (`td-task-urgent-pulse` 1.8s) + `Open` action button. Body: What = `Hedge BFP-3A exposure · JRG-CCGT-1`; Why = `Unplanned BFP-3A trip · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT`.
+- Visibility gated by `getCanonicalTicket().statePill === 'ROUTED_TO_TRADING_DESK' && !state.priya.decisionLocked` via new `updateLaptopActiveTasks()` called per render.
+- URGENT tile click → `state.screen = 'incident-detail'; render()` → `syncLaptopModalState()` opens existing W8 + W9 trader modal (mechanic preserved).
+- Post-lock: URGENT tile replaced by greyed `.td-task-completed` tile w/ green `✓ Locked` badge and per-option label (e.g. `Hedge locked · Cross-site Sakra balancing`).
+
+**Section I — P3 KG: 3 new layers L5 / L6 / L7:**
+- `LAYER_Y` extended: `L5: 150 (Markets)` · `L6: 210 (Contracts)` · `L7: 270 (Cross-site Network)`.
+- `KG_LAYER_COLORS` extended: `L5: #A855F7 (purple)` · `L6: #8B5CF6 (violet)` · `L7: #6366F1 (indigo)`.
+- 7 commercial nodes relayered with Y pinned to `LAYER_Y[layer]`:
+  - L5 (Markets · 3 nodes): merchant-market-sg · supply-curve-singapore · demand-forecast-q3-2026
+  - L6 (Contracts · 2 nodes): ppa-pso-2026 · hedge-instrument-catalog
+  - L7 (Cross-site Network · 2 nodes): cross-site-sakra-availability · cross-site-tuas-availability
+- Existing `KG_COMMERCIAL_EDGES` preserved (source/target IDs unchanged, edges auto-relink).
+- P3 camera pose adjusted: `cam={x:400, y:150, z:820}` · `lookAt={x:400, y:150, z:0}` (was `y:0, z:700`) — pulled back + raised to frame the 7-layer Y stratification.
+
+Verified via Chrome MCP — 24 tests run, per-test results below. Subjective items (visual KG geometry / projector legibility / animation timing feel) flagged as human-check.
+
+```
+#: A1 · Test: Learning Flywheel removed · Observed: document.getElementById('zone-flywheel') === null · Expected: zone absent · Pass: ✓
+#: B1 · Test: Narrative modal dims · Observed: computedStyle width 1000px height 680px · Expected: 1000×680 · Pass: ✓
+#: C1 · Test: nv-loop-spin keyframe removed · Observed: no @keyframes nv-loop-spin in any stylesheet · Expected: removed · Pass: ✓
+#: D1 · Test: KG legend overlay present · Observed: .kg-legend-overlay node found, 12 .kg-leg-row children · Expected: vertical list overlay · Pass: ✓
+#: D2 · Test: Legend includes L1-L7 + cluster rows · Observed: data-layer L1/L2/L3/L4/L5/L6/L7 all present; data-cluster staging/auditor/commercial rows present · Expected: 7 layers + 3 staging + 1 auditor + 1 commercial · Pass: ✓
+#: E1 · Test: P1 §2 anticipation canvas · Observed: .nv-anticipation-canvas present; 4 .nv-step nodes (step 1-4); NO .nv-bucket · Expected: 4-step storyboard · Pass: ✓
+#: E2 · Test: P1 §2 footer narration · Observed: "The agents anticipated. Faye never asked. The snapshot was already waiting." · Expected: same · Pass: ✓
+#: F1 · Test: P1 §3 parallel-match canvas · Observed: .nv-parallel-match-canvas present; .nv-pm-grid; 4 .nv-pm-row; 16 .nv-pm-cell; NO .nv-bucket · Expected: 4×4 matrix · Pass: ✓
+#: F2 · Test: P1 §3 candidate IDs in DOM · Observed: ["lim","j-tan","s-ibrahim","m-lim"] · Expected: same · Pass: ✓
+#: F3 · Test: P1 §3 winner resolution at t=7s · Observed: lim row data-winner="true" + all 4 cells pass; j-tan results [pass,fail,na,na]; dispatch-fire data-active="true" · Expected: same per spec · Pass: ✓
+#: G1 · Test: P2 Lim right pane = 2 sections · Observed: lim_sections=["A","B"] · Expected: 2 sections (A combined + B = KG) · Pass: ✓
+#: G2 · Test: P2 Section labels · Observed: btnA_label="Play" btnB_label="Open KG" · Expected: same · Pass: ✓
+#: G3 · Test: P2 §A split-canvas modal · Observed: .nv-split-canvas present; 2 .nv-split-col; 3 safety agents + 3 tacit agents; banner "TWO ON-SITE PROBLEMS · ONE PLATFORM"; NO .nv-bucket · Expected: same · Pass: ✓
+#: G4 · Test: P1 §1 preserved (3-bucket default template) · Observed: .nv-canvas + 3 .nv-bucket nodes · Expected: P1 §1 unchanged · Pass: ✓
+#: H1 · Test: Laptop wider + shorter · Observed: laptop_maxWidth=1280px · laptop_minHeight=592.48px (= 70vh at 846 viewport) · Expected: 1280px · 70vh · Pass: ✓
+#: H2 · Test: Notification bell removed · Observed: .td-notification-bell not in DOM · Expected: dropped · Pass: ✓
+#: H3 · Test: 2-col body grid · Observed: .td-body-grid present · gridTemplateColumns "706.062px 504.331px" (1.4:1 ratio @ ~1280px content) · .td-body-right .td-zone-tasks truthy · Expected: 1.4fr 1fr, tasks in right col · Pass: ✓
+#: H4 · Test: URGENT tile on ROUTED_TO_TRADING_DESK · Observed: .td-task-tile.td-task-urgent present; badge "URGENT"; what "Hedge BFP-3A exposure · JRG-CCGT-1"; action button present · Expected: gated by ticket.statePill · Pass: ✓
+#: H5 · Test: URGENT tile click opens trader modal · Observed: state.screen='incident-detail' after click; trader-modal-backdrop appears · Expected: existing W8/W9 modal opens · Pass: ✓
+#: H6 · Test: Post-lock URGENT replaced by completed tile · Observed: after state.priya.decisionLocked=true + render: .td-task-urgent absent; .td-task-completed present w/ "✓ Locked" badge + per-option what "Hedge locked · Cross-site Sakra balancing" · Expected: greyed completed-state · Pass: ✓
+#: I1 · Test: LAYER_Y extended · Observed: {L1:90, L2:30, L3:-30, L4:-90, L5:150, L6:210, L7:270} · Expected: same · Pass: ✓
+#: I2 · Test: Commercial nodes relayered + Y-pinned · Observed: L5:3 (merchant-market/supply-curve/demand-forecast all y=150) · L6:2 (ppa-pso/hedge-catalog all y=210) · L7:2 (sakra/tuas all y=270); every node.y === LAYER_Y[node.layer] · Expected: same · Pass: ✓
+#: I3 · Test: P3 camera pose adjusted · Observed: cameraPosition called with cam={x:400,y:150,z:820} lookAt={x:400,y:150,z:0} ms=2000 · Expected: same per Section I.5 · Pass: ✓
+#: I4 · Test: Legend overlay includes L5/L6/L7 rows · Observed: data-layer="L5"/"L6"/"L7" rows present · Expected: same · Pass: ✓
+#: Visual-E · Test: Anticipation modal full render screenshot · Observed: 4 step cards rendered left-to-right with SOP doc / Step-7 highlight / vibration RMS chart drawn / staged tablet w/ Anticipated badge + footer narration · Expected: same · Pass: ✓ (visual confirm)
+#: Visual-F · Test: Parallel-match modal full render screenshot · Observed: 4×4 grid resolved, Lim row green + GO badge, J.Tan/S.Ibrahim/M.Lim each have appropriate fail/na cells, counter + dispatch line visible · Expected: same · Pass: ✓ (visual confirm)
+#: Visual-G · Test: Split-canvas modal full render screenshot · Observed: banner + 2 cols (safety pink-vivid border / tacit blue-vivid border) + 3 ✓ agents per col + critic per col + outcome per col + footer · Expected: same · Pass: ✓ (visual confirm)
+#: Visual-H · Test: Priya laptop full render screenshot · Observed: laptop frame wider, KPI strip preserved, 2-col body w/ portfolio+market LEFT and Active Tasks RIGHT, URGENT tile at top of tasks w/ red border + URGENT badge + Open button, baseline tiles below, NO bell · Expected: same · Pass: ✓ (visual confirm)
+```
+
+Human-check items (subjective; flagged not auto-asserted):
+
+- **3D KG legend overlap at projector resolution.** Overlay at top-middle is `pointer-events: none` so drag still works, but with 12 rows it consumes ~360px vertical from the top of the canvas — at small floating-window heights this can occlude L1 / L2 nodes. Pulkit should size + position the floating window during projector dry-run.
+- **Y-band stratification at the new camera pose (cam y=150, looking at y=150).** Layers span Y range [-90, 270] = 360 units. Camera Z=820 is comfortable, but at projector distance Y-band gaps may compress. Visual integrity needs eyeball check.
+- **L5 (purple) / L6 (violet) / L7 (indigo) color triplet.** Adjacent in hue — at projector distance, may be hard to distinguish layer bands. Consider higher-contrast distinct hues if Pulkit feels they blend during dry-run.
+- **Anticipation theater Step 3 chart draw.** Stroke-dashoffset animation is 2s. Step 3 reveals at t=5s; visual asks whether chart finishes drawing before Step 4's reveal at t=8s (3s window — generous). Animation timing feel = subjective.
+- **Parallel-match grid cell pulse.** Initial state has all 16 cells pulsing simultaneously. At full-screen modal width (1000px), this can read as visual noise rather than parallel-execution clarity. Pulkit should judge during dry-run.
+- **URGENT tile pulse keyframe (1.8s box-shadow).** Distracts attention to incident-specific tile. Loud red-amber accent — intentional but should be confirmed at projector distance.
+
+Follow-up notes:
+
+- `buildLayerTitle` (W3.5) retained as dead code — never called (was already dead before W11). Per WA #5.
+- `paintRightPaneInlineKG` (W7) retained as dead code per WA #5.
+- `wireLaptopBellClick` / `onLaptopBellClick` / `updateLaptopBellState` (W8 G) DELETED — bell mechanic fully replaced by URGENT-tile click pattern.
+- `P2_SECTION_B` constant DELETED (standalone tacit modal pathway replaced by combined split-canvas in P2_SECTION_A).
+- `<script src="app.js?v=w11">` cache-bust query added during W11 verification — keep across future revisions or strip on final build.
+- W11 = COMPLETE. Demo build remains FEATURE COMPLETE for the 2026-05-27 ITP presentation. Remaining work = projector dry-run + narration rehearsal.
+
+### W12 deployment confirmation (2026-05-25) — POST-W11 REVIEW POLISH + RENAMES
+
+7-item polish + restructure wave post-W11 review.
+
+**Section A — P2 KG hides L5/L6/L7:**
+Build-time filter via `getKGNodesForPersona(persona)` + `getKGEdgesForPersona(persona)` + `applyPersonaKGFilter(persona)` re-sets `graphData()` with persona-scoped subset. Called from `toggleGraphWindow` on open. `#kg-floating-window` data-persona attribute drives CSS hide rule for `.kg-leg-row[data-layer="L5/L6/L7"]` + `.kg-leg-row[data-cluster="commercial"]` via `#kg-floating-window[data-persona="onsite"]` selector.
+
+**Section B — KG palette + uniform white halo:**
+- New 7-layer palette: L1 `#10B981` emerald · L2 `#3B82F6` blue · L3 `#F59E0B` amber · L4 `#EF4444` red · L5 `#A855F7` purple · L6 `#06B6D4` cyan · L7 `#EC4899` pink.
+- Per-cluster halo color logic (staging blue · auditor blue · commercial purple) REMOVED.
+- All nodes now use uniform white halo (radius × 1.18, opacity 0.95) matching original 4-layer treatment. Newly-added KG-growth flash still renders green at radius × 1.55.
+
+**Section C — L5/L6/L7 densification:**
+- L5 Markets: 3 → 8 nodes (added USEP-30min · LNG-spot · carbon-CORSIA · weather-temp · gas-pipeline).
+- L6 Contracts: 2 → 7 nodes (added PSO-bilateral · CCAA-industrial · futures-SGD-monthly · vesting-EMA · ancillary-services).
+- L7 Cross-site: 2 → 8 nodes (added Banyan-CHP · Tuas-spinning-reserve · 275kV-EHV · interconnector-MY · grid-50Hz · Sakra-cogen).
+- 9 new inter-layer + intra-layer edges added; commercial total 23 nodes (was 7).
+
+**Section D — Drop "green 3-dot-point" sections:**
+- `.nv-sources` data source pills removed from `buildDefaultBucketCanvas`.
+- `.nv-footer-narration` italic commentary removed from `buildAnticipationCanvas`.
+- `.pn-s-meta` italic meta-line removed from all 3 persona narrative section cards (Faye P1 · Lim P2 · Priya P3).
+- `.nv-narration` block also dropped from default bucket canvas.
+- All associated CSS rules dropped from index.html.
+
+**Section E — Dr. A. Wong → Dr. A. Ismail global rename:**
+- All display labels updated in app.js + index.html + CLAUDE.md + SEMBCORP_SCOPE.md.
+- KG node ID `dr-wong` → `dr-ismail`. KG edges updated. `wong-field-experience-2023` → `ismail-field-experience-2023` (id + label both updated for full zero-match).
+- Transcript modal title + 6 speaker lines re-attributed.
+- Capture footers · banner copy · agent log lines · `PERSONAS` array · `ROW_OWNER_BY_PERSONA` · `DISPATCH_LABEL` · CSS classes (`wong-summary-slot` → `ismail-summary-slot`, etc.) · functions (`paintWongSummaryComplete` → `paintIsmailSummaryComplete`, etc.) · `state.wong` → `state.ismail` — all updated.
+- `grep -c -E "Wong|wong"` on app.js + index.html + CLAUDE.md + SEMBCORP_SCOPE.md returns 0 matches.
+- AGENTS.md retains 3 historical Wong references — intentionally untouched per Karpathy rule 3 (not in W12 explicit rename scope).
+
+**Section F — Lim Reject intermediate dialogue:**
+- New `.sop-suggest-dialogue` element spawned post-Reject: heading `SOP suggests calling Dr. A. Ismail` + sub-text + `Call` button.
+- Click Call → dialogue removes from DOM + SOP-routing theater fires for 3s (shortened from 6s) + in-call strip spawns.
+- Reduces visual clutter (auto-transition from W7 → W11 replaced w/ explicit user-driven step).
+
+**Section G — P2 right pane reverts to 3 sections (from W11 2-section):**
+- Section A: Safety stage-gate theater. Workflow bar w/ 5 stages (Dispatch · Site arrival · Verify state · Inspection · Begin work). At t=2s alert flashes (HSE Field Compliance Agent self-alert). At t=2.5s safety gate slides in. 3 checks resolve sequentially (HSE · Cert · PPE/LOTO) at t=3s/4.5s/6s. At t=6.5s gate cleared outcome reveals. At t=7s workflow resumes (stage 4 done · stage 5 active).
+- Section B: Tacit Singlish-detection theater. Audio waveform animates. At t=2s detection pulse reveals (English-Singapore detected · Audio-transcription Agent). At t=3-5s, 5 Singlish bubbles appear sequentially. At t=5.5s extraction reveals (arrow-down + "5 bytes coalesced"). At t=6-9s, 5 bytes reveal sequentially (3 promoted green · 2 unpromoted amber).
+- Section C: KG `Open KG` button — unchanged from W11 behavior.
+
+**Section H — P3 laptop redesign v2:**
+- Sembcorp hexagonal SVG logo (`.td-brand-logo`) in top-bar — replaces W11 wave-mark text-only.
+- Active Tasks zone (`.td-zone-tasks`) is FIRST child of right column (top placement).
+- URGENT tile copy refreshed: `Buy USEP forward · Jul-26 · 50 MW · Q3 peak window` + `JRG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT` + `~SGD 240k at risk` + `⏱ 28 min` (red-amber pulsing).
+- 3 non-urgent task tiles also get `.td-task-money` (SGD spread/exposure/variance) + `.td-task-timer` meta.
+- Empty bottom space filled: LEFT bottom `td-zone-trend` (USEP Forward Curve · Q3-2026 SVG line trend + 3-row position summary: Long +150 MW · Hedged 120 MW 80% · Exposure 30 MW). RIGHT bottom `td-zone-margin-gauge` (Reserve Margin SVG donut · 28% comfortable · forecast 22–30% next 6h).
+- Zone 2 Market Snapshot trimmed to single Market Regime card (USEP curve detail relocated to Zone 3; Reserve Margin gauge relocated to right column bottom).
+
+**Verification (Chrome MCP · per-test observed-vs-expected):**
+
+```
+#: A1 · Test: P2 KG hides L5/L6/L7 nodes · Observed: getKGNodesForPersona('onsite') returns 97 nodes; .some(L5)=false, .some(L6)=false, .some(L7)=false · Expected: zero L5/L6/L7 nodes · Pass: ✓
+#: A1' · Test: P2 KG hides commercial cluster · Observed: .some(cluster==='commercial')=false on filtered subset · Expected: zero commercial nodes · Pass: ✓
+#: A2 · Test: P2 KG hides commercial edges · Observed: getKGEdgesForPersona('onsite') returns 120 edges; p2EdgeRefsCommercial=false · Expected: no edges referencing commercial nodes · Pass: ✓
+#: A3 · Test: P3 KG shows all 7 layers + commercial cluster · Observed: getKGNodesForPersona('analyst') = 120 nodes, all L5/L6/L7 present, 23 commercial nodes · Expected: full graph · Pass: ✓
+#: B1 · Test: KG_LAYER_COLORS 7-hue palette · Observed: L1=#10B981 · L2=#3B82F6 · L3=#F59E0B · L4=#EF4444 · L5=#A855F7 · L6=#06B6D4 · L7=#EC4899 · Expected: same · Pass: ✓
+#: B2 · Test: Uniform white halo in nodeThreeObject · Observed: code review confirms ringColor=0xFFFFFF (non-newly-added), opacity=0.95, ringRadius=radius*1.18; per-cluster branches removed · Expected: white uniform halo · Pass: ✓ (code-verified; three.js material read skipped — headless Chrome lacks WebGL renderer)
+#: B3 · Test: Halo radius uniform · Observed: code review confirms ringRadius=radius*1.18 for all non-newly-added; no per-cluster ring radius branches · Expected: uniform · Pass: ✓
+#: C1 · Test: L5 density · Observed: KG_NODES.filter(L5).length=8 · Expected: 8 · Pass: ✓
+#: C2 · Test: L6 density · Observed: KG_NODES.filter(L6).length=7 · Expected: 7 · Pass: ✓
+#: C3 · Test: L7 density · Observed: KG_NODES.filter(L7).length=8 · Expected: 8 · Pass: ✓
+#: D1 · Test: .nv-sources removed · Observed: 0 elements + CSS rule dropped · Expected: zero · Pass: ✓
+#: D2 · Test: .nv-footer-narration removed · Observed: 0 elements + CSS rule dropped · Expected: zero · Pass: ✓
+#: D3 · Test: .pn-s-meta removed · Observed: 0 elements + CSS rule dropped · Expected: zero · Pass: ✓
+#: D4 · Test: .nv-narration removed · Observed: 0 elements · Expected: zero · Pass: ✓
+#: E1 · Test: Wong → Ismail global zero-match · Observed: grep returns 0 on app.js + index.html + CLAUDE.md + SEMBCORP_SCOPE.md · Expected: zero · Pass: ✓
+#: E2 · Test: KG node ID renamed · Observed: dr-ismail exists, dr-wong undefined · Expected: same · Pass: ✓
+#: E3 · Test: Transcript modal updated · Observed: contains "Dr. A. Ismail", no Wong refs · Expected: same · Pass: ✓
+#: F1 · Test: SOP-suggest dialogue post-Reject · Observed: .sop-suggest-dialogue spawned · text "SOP suggests calling Dr. A. Ismail" · dyn-name="Dr. A. Ismail" · Call button present · Expected: same · Pass: ✓
+#: F2 · Test: Click Call triggers theater + in-call · Observed: dialogue removed · sop-routing-theater fired and transitioned · .in-call-strip spawned w/ "On call · Dr. A. Ismail" · Expected: same · Pass: ✓
+#: G1 · Test: P2 right pane = 3 sections · Observed: 3 .pn-section elements [A safety · B tacit · C KG]; A+B actions=modal, C action=open-kg · Expected: same · Pass: ✓
+#: G2 · Test: Section A safety modal · Observed: .nv-safety-gate-canvas, .nv-sg-workflow-bar (5 stages), .nv-sg-alert, .nv-sg-gate (3 checks), .nv-sg-gate-outcome all present · Expected: same · Pass: ✓
+#: G3 · Test: Section B tacit modal · Observed: .nv-tacit-singlish-canvas, .nv-ts-waveform, .nv-ts-detection, 5 bubbles, 5 bytes (3 promoted · 2 unpromoted), Dr. A. Ismail dyn-name · Expected: same · Pass: ✓
+#: H1 · Test: Sembcorp hexagonal SVG logo · Observed: .td-brand-logo (SVG element, 2 polygons hex+inner) · Expected: SVG, not text · Pass: ✓
+#: H2 · Test: Tasks zone top of right column · Observed: .td-body-right firstElementChild = .td-zone-tasks · Expected: same · Pass: ✓
+#: H3 · Test: URGENT tile copy updated · Observed: what="Buy USEP forward · Jul-26 · 50 MW · Q3 peak window", money="~SGD 240k at risk", timer="⏱ 28 min" · Expected: same · Pass: ✓
+#: H4 · Test: Baseline tiles have $ + timer · Observed: 4 tiles (URGENT+3) have .td-task-money + .td-task-timer · Expected: 4 each · Pass: ✓
+#: H5 · Test: Bottom space filled · Observed: .td-usep-trend SVG + .td-position-summary (LEFT bottom) + .td-margin-donut (RIGHT bottom) all present · Expected: same · Pass: ✓
+#: Visual-H · Test: Priya laptop screenshot · Observed: URGENT tile w/ red border + financial copy + $240k + 28 min; baseline tiles w/ SGD spread/exposure/variance + timer chips; Zone 3 USEP Forward Curve heading visible; Reserve Margin section header visible right column · Expected: same · Pass: ✓ (visual confirm)
+```
+
+Human-check items (subjective; flagged not auto-asserted):
+
+- **WebGL renderer init in headless Chrome** is unreliable — `KG_STATE.graph` did not initialize during MCP verification (mount had 0×0 before display). All KG persona-filter logic verified via direct function calls on KG_NODES/KG_EDGES. Real-browser visual confirmation of halo color uniformity + densified L5/L6/L7 layout deferred to Pulkit's localhost run.
+- **3D KG legend overlay row count** increased to 7 layers + 5 cluster glyphs = 12 rows. At small floating-window heights this can occlude L1/L2 nodes. Same caveat as W11.
+- **Y-band density at densified layers.** L5 (8 nodes) · L6 (7 nodes) · L7 (8 nodes) packed in x ∈ [700, 820], so per-layer Z spread is tight. Force-graph may auto-spread on physics tick but initial reveal could feel crowded.
+- **L5/L6/L7 hue contrast.** New palette uses purple/cyan/pink — should be more distinguishable than W11 purple/violet/indigo, but projector dry-run needed to confirm.
+- **AGENTS.md retains 3 Wong references** intentionally — not in W12 explicit rename scope. Follow-up note (Karpathy rule 3).
+
+Follow-up notes:
+
+- `P2_SECTION_A` W11 split-canvas pathway DROPPED (replaced by safety-gate template). `buildSplitCanvas` + `playSplitCanvasAnimation` retained as dead code per WA #5 — no current call site after W12 G refactor.
+- `state.ismail.*` (formerly `state.wong.*`) preserves W4 curated Screen D state shape — used by `renderOffsiteIncidentDetail` (dead code per WA #5, kept).
+- `wong-field-experience-2023` KG ID renamed to `ismail-field-experience-2023` (coach allowed either; renamed for grep zero-match).
+- `<script src="app.js?v=w12">` cache-bust updated.
+- W12 = COMPLETE. Demo build remains FEATURE COMPLETE for the 2026-05-27 ITP presentation. Remaining work = projector dry-run + narration rehearsal.

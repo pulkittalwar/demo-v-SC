@@ -69,8 +69,8 @@ const state = {
     rejectClicked: false,
     confirmRevisedClicked: false,
   },
-  // ── W4 — Wong curated Screen D state ──
-  wong: {
+  // ── W4 — Ismail curated Screen D state ──
+  ismail: {
     revealStarted: false,
     summaryRevealed: false,
     approvalGiven: false,
@@ -105,7 +105,7 @@ function setStatePill(v) {
 const PERSONA_INITIALS = {
   ops:     { initials: 'FS',  name: 'Faye Sit'        },
   onsite:  { initials: 'LWJ', name: 'Lim Wei Jie'    },
-  offsite: { initials: 'AW',  name: 'Dr. A. Wong'    },
+  offsite: { initials: 'AW',  name: 'Dr. A. Ismail'    },
   analyst: { initials: 'PS',  name: 'Priya Sundaram' },
 };
 
@@ -136,7 +136,7 @@ const BANNER_COPY = {
   },
 };
 
-// ── W7 — State pill labels (simplified chain · Wong intermediate dropped) ──
+// ── W7 — State pill labels (simplified chain · Ismail intermediate dropped) ──
 const STATE_PILL_LABEL = {
   TRIAGE_READY:                     'TRIAGE READY',
   DISPATCHED_TO_ONSITE:             'DISPATCHED TO ONSITE',
@@ -158,7 +158,7 @@ const PRIYA_OPTION_LABEL = {
 const ROW_OWNER_BY_PERSONA = {
   ops:     { name: 'Faye Sit',         initials: 'FS'  },
   onsite:  { name: 'Lim Wei Jie',      initials: 'LWJ' },
-  offsite: { name: 'Dr. A. Wong',      initials: 'AW'  },
+  offsite: { name: 'Dr. A. Ismail',      initials: 'AW'  },
   analyst: { name: 'Priya Sundaram',   initials: 'PS'  },
 };
 
@@ -171,7 +171,7 @@ const HANDOFF_NEXT = {
 
 const DISPATCH_LABEL = {
   ops:     'Lim Wei Jie',
-  onsite:  'Dr. A. Wong',
+  onsite:  'Dr. A. Ismail',
   offsite: 'Priya Sundaram',
 };
 
@@ -369,7 +369,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Sakra-CCGT-1 · GT-1',
       body: 'Sakra-CCGT-1 GT-1 trip RCA · lead investigator',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Wong', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -377,7 +377,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Jurong-CCGT-2 · BFP',
       body: 'Jurong-CCGT-2 BFP overhaul technical review',
       severity: 'INFO', state: 'AWAITING INPUT', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Wong', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -385,7 +385,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Tuas-Power · Generator',
       body: 'Tuas-Power generator stator advisory · stakeholder call',
       severity: 'INFO', state: 'SCHEDULED 11:00 SGT', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Wong', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
     },
   ],
@@ -464,7 +464,7 @@ function back() {
   render();
 }
 
-// ── Personas panel (external, above tablet) — W7: Wong tile removed (3 tiles) ──
+// ── Personas panel (external, above tablet) — W7: Ismail tile removed (3 tiles) ──
 // W8 Section 0 Part 1 — diff-update (build once, mutate attrs/classes on subsequent calls).
 // Preserves in-flight .persona-tile-pulse keyframe — fixes "flash" caused by innerHTML wipe restarting pulse from 0%.
 function renderPersonasPanel() {
@@ -1996,8 +1996,8 @@ function wireVerdictButtons() {
   }
 }
 
-// W7 — Reject = main path. SOP-routing theater → in-call strip.
-// W8 D.1 — theater 3s → 6s. W8 A.6 — fire SOP Action Agent (not workflow).
+// W7 — Reject = main path. W12 Section F — intermediate "SOP suggests calling <name>" dialogue.
+// Reject → dialogue spawns → user clicks Call → SOP-routing theater (3s) → in-call strip.
 function onVerdictReject() {
   if (state.lim.rejectClicked) return;
   state.lim.rejectClicked = true;
@@ -2005,32 +2005,60 @@ function onVerdictReject() {
 
   const slot = document.getElementById('lim-ctas-slot');
   if (!slot) return;
-  // Drop verdict section, spawn SOP-routing theater
+  // Drop verdict section, spawn SOP-suggest dialogue
   slot.innerHTML = `
+    <div class="sop-suggest-dialogue">
+      <div class="ssd-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.58l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
+      </div>
+      <div class="ssd-body">
+        <div class="ssd-text">SOP suggests calling <span class="dyn-name">Dr. A. Ismail</span></div>
+        <div class="ssd-sub">SOP-BFP-VIBR-001 · escalation playbook · Senior Engineer reference</div>
+      </div>
+      <button class="ssd-action" type="button">Call</button>
+    </div>`;
+
+  wireSOPSuggestDialogue();
+}
+
+function wireSOPSuggestDialogue() {
+  const btn = document.querySelector('.sop-suggest-dialogue .ssd-action');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', onSOPSuggestCallClick);
+}
+
+function onSOPSuggestCallClick() {
+  const slot = document.getElementById('lim-ctas-slot');
+  if (!slot) return;
+  const dialogue = slot.querySelector('.sop-suggest-dialogue');
+  if (dialogue) dialogue.remove();
+
+  // Fire SOP Action Agent theater (3s) — shorter than original 6s since the dialogue accounted for pacing.
+  slot.insertAdjacentHTML('beforeend', `
     <div class="sop-routing-theater">
       <span class="reveal-dots"><span></span><span></span><span></span></span>
       <span class="reveal-msg">
-        <span class="reveal-agent">SOP Action Agent</span> · Connecting to <span class="dyn-name">Dr. A. Wong</span> via call · routing through escalation playbook
+        <span class="reveal-agent">SOP Action Agent</span> · Connecting to <span class="dyn-name">Dr. A. Ismail</span> via call · routing through escalation playbook
       </span>
-    </div>`;
+    </div>`);
 
   if (window.LOG) {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'sop-action',
-      text: 'SOP Action Agent · Connecting to Dr. A. Wong via call · routing through escalation playbook',
+      text: 'SOP Action Agent · Connecting to Dr. A. Ismail via call · routing through escalation playbook',
       dataSource: 'Hyperspace OS',
-      nodeChain: ['dr-wong', 'sop-bfp-vibration-investigation'],
+      nodeChain: ['dr-ismail', 'sop-bfp-vibration-investigation'],
     });
   }
-  fireAgentCardLifecycle('sop-action', 6000);
+  fireAgentCardLifecycle('sop-action', 3000);
 
-  // After 6s: remove theater, spawn in-call strip
   setTimeout(() => {
     const t = slot.querySelector('.sop-routing-theater');
     if (t) t.remove();
     spawnInCallStrip();
-  }, 6000);
+  }, 3000);
 }
 
 // W7 — Confirm = alt-path stub (Pulkit won't click in live demo).
@@ -2095,7 +2123,7 @@ function buildInCallStripHTML() {
       <span class="in-call-phone-ic">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.58l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
       </span>
-      <span class="in-call-label">On call · Dr. A. Wong</span>
+      <span class="in-call-label">On call · Dr. A. Ismail</span>
       <span class="in-call-audio-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
     </div>
     <button class="in-call-end-btn" type="button">End</button>`;
@@ -2263,9 +2291,9 @@ function triggerKGGrowth() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'workflow',
-      text: "Tacit knowledge captured from Dr. A. Wong's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
+      text: "Tacit knowledge captured from Dr. A. Ismail's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
       dataSource: 'Hyperspace OS',
-      nodeChain: ['casing-tacit-knowledge', 'wong-field-experience-2023', 'bfp-casing-inspection-protocol'],
+      nodeChain: ['casing-tacit-knowledge', 'ismail-field-experience-2023', 'bfp-casing-inspection-protocol'],
     });
   }
   fireAgentCardLifecycle('workflow', 2000);
@@ -2317,7 +2345,7 @@ function spawnReviseDiagnosisTile() {
       <div class="rdt-body">
         <div class="rdt-heading">REVISE DIAGNOSIS</div>
         <div class="rdt-text">
-          Hyperspace OS detected the correct diagnosis was <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Wong</span>.
+          Hyperspace OS detected the correct diagnosis was <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Ismail</span>.
         </div>
       </div>
       <button class="rdt-confirm-btn" type="button">Confirm revised diagnosis</button>
@@ -2432,7 +2460,7 @@ function appendEscalationCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · team · incident · revised diagnosis + transcript enriched</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. A. Wong</span> · 02:56 SGT`;
+  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. A. Ismail</span> · 02:56 SGT`;
   container.appendChild(lbl);
 }
 
@@ -2443,7 +2471,7 @@ function fireWorkflowAgentArcEscalate() {
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
     { delay: 200,  line: { ts: '02:56:10', source: 'workflow', text: 'Lim Wei Jie · escalation captured · revised diagnosis pump casing crack', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'pump-casing-crack-pattern', 'casing-bfp-3a'] } },
-    { delay: 900,  line: { ts: '02:56:11', source: 'workflow', text: 'handoff sequence recorded · P2 Onsite → P3 Offsite · approval pending', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'dr-wong'] } },
+    { delay: 900,  line: { ts: '02:56:11', source: 'workflow', text: 'handoff sequence recorded · P2 Onsite → P3 Offsite · approval pending', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'dr-ismail'] } },
     { delay: 900,  line: { ts: '02:56:12', source: 'workflow', text: 'SOP-BFP-VIBR-001 · revised diagnosis + call transcript attached to KG', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'] } },
   ];
   let t = 0;
@@ -2459,7 +2487,7 @@ function fireWorkflowAgentArcEscalate() {
 }
 
 // ─────────────────────────────────────────────
-// W4 — Dr. A. Wong (Offsite) curated Screen D
+// W4 — Dr. A. Ismail (Offsite) curated Screen D
 // Banner + summary (single 5s loading theater) + revised diagnosis read-only
 // + transcript link + Approve escalation CTA
 // ─────────────────────────────────────────────
@@ -2486,12 +2514,12 @@ function renderOffsiteIncidentDetail(root) {
     </div>`;
   content.appendChild(hdr);
 
-  const summarySlot = el('div', 'wong-summary-slot');
-  summarySlot.id = 'wong-summary-slot';
+  const summarySlot = el('div', 'ismail-summary-slot');
+  summarySlot.id = 'ismail-summary-slot';
   content.appendChild(summarySlot);
 
-  const ctaSlot = el('div', 'wong-cta-slot');
-  ctaSlot.id = 'wong-cta-slot';
+  const ctaSlot = el('div', 'ismail-cta-slot');
+  ctaSlot.id = 'ismail-cta-slot';
   content.appendChild(ctaSlot);
 
   const backBtn = content.querySelector('.inc-back');
@@ -2504,29 +2532,29 @@ function renderOffsiteIncidentDetail(root) {
 
   const personaState = activePersonaTicketState();
   if (personaState.actioned) {
-    paintWongSummaryComplete();
-    paintWongCTAApproved();
-    setTimeout(appendWongApprovalCaptureFooter, 200);
+    paintIsmailSummaryComplete();
+    paintIsmailCTAApproved();
+    setTimeout(appendIsmailApprovalCaptureFooter, 200);
     return;
   }
 
-  if (state.wong.summaryRevealed) {
-    paintWongSummaryComplete();
-    paintWongCTAReady();
+  if (state.ismail.summaryRevealed) {
+    paintIsmailSummaryComplete();
+    paintIsmailCTAReady();
   } else {
-    startWongScreenDReveal();
+    startIsmailScreenDReveal();
   }
 }
 
-function startWongScreenDReveal() {
-  state.wong.revealStarted = true;
-  const slot = document.getElementById('wong-summary-slot');
+function startIsmailScreenDReveal() {
+  state.ismail.revealStarted = true;
+  const slot = document.getElementById('ismail-summary-slot');
   if (!slot) return;
-  // W6 — Wong loading reveal alias: Turbine Diagnostic Agent (institutional rotating-machinery knowledge)
+  // W6 — Ismail loading reveal alias: Turbine Diagnostic Agent (institutional rotating-machinery knowledge)
   slot.innerHTML = `
-    <div class="reveal-pending wong-loading" data-stage="wong-summary">
+    <div class="reveal-pending ismail-loading" data-stage="ismail-summary">
       <span class="reveal-dots"><span></span><span></span><span></span></span>
-      <span class="reveal-msg"><span class="reveal-agent">Turbine Diagnostic Agent</span> · Loading institutional rotating-machinery knowledge for Dr. A. Wong</span>
+      <span class="reveal-msg"><span class="reveal-agent">Turbine Diagnostic Agent</span> · Loading institutional rotating-machinery knowledge for Dr. A. Ismail</span>
     </div>`;
   // W6 — CTA deferred: spawn only on reveal complete (Section A)
   // W6 — fire right-pane card lifecycle (triage + power-gen critic in parallel)
@@ -2535,29 +2563,29 @@ function startWongScreenDReveal() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'triage',
-      text: 'Turbine Diagnostic Agent · pulling Wong\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
+      text: 'Turbine Diagnostic Agent · pulling Ismail\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
       dataSource: 'Hyperspace OS',
-      nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-wong'],
+      nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
     });
   }
   pushReveal(() => {
-    state.wong.summaryRevealed = true;
-    paintWongSummaryComplete();
-    paintWongCTAReady();
+    state.ismail.summaryRevealed = true;
+    paintIsmailSummaryComplete();
+    paintIsmailCTAReady();
   }, 5000);
 }
 
-function paintWongSummaryComplete() {
-  const slot = document.getElementById('wong-summary-slot');
+function paintIsmailSummaryComplete() {
+  const slot = document.getElementById('ismail-summary-slot');
   if (!slot) return;
   const ts = state.lim.revisionTimestamp || '02:55 SGT';
   slot.innerHTML = `
-    <div class="summary-report wong-summary">
+    <div class="summary-report ismail-summary">
       <div class="sr-heading">Predicted diagnosis</div>
-      <div class="wong-fwd-line">
+      <div class="ismail-fwd-line">
         <span class="dyn-name">Lim Wei Jie</span> has forwarded this incident · diagnosis revision · escalation for offsite sign-off.
       </div>
-      <div class="sr-hypothesis sr-hypothesis-revised wong-revised">
+      <div class="sr-hypothesis sr-hypothesis-revised ismail-revised">
         <div class="sr-hyp-row sr-hyp-original">
           <span class="sr-hyp-name strikethrough">${INCIDENT.hypothesis.primary}</span>
           <span class="sr-hyp-flag">SUPERSEDED</span>
@@ -2569,46 +2597,46 @@ function paintWongSummaryComplete() {
         <div class="sr-hyp-revised-detail">
           Confirmed via expert field-experience pattern + targeted inspection (60mm hairline discontinuity, 4-o'clock on volute, near discharge weld).
           Bearing damage secondary, caused by imbalanced loading under casing fatigue.
-          <button class="wong-tx-link" type="button">View call transcript · <span class="dyn-name">${ts}</span></button>
+          <button class="ismail-tx-link" type="button">View call transcript · <span class="dyn-name">${ts}</span></button>
         </div>
       </div>
-      <div class="wong-ask">
+      <div class="ismail-ask">
         Approval requested: shaft replacement scheduling + capacity impact escalation to Asset Performance.
       </div>
     </div>`;
   wireTranscriptModalLinks();
 }
 
-function paintWongCTADisabled() {
-  const slot = document.getElementById('wong-cta-slot');
+function paintIsmailCTADisabled() {
+  const slot = document.getElementById('ismail-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="wong-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
+  slot.innerHTML = `<button class="ismail-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
 }
 
-function paintWongCTAReady() {
-  const slot = document.getElementById('wong-cta-slot');
+function paintIsmailCTAReady() {
+  const slot = document.getElementById('ismail-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="wong-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
-  wireWongApproveClick();
+  slot.innerHTML = `<button class="ismail-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
+  wireIsmailApproveClick();
 }
 
-function paintWongCTAApproved() {
-  const slot = document.getElementById('wong-cta-slot');
+function paintIsmailCTAApproved() {
+  const slot = document.getElementById('ismail-cta-slot');
   if (slot) slot.innerHTML = '';
 }
 
-function wireWongApproveClick() {
-  const cta = document.querySelector('.wong-approve-cta');
+function wireIsmailApproveClick() {
+  const cta = document.querySelector('.ismail-approve-cta');
   if (!cta || cta.dataset.wired === '1') return;
   cta.dataset.wired = '1';
-  cta.addEventListener('click', onWongApproveClick);
+  cta.addEventListener('click', onIsmailApproveClick);
 }
 
-function onWongApproveClick() {
+function onIsmailApproveClick() {
   const ticket = getCanonicalTicket();
   if (ticket.byPersona.offsite.actioned) return;
   ticket.byPersona.offsite.actioned = true;
-  // W5 — Wong routes BACK to Faye (Site Operations Manager), not direct to Priya.
+  // W5 — Ismail routes BACK to Faye (Site Operations Manager), not direct to Priya.
   setStatePill('ROUTED_BACK_TO_OPS');
   ticket.handoffPending.p1 = true;        // legacy key, harmless
   ticket.handoffPending.ops = true;       // Faye re-receives the ticket
@@ -2616,15 +2644,15 @@ function onWongApproveClick() {
   // Reset Faye's seen/opened so banner re-fires + dot reappears; actioned preserved (first dispatch).
   ticket.byPersona.ops.seen = false;
   ticket.byPersona.ops.opened = false;
-  state.wong.approvalGiven = true;
-  state.wong.approvalTimestamp = '02:58 SGT';
+  state.ismail.approvalGiven = true;
+  state.ismail.approvalTimestamp = '02:58 SGT';
   fireWorkflowAgentArcApprove();
-  appendWongApprovalCaptureFooter();
-  paintWongCTAApproved();
+  appendIsmailApprovalCaptureFooter();
+  paintIsmailCTAApproved();
   render();
 }
 
-function appendWongApprovalCaptureFooter() {
+function appendIsmailApprovalCaptureFooter() {
   const container = document.getElementById('incident-detail-view');
   if (!container) return;
   if (container.querySelector('.dispatch-capture-footer')) return;
@@ -2635,7 +2663,7 @@ function appendWongApprovalCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · sign-off attached to incident · routed back to Site Operations Manager</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed back to <span class="dyn-name">Faye Sit</span> · ${state.wong.approvalTimestamp || '02:58 SGT'}`;
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Faye Sit</span> · ${state.ismail.approvalTimestamp || '02:58 SGT'}`;
   container.appendChild(lbl);
 }
 
@@ -2644,8 +2672,8 @@ function fireWorkflowAgentArcApprove() {
   setAgentActive(agentId, 'Approval Sign-off Capture', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200, line: { ts: '02:58:05', source: 'workflow', text: 'Sign-off recorded · revised diagnosis confirmed · escalation approved', dataSource: 'Hyperspace OS', nodeChain: ['dr-wong', 'pump-casing-crack-pattern'] } },
-    { delay: 900, line: { ts: '02:58:06', source: 'workflow', text: 'Workflow trace · P3 Offsite → P1 Ops Tower · route-back for ops + commercial impact action', dataSource: 'Hyperspace OS', nodeChain: ['dr-wong', 'r-kumar'] } },
+    { delay: 200, line: { ts: '02:58:05', source: 'workflow', text: 'Sign-off recorded · revised diagnosis confirmed · escalation approved', dataSource: 'Hyperspace OS', nodeChain: ['dr-ismail', 'pump-casing-crack-pattern'] } },
+    { delay: 900, line: { ts: '02:58:06', source: 'workflow', text: 'Workflow trace · P3 Offsite → P1 Ops Tower · route-back for ops + commercial impact action', dataSource: 'Hyperspace OS', nodeChain: ['dr-ismail', 'r-kumar'] } },
     { delay: 900, line: { ts: '02:58:07', source: 'workflow', text: 'KG enriched · sign-off attached · routed back to Faye Sit · ops manager action queued', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation', 'r-kumar'] } },
   ];
   let t = 0;
@@ -2682,7 +2710,7 @@ function renderOpsEscalationReport(root) {
     <div class="inc-hdr-row">
       <div class="inc-hdr-left">
         <div class="inc-title">${INCIDENT.asset}</div>
-        <div class="inc-id">${INCIDENT.id} · returned from Dr. A. Wong</div>
+        <div class="inc-id">${INCIDENT.id} · returned from Dr. A. Ismail</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
       <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
@@ -2747,8 +2775,8 @@ function spawnEscalationReportContent() {
           <div class="oer-wl-item">✓ 3/3 Instrument checks</div>
           <div class="oer-wl-item">✓ 2/2 Root cause isolation checks</div>
           <div class="oer-wl-item">✓ Initial bearing-spalling hypothesis rejected</div>
-          <div class="oer-wl-item">✓ Call with <span class="dyn-name">Dr. A. Wong</span> · 7m 23s · transcript captured</div>
-          <div class="oer-wl-item">✓ Transcript captured · <span class="dyn-name">Dr. A. Wong</span> + <span class="dyn-name">Lim Wei Jie</span> discussed and agreed <button class="oer-tx-inline" type="button">(see transcript)</button></div>
+          <div class="oer-wl-item">✓ Call with <span class="dyn-name">Dr. A. Ismail</span> · 7m 23s · transcript captured</div>
+          <div class="oer-wl-item">✓ Transcript captured · <span class="dyn-name">Dr. A. Ismail</span> + <span class="dyn-name">Lim Wei Jie</span> discussed and agreed <button class="oer-tx-inline" type="button">(see transcript)</button></div>
         </div>
       </div>
 
@@ -3181,7 +3209,7 @@ function closeTranscriptModal() {
   if (m) { m.dataset.open = 'false'; m.setAttribute('aria-hidden', 'true'); }
 }
 function wireTranscriptModalLinks() {
-  document.querySelectorAll('.post-call-transcript-link, .sr-hyp-transcript-link, .wong-tx-link, .oer-transcript-link, .ac-transcript-link, .oer-tx-inline').forEach(btn => {
+  document.querySelectorAll('.post-call-transcript-link, .sr-hyp-transcript-link, .ismail-tx-link, .oer-transcript-link, .ac-transcript-link, .oer-tx-inline').forEach(btn => {
     if (btn.dataset.wired === '1') return;
     btn.dataset.wired = '1';
     btn.addEventListener('click', openTranscriptModal);
@@ -3326,13 +3354,13 @@ function renderMonitoringView(root) {
   `;
   list.appendChild(listHdr);
 
-  // W5 — Wong post-approval banner (only on offsite monitoring after approve fired)
-  if (state.activePersona === 'offsite' && state.wong && state.wong.approvalGiven) {
-    const wpab = el('div', 'wong-post-approval-banner');
+  // W5 — Ismail post-approval banner (only on offsite monitoring after approve fired)
+  if (state.activePersona === 'offsite' && state.ismail && state.ismail.approvalGiven) {
+    const wpab = el('div', 'ismail-post-approval-banner');
     wpab.innerHTML = `
       <span class="wpab-ic">✓</span>
       <span class="wpab-txt">
-        Approval given · returned to <span class="dyn-name">Faye Sit</span> · <span class="wpab-ts">${state.wong.approvalTimestamp || '02:58 SGT'}</span>
+        Approval given · returned to <span class="dyn-name">Faye Sit</span> · <span class="wpab-ts">${state.ismail.approvalTimestamp || '02:58 SGT'}</span>
       </span>`;
     list.appendChild(wpab);
   }
@@ -3588,29 +3616,21 @@ function renderLaptopContent() {
   if (!content.dataset.built) {
     paintLaptopDashboard(content);
     content.dataset.built = '1';
-    wireLaptopBellClick();
   }
-  updateLaptopBellState();
+  updateLaptopActiveTasks();
   updateLaptopDemoEndBanner();
   syncLaptopModalState();
 }
 
 function paintLaptopDashboard(content) {
-  const tasks = buildPersonaOwnTasks('analyst');
-  const tasksHTML = tasks.map(t => `
-    <div class="td-task-row">
-      <span class="td-task-id">${t.id}</span>
-      <span class="td-task-title">${t.body}</span>
-      <span class="td-task-meta">${t.state}</span>
-    </div>`).join('');
-
   content.innerHTML = `
     <div class="trader-dash">
       <div class="td-topbar">
         <div class="td-brand">
-          <svg class="td-brand-mark" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M 4 28 Q 12 12, 24 18 T 38 12" stroke="#00A651" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 4 34 Q 14 22, 26 24 T 38 18" stroke="#00A651" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.65"/>
+          <svg class="td-brand-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polygon points="16,3 27,9 27,23 16,29 5,23 5,9" fill="#00A651"/>
+            <circle cx="16" cy="16" r="5" fill="#FFFFFF"/>
+            <polygon points="16,11 21,16 16,21 11,16" fill="#00A651"/>
           </svg>
           <div class="td-brand-text-block">
             <span class="td-brand-text">Sembcorp</span>
@@ -3621,13 +3641,6 @@ function paintLaptopDashboard(content) {
           <span class="td-persona-name">Priya Sundaram</span>
           <span class="td-persona-role">Senior Power Trader · Singapore</span>
         </div>
-        <button class="td-notification-bell" type="button" data-count="0">
-          <svg class="td-bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span class="td-bell-count">1</span>
-        </button>
       </div>
 
       <div class="td-kpi-strip">
@@ -3680,62 +3693,25 @@ function paintLaptopDashboard(content) {
         </div>
       </div>
 
-      <div class="td-zone">
-        <div class="td-zone-header">
-          <span class="td-zone-num">1</span>
-          <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
-        </div>
-        <div class="td-portfolio">
-          <div class="td-pf-card"><div class="td-pf-label">Jurong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
-          <div class="td-pf-card"><div class="td-pf-label">Tuas Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
-          <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
-          <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
-          <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
-        </div>
-      </div>
+      <div class="td-body-grid">
+        <div class="td-body-left">
+          <div class="td-zone">
+            <div class="td-zone-header">
+              <span class="td-zone-num">1</span>
+              <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
+            </div>
+            <div class="td-portfolio">
+              <div class="td-pf-card"><div class="td-pf-label">Jurong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Tuas Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
+            </div>
+          </div>
 
       <div class="td-zone">
         <div class="td-zone-header"><span class="td-zone-num">2</span><span class="td-zone-title">Market Snapshot</span></div>
         <div class="td-market">
-          <div class="td-market-card td-market-curve-card">
-            <div class="td-mk-label">USEP Forward Curve · 24h</div>
-            <div class="td-mk-headline">
-              <span class="td-mk-headline-value">$112.45</span>
-              <span class="td-mk-headline-unit">SGD/MWh</span>
-              <span class="td-mk-headline-delta td-mk-delta-up">+18.30 (19.4%)</span>
-            </div>
-            <svg class="td-mk-curve" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
-              <defs>
-                <linearGradient id="td-curve-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#00A651" stop-opacity="0.8"/>
-                  <stop offset="100%" stop-color="#00A651" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <path d="M 0 48 L 10 46 L 20 47 L 30 44 L 40 42 L 50 40 L 60 38 L 70 36 L 80 34 L 90 33 L 100 35 L 110 32 L 120 28 L 130 26 L 140 24 L 150 22 L 160 20 L 170 18 L 180 19 L 190 16 L 200 14 L 210 12 L 220 10 L 230 8 L 240 6 L 240 60 L 0 60 Z"
-                    fill="url(#td-curve-gradient)" opacity="0.20"/>
-              <path d="M 0 48 L 10 46 L 20 47 L 30 44 L 40 42 L 50 40 L 60 38 L 70 36 L 80 34 L 90 33 L 100 35 L 110 32 L 120 28 L 130 26 L 140 24 L 150 22 L 160 20 L 170 18 L 180 19 L 190 16 L 200 14 L 210 12 L 220 10 L 230 8 L 240 6"
-                    stroke="#00A651" stroke-width="2" fill="none"/>
-              <line x1="120" y1="0" x2="120" y2="60" stroke="#64748B" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
-              <text x="124" y="10" font-size="8" fill="#64748B">NOW</text>
-            </svg>
-            <div class="td-mk-curve-axis">
-              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
-            </div>
-          </div>
-          <div class="td-market-card td-market-gauge-card">
-            <div class="td-mk-label">Reserve Margin · Singapore</div>
-            <div class="td-mk-gauge-wrap">
-              <svg class="td-mk-gauge" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="60" cy="60" r="46" stroke="#E5E7EB" stroke-width="10" fill="none"/>
-                <circle cx="60" cy="60" r="46" stroke="#00A651" stroke-width="10" fill="none"
-                        stroke-dasharray="81 289" stroke-linecap="round"
-                        transform="rotate(-90 60 60)"/>
-                <text x="60" y="62" text-anchor="middle" font-size="22" font-weight="800" fill="#0F1B3D">28%</text>
-                <text x="60" y="78" text-anchor="middle" font-size="9" font-weight="600" fill="#64748B" letter-spacing="0.5">COMFORTABLE</text>
-              </svg>
-            </div>
-            <div class="td-mk-trend">Forecast (Next 6 Hrs) · 22–30%</div>
-          </div>
           <div class="td-market-card">
             <div class="td-mk-label">Market Regime</div>
             <div class="td-mk-value normal">▶ NORMAL</div>
@@ -3744,44 +3720,146 @@ function paintLaptopDashboard(content) {
         </div>
       </div>
 
-      <div class="td-zone">
-        <div class="td-zone-header"><span class="td-zone-num">3</span><span class="td-zone-title">Active Tasks</span></div>
-        <div class="td-tasks">${tasksHTML}</div>
+      <div class="td-zone td-zone-trend">
+        <div class="td-zone-header">
+          <span class="td-zone-num">3</span>
+          <span class="td-zone-title">USEP Forward Curve · Q3-2026</span>
+        </div>
+        <div class="td-zone-trend-body">
+          <svg class="td-usep-trend" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="td-usep-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00A651" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#00A651" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 80 L40 75 L80 65 L120 68 L160 55 L200 50 L240 45 L280 38 L320 42 L320 100 L0 100 Z"
+                  fill="url(#td-usep-grad)"/>
+            <path d="M0 80 L40 75 L80 65 L120 68 L160 55 L200 50 L240 45 L280 38 L320 42"
+                  stroke="#00A651" stroke-width="2" fill="none"/>
+            <line x1="0" y1="100" x2="320" y2="100" stroke="#E5E7EB"/>
+          </svg>
+          <div class="td-position-summary">
+            <div class="td-ps-row"><span>Long position</span><strong>+150 MW</strong></div>
+            <div class="td-ps-row"><span>Hedged</span><strong>120 MW (80%)</strong></div>
+            <div class="td-ps-row"><span>Exposure</span><strong>30 MW</strong></div>
+          </div>
+        </div>
+      </div>
+
+        </div>
+        <div class="td-body-right">
+          <div class="td-zone td-zone-tasks">
+            <div class="td-zone-header">
+              <span class="td-zone-num">★</span>
+              <span class="td-zone-title">Active Tasks</span>
+            </div>
+            <div class="td-tasks" id="td-tasks-list"></div>
+          </div>
+
+          <div class="td-zone td-zone-margin-gauge">
+            <div class="td-zone-header">
+              <span class="td-zone-num">◐</span>
+              <span class="td-zone-title">Reserve Margin · Singapore</span>
+            </div>
+            <div class="td-zone-margin-body">
+              <svg class="td-margin-donut" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="60" cy="60" r="50" stroke="#E5E7EB" stroke-width="12" fill="none"/>
+                <circle cx="60" cy="60" r="50" stroke="#00A651" stroke-width="12" fill="none"
+                        stroke-dasharray="88 314" stroke-linecap="round"
+                        transform="rotate(-90 60 60)"/>
+                <text x="60" y="64" text-anchor="middle" font-size="22" font-weight="800" fill="#0F1B3D">28%</text>
+                <text x="60" y="80" text-anchor="middle" font-size="9" font-weight="600" fill="#64748B" letter-spacing="0.5">COMFORTABLE</text>
+              </svg>
+              <div class="td-margin-forecast">Forecast 22–30% · Next 6h</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>`;
 }
 
-function wireLaptopBellClick() {
-  const bell = document.querySelector('.td-notification-bell');
-  if (!bell || bell.dataset.wired === '1') return;
-  bell.dataset.wired = '1';
-  bell.addEventListener('click', onLaptopBellClick);
-}
+// W11 Section H — render Active Tasks list with URGENT tile gated by state.
+const PRIYA_LOCKED_OPTION_TILE = {
+  hedge:        { what: 'Hedge locked · Forward Q3 capacity hedge',     why: 'Revenue exposure neutralized via Q3 forward hedge instrument.' },
+  'cross-site': { what: 'Hedge locked · Cross-site Sakra balancing',    why: 'Sakra-CCGT-1 standby capacity nominated for HH18–HH21 cover.' },
+  spot:         { what: 'Hedge locked · Spot market purchase',          why: 'Spot purchase covers PSO commitment shortfall.' },
+  curtailment:  { what: 'Curtailment notice locked · PSO',              why: 'PSO commitment curtailed under force-majeure clause.' },
+};
 
-function onLaptopBellClick() {
-  const bell = document.querySelector('.td-notification-bell');
-  if (!bell || bell.dataset.count === '0') return;
-  if (state.priya.decisionLocked) return;
-  if (state.screen !== 'incident-detail') {
-    state.history.push(state.screen);
-    state.screen = 'incident-detail';
-  }
-  render();
-}
-
-function updateLaptopBellState() {
-  const bell = document.querySelector('.td-notification-bell');
-  if (!bell) return;
+function updateLaptopActiveTasks() {
+  const list = document.getElementById('td-tasks-list');
+  if (!list) return;
   const ticket = getCanonicalTicket();
   const pill = ticket && ticket.statePill;
-  const shouldPulse = (pill === 'ROUTED_TO_TRADING_DESK') && !state.priya.decisionLocked;
-  const newCount = shouldPulse ? '1' : '0';
-  if (bell.dataset.count !== newCount) bell.dataset.count = newCount;
-  if (shouldPulse && !bell.classList.contains('td-bell-pulse')) {
-    bell.classList.add('td-bell-pulse');
-  } else if (!shouldPulse && bell.classList.contains('td-bell-pulse')) {
-    bell.classList.remove('td-bell-pulse');
+  const isRouted = (pill === 'ROUTED_TO_TRADING_DESK');
+  const locked = state.priya.decisionLocked;
+
+  const baselineTiles = `
+    <div class="td-task-tile" data-tile="trd-0218">
+      <div class="td-task-what">Cover Sakra-CCGT-1 standby balancing position</div>
+      <div class="td-task-why">Cross-site availability window · 14:00–22:00 SGT</div>
+      <div class="td-task-meta">
+        <span class="td-task-money">~SGD 85k spread potential</span>
+        <span class="td-task-timer">⏱ 45 min</span>
+      </div>
+    </div>
+    <div class="td-task-tile" data-tile="trd-0224">
+      <div class="td-task-what">USEP forward curve · Q3 hedge eligibility review</div>
+      <div class="td-task-why">Position review before settlement window close</div>
+      <div class="td-task-meta">
+        <span class="td-task-money">~SGD 120k hedge exposure</span>
+        <span class="td-task-timer">⏱ 2h</span>
+      </div>
+    </div>
+    <div class="td-task-tile" data-tile="trd-0231">
+      <div class="td-task-what">PSO dispatch reconciliation · variance check</div>
+      <div class="td-task-why">Yesterday's actual vs scheduled · settle by EOD</div>
+      <div class="td-task-meta">
+        <span class="td-task-money">~SGD 40k variance impact</span>
+        <span class="td-task-timer">⏱ 4h</span>
+      </div>
+    </div>`;
+
+  let topTile = '';
+  if (locked) {
+    const opt = PRIYA_LOCKED_OPTION_TILE[state.priya.selectedOption] || { what: 'Hedge locked', why: 'Revenue exposure neutralized.' };
+    topTile = `
+      <div class="td-task-tile td-task-completed" data-tile="inc-completed">
+        <div class="td-task-completed-badge">✓ Locked</div>
+        <div class="td-task-what">${opt.what}</div>
+        <div class="td-task-why">${opt.why}</div>
+      </div>`;
+  } else if (isRouted) {
+    topTile = `
+      <div class="td-task-tile td-task-urgent" data-tile="inc">
+        <div class="td-task-urgent-badge">URGENT</div>
+        <div class="td-task-what">Buy USEP forward · Jul-26 · 50 MW · Q3 peak window</div>
+        <div class="td-task-why">JRG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT</div>
+        <div class="td-task-meta">
+          <span class="td-task-money">~SGD 240k at risk</span>
+          <span class="td-task-timer">⏱ 28 min</span>
+        </div>
+        <button class="td-task-action" type="button">Open</button>
+      </div>`;
   }
+
+  list.innerHTML = topTile + baselineTiles;
+  wireUrgentTaskTile();
+}
+
+function wireUrgentTaskTile() {
+  const btn = document.querySelector('.td-task-tile[data-tile="inc"] .td-task-action');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', () => {
+    if (state.priya.decisionLocked) return;
+    if (state.screen !== 'incident-detail') {
+      state.history.push(state.screen);
+      state.screen = 'incident-detail';
+    }
+    render();
+  });
 }
 
 const PRIYA_LAPTOP_OPTION_LABEL = {
@@ -3935,8 +4013,7 @@ function renderRightPanePriya() {
       <div class="pn-s-num">★</div>
       <div class="pn-s-body">
         <div class="pn-s-title">Commercial intelligence cluster</div>
-        <div class="pn-s-sub">7 new nodes integrated into the KG: merchant prices · power purchase agreements · supply/demand curves · cross-site availability.</div>
-        <div class="pn-s-meta">Sources: USEP · merchant market feed · PPA registry · cross-site SCADA</div>
+        <div class="pn-s-sub">23 new nodes across Markets · Contracts · Cross-site Network layers: merchant prices · power purchase agreements · supply/demand curves · cross-site availability.</div>
       </div>
       <button class="pn-s-play" type="button" data-section="P3-KG" data-action="open-kg">
         <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
@@ -3962,26 +4039,27 @@ function wirePriyaRightPaneButtons() {
 // W10 Section H — P2 Lim right-pane narrative (Safety · Tacit · KG promotion)
 // ═══════════════════════════════════════════════════════════════
 
+// W12 Section G — Lim right pane reverts to 3 sections (A safety · B tacit · C KG)
 const P2_NARRATIVE_SECTIONS = [
   {
     num: 'A',
-    title: 'Safety-first field gating',
-    sub: 'HSE agents block field work unless safety certs + PPE + LOTO state are current.',
-    meta: '3 domain experts · 1 critic · sources: Org Knowledge · Hyperspace',
+    title: 'Safety protocol enforcement · workflow stage gate',
+    sub: 'HSE agents inject a self-alert mid-workflow. Work blocks until safety checks clear, then resumes.',
+    action: 'modal',
     buttonLabel: 'Play',
   },
   {
     num: 'B',
-    title: 'Tacit knowledge capture from calls + chats',
-    sub: 'AI extracts the engineering insight that\'s normally lost on the phone or WhatsApp.',
-    meta: '3 domain experts · 1 critic · sources: call audio · Org Knowledge',
+    title: 'Tacit knowledge capture · Singlish-aware transcription',
+    sub: 'Audio in. Language detected: English-Singapore. Engineering nuance captured.',
+    action: 'modal',
     buttonLabel: 'Play',
   },
   {
     num: 'C',
     title: 'Tacit knowledge → Knowledge Graph promotion',
-    sub: 'Agents triage tacit bytes · process engineers review · only validated insights promote to the KG.',
-    meta: '3 domain experts · 2 critics · sources: tacit staging · Main KG',
+    sub: 'Triage · review · only validated insights promote.',
+    action: 'open-kg',
     buttonLabel: 'Open KG',
   },
 ];
@@ -4000,22 +4078,25 @@ function renderRightPaneLim() {
   wrap.innerHTML = `
     <div class="pn-header">
       <div class="pn-h-title">On-site agents at work · 3 capabilities</div>
-      <div class="pn-h-sub">Safety-first dispatch · tacit knowledge capture · KG learning loop.</div>
+      <div class="pn-h-sub">Safety enforcement · tacit knowledge capture · KG learning loop.</div>
     </div>
-    ${P2_NARRATIVE_SECTIONS.map(s => `
-      <div class="pn-section ${state.w10.playedSections.p2[s.num] ? 'pn-section-played' : ''}" data-section="${s.num}">
+    ${P2_NARRATIVE_SECTIONS.map(s => {
+      const isKG = s.action === 'open-kg';
+      const played = state.w10.playedSections.p2[s.num];
+      const btnLabel = isKG ? 'Open KG' : (played ? '✓ Replay' : 'Play');
+      return `
+      <div class="pn-section ${!isKG && played ? 'pn-section-played' : ''}" data-section="${s.num}">
         <div class="pn-s-num">${s.num}</div>
         <div class="pn-s-body">
           <div class="pn-s-title">${s.title}</div>
           <div class="pn-s-sub">${s.sub}</div>
-          <div class="pn-s-meta">${s.meta}</div>
         </div>
-        <button class="pn-s-play ${s.num !== 'C' && state.w10.playedSections.p2[s.num] ? 'pn-s-played' : ''}" type="button" data-section="${s.num}" data-action="${s.num === 'C' ? 'open-kg' : 'modal'}">
+        <button class="pn-s-play ${!isKG && played ? 'pn-s-played' : ''}" type="button" data-section="${s.num}" data-action="${s.action}">
           <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
-          <span>${s.num === 'C' ? 'Open KG' : (state.w10.playedSections.p2[s.num] ? '✓ Replay' : 'Play')}</span>
+          <span>${btnLabel}</span>
         </button>
-      </div>
-    `).join('')}
+      </div>`;
+    }).join('')}
   `;
   host.appendChild(wrap);
   wireLimRightPaneButtons();
@@ -4042,47 +4123,18 @@ function wireLimRightPaneButtons() {
 // W10 — P2 modal content defs
 // ═══════════════════════════════════════════════════════════════
 
+// W12 Section G.2 — P2 Section A: Safety stage-gate theater.
+// Workflow bar w/ 5 stages plays · alert flashes · safety gate slides in · 3 checks resolve · gate clears · workflow resumes.
 const P2_SECTION_A = {
-  num: 'A', title: 'Safety-first field gating',
-  domain: [
-    { name: 'HSE Field Compliance Agent', persistent: 'hse',  dataSource: 'Org Knowledge' },
-    { name: 'Safety Cert Validator',      persistent: null,   dataSource: 'Org Knowledge' },
-    { name: 'PPE/LOTO Check Agent',       persistent: null,   dataSource: 'Hyperspace' },
-  ],
-  orch: [
-    { name: 'A2A Coordination Agent', persistent: 'workflow' },
-  ],
-  critique: [
-    { name: 'HSE Risk Validator', persistent: 'hse' },
-  ],
-  sources: ['Org Knowledge · cert records', 'Hyperspace · LOTO state'],
-  narration: [
-    'HSE agents pull current safety certifications + PPE issue records from Org Knowledge.',
-    'PPE/LOTO Check Agent confirms lockout/tagout state on the asset from Hyperspace.',
-    'HSE Risk Validator gates field dispatch — block if any cert lapsed or LOTO not asserted.',
-  ],
+  num: 'A', title: 'Safety protocol enforcement · workflow stage gate',
+  template: 'safety-gate',
 };
 
+// W12 Section G.3 — P2 Section B: Tacit Singlish-detection theater.
+// Audio waveform · language detection pulse · 5 Singlish bubbles · 5 bytes coalesced.
 const P2_SECTION_B = {
-  num: 'B', title: 'Tacit knowledge capture from calls + chats',
-  domain: [
-    { name: 'Audio-transcription Agent', persistent: 'audio-transcription', dataSource: 'Call audio' },
-    { name: 'Tacit Knowledge Extractor', persistent: null,                  dataSource: 'Transcript' },
-    { name: 'Semantic Tag Agent',        persistent: null,                  dataSource: 'Main KG' },
-  ],
-  orch: [
-    { name: 'A2A Coordination Agent', persistent: 'workflow' },
-  ],
-  critique: [
-    { name: 'Tacit Relevance Critic', persistent: null },
-  ],
-  sources: ['Call audio · Lim ↔ Wong', 'Main KG · entity catalog'],
-  narration: [
-    'Audio-transcription Agent converts the Lim ↔ Wong call into structured transcript.',
-    'Tacit Knowledge Extractor surfaces the engineering insight the engineers exchange in passing.',
-    'Semantic Tag Agent maps the insight to existing entities in the Main KG (Sulzer, BFP casing, 4-o\'clock volute).',
-    'Tacit Relevance Critic filters out small-talk and routes only operationally-relevant bytes onward.',
-  ],
+  num: 'B', title: 'Tacit knowledge capture · Singlish-aware transcription',
+  template: 'tacit-singlish',
 };
 
 const P2_SECTION_BY_NUM = { 'A': P2_SECTION_A, 'B': P2_SECTION_B };
@@ -4148,7 +4200,6 @@ function renderRightPaneFaye() {
         <div class="pn-s-body">
           <div class="pn-s-title">${s.title}</div>
           <div class="pn-s-sub">${s.sub}</div>
-          <div class="pn-s-meta">${s.meta}</div>
         </div>
         <button class="pn-s-play ${state.w10.playedSections.p1[s.num] ? 'pn-s-played' : ''}" type="button" data-section="${s.num}">
           <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
@@ -4201,51 +4252,34 @@ const P1_SECTION_1 = {
   ],
 };
 
+// W11 Section E — Anticipation theater (4-step storyboard)
 const P1_SECTION_2 = {
   num: 2, title: 'SOP-driven telemetry confirmation',
-  domain: [
-    { name: 'SOP Retrieval Agent',          persistent: null,         dataSource: 'Org Knowledge' },
-    { name: 'Sensor Anomaly Inspector',     persistent: 'inspection', dataSource: 'Hyperspace' },
-    { name: 'Telemetry Snapshot Compiler',  persistent: null,         dataSource: 'Hyperspace' },
+  template: 'anticipation',
+  steps: [
+    { idx: 1, visual: 'sop-doc',         agent: 'SOP Retrieval Agent',         persistent: null,         caption: 'Pulls SOP-BFP-VIBR-001 from Org Knowledge' },
+    { idx: 2, visual: 'sop-highlight',   agent: 'SOP Adherence Critic',        persistent: null,         caption: 'Flags Step 7: operator must verify telemetry' },
+    { idx: 3, visual: 'chart-draw',      agent: 'Sensor Anomaly Inspector',    persistent: 'inspection', caption: 'Pulls last 15-min vibration RMS · NDE bearing housing' },
+    { idx: 4, visual: 'snapshot-staged', agent: 'Telemetry Snapshot Compiler', persistent: null,         caption: 'Bundles snapshot, places it in Faye Sit\'s queue' },
   ],
-  orch: [
-    { name: 'Orchestrator',           persistent: 'orchestrator' },
-    { name: 'A2A Coordination Agent', persistent: 'workflow' },
-  ],
-  critique: [
-    { name: 'SOP Adherence Critic',  persistent: null },
-    { name: 'Critic · Power Gen',    persistent: 'critic-power-gen' },
-  ],
-  sources: ['Hyperspace · last-15-min snapshot', 'Org Knowledge · SOP-BFP-VIBR-001'],
-  narration: [
-    'SOP says the operator must visually confirm the alarm against telemetry.',
-    'Agents fetch the last 15 minutes of vibration RMS from Hyperspace and bundle it as a snapshot.',
-    'SOP Adherence Critic confirms the snapshot satisfies the SOP gate.',
-  ],
+  footer: 'The agents anticipated. Faye never asked. The snapshot was already waiting.',
 };
 
+// W11 Section F — Parallel-match theater (4×4 matrix)
 const P1_SECTION_3 = {
   num: 3, title: 'Scheduling · Expertise match · Dispatch',
-  domain: [
-    { name: 'Duty Roster Agent',          persistent: null,        dataSource: 'Org Knowledge' },
-    { name: 'Expertise Match Agent',      persistent: null,        dataSource: 'Org Knowledge' },
-    { name: 'Availability Window Agent',  persistent: null,        dataSource: 'Org Knowledge' },
-    { name: 'A2A Coordination Agent',     persistent: 'workflow' },
+  template: 'parallel-match',
+  criteria: ['Roster Check', 'Expertise Match', 'Availability Window', 'Certs Validator'],
+  candidates: [
+    { id: 'lim',       name: 'Lim Wei Jie', results: ['pass', 'pass', 'pass', 'pass'], winner: true  },
+    { id: 'j-tan',     name: 'J. Tan',      results: ['pass', 'fail', 'na',   'na'  ], winner: false },
+    { id: 's-ibrahim', name: 'S. Ibrahim',  results: ['pass', 'pass', 'fail', 'na'  ], winner: false },
+    { id: 'm-lim',     name: 'M. Lim',      results: ['pass', 'pass', 'pass', 'fail'], winner: false },
   ],
-  orch: [
-    { name: 'Orchestrator', persistent: 'orchestrator' },
-  ],
-  critique: [
-    { name: 'Workforce Compliance Critic', persistent: null },
-  ],
-  sources: ['Org Knowledge · duty roster', 'Org Knowledge · expertise database', 'Org Knowledge · cert + training records'],
-  narration: [
-    'Agents check the duty roster for the right shift window.',
-    'Expertise Match confirms BFP / Sulzer / centrifugal-pump experience for the candidate.',
-    'Availability Window confirms Lim Wei Jie is free for the full 45-minute window.',
-    'Workforce Compliance Critic confirms his safety certs and recent SOP refresher are current.',
-    'A2A Coordination Agent fires the dispatch with all incident context pre-attached — no phone calls needed.',
-  ],
+  counterLabel: '4 criteria × 4 candidates · evaluated in parallel',
+  counterTime: '20-minute phone tag → ',
+  counterTimeBold: '2.4 seconds',
+  dispatchHTML: '→ <strong>A2A Coordination Agent</strong> · dispatching to <span class="dyn-name">Lim Wei Jie</span> · payload pre-attached',
 };
 
 const P1_SECTION_BY_NUM = { '1': P1_SECTION_1, '2': P1_SECTION_2, '3': P1_SECTION_3 };
@@ -4282,49 +4316,7 @@ function openNarrativeModal(scope, sectionDef) {
         <button class="nm-close" type="button" aria-label="Close">×</button>
       </div>
       <div class="narrative-modal-body" id="narrative-modal-body">
-        <div class="nv-canvas">
-          <div class="nv-bucket" data-bucket-type="domain">
-            <div class="nv-bucket-label">Domain experts · transient</div>
-            <div class="nv-agents">
-              ${sectionDef.domain.map((a, i) => `<span class="nv-agent" data-bucket="domain" data-idx="${i}">${a.name}</span>`).join('')}
-            </div>
-          </div>
-          <div class="nv-arrow" data-direction="down">
-            <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
-            <span>orchestrated by</span>
-          </div>
-          <div class="nv-bucket" data-bucket-type="orch">
-            <div class="nv-bucket-label">Orchestration</div>
-            <div class="nv-agents">
-              ${sectionDef.orch.map((a, i) => `<span class="nv-agent" data-bucket="orch" data-idx="${i}">${a.name}</span>`).join('')}
-            </div>
-          </div>
-          <div class="nv-arrow" data-direction="down">
-            <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
-            <span>validated by</span>
-          </div>
-          <div class="nv-bucket" data-bucket-type="critique">
-            <div class="nv-bucket-label">Critique</div>
-            <div class="nv-agents">
-              ${sectionDef.critique.map((a, i) => `<span class="nv-agent" data-bucket="critique" data-idx="${i}">${a.name}</span>`).join('')}
-            </div>
-          </div>
-          <div class="nv-loop">
-            <svg viewBox="0 0 18 18"><path d="M14 4 A6 6 0 1 1 4 4 M14 4 L11 1 M14 4 L11 7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-            <span>continuous monitoring</span>
-          </div>
-          <div class="nv-sources">
-            <div class="nv-sources-label">Data sources used:</div>
-            <div class="nv-source-pills">
-              ${sectionDef.sources.map(s => `<span class="nv-source-pill" data-source="${s.split(' · ')[0]}">${s}</span>`).join('')}
-            </div>
-          </div>
-          ${sectionDef.narration ? `
-            <div class="nv-narration">
-              ${sectionDef.narration.map(line => `<span class="nv-narration-line">› ${line}</span>`).join('')}
-            </div>
-          ` : ''}
-        </div>
+        ${buildNarrativeModalCanvas(sectionDef)}
       </div>
     </div>
   `;
@@ -4385,6 +4377,14 @@ function closeNarrativeModal() {
 // ═══════════════════════════════════════════════════════════════
 
 function playNarrativeModalAnimation(sectionDef) {
+  // W11/W12 — dispatch by template
+  const tmpl = sectionDef.template;
+  if (tmpl === 'anticipation')    return playAnticipationAnimation(sectionDef);
+  if (tmpl === 'parallel-match')  return playParallelMatchAnimation(sectionDef);
+  if (tmpl === 'split-canvas')    return playSplitCanvasAnimation(sectionDef);
+  if (tmpl === 'safety-gate')     return playSafetyGateAnimation(sectionDef);
+  if (tmpl === 'tacit-singlish')  return playTacitSinglishAnimation(sectionDef);
+
   const seq = [];
   // Phase 1 — domain agents
   (sectionDef.domain || []).forEach((agent, idx) => {
@@ -4419,6 +4419,466 @@ function playNarrativeModalAnimation(sectionDef) {
   });
 
   state.w10.modalTimers = seq.map(step => setTimeout(() => applyNarrativeAction(step), step.at));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// W11 — Narrative modal: per-template canvas builders + sequencers
+// ═══════════════════════════════════════════════════════════════
+
+function buildNarrativeModalCanvas(sectionDef) {
+  const tmpl = sectionDef.template;
+  if (tmpl === 'anticipation')    return buildAnticipationCanvas(sectionDef);
+  if (tmpl === 'parallel-match')  return buildParallelMatchCanvas(sectionDef);
+  if (tmpl === 'split-canvas')    return buildSplitCanvas(sectionDef);
+  if (tmpl === 'safety-gate')     return buildSafetyGateCanvas(sectionDef);
+  if (tmpl === 'tacit-singlish')  return buildTacitSinglishCanvas(sectionDef);
+  return buildDefaultBucketCanvas(sectionDef);
+}
+
+function buildDefaultBucketCanvas(sectionDef) {
+  return `
+    <div class="nv-canvas">
+      <div class="nv-bucket" data-bucket-type="domain">
+        <div class="nv-bucket-label">Domain experts · transient</div>
+        <div class="nv-agents">
+          ${(sectionDef.domain || []).map((a, i) => `<span class="nv-agent" data-bucket="domain" data-idx="${i}">${a.name}</span>`).join('')}
+        </div>
+      </div>
+      <div class="nv-arrow" data-direction="down">
+        <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
+        <span>orchestrated by</span>
+      </div>
+      <div class="nv-bucket" data-bucket-type="orch">
+        <div class="nv-bucket-label">Orchestration</div>
+        <div class="nv-agents">
+          ${(sectionDef.orch || []).map((a, i) => `<span class="nv-agent" data-bucket="orch" data-idx="${i}">${a.name}</span>`).join('')}
+        </div>
+      </div>
+      <div class="nv-arrow" data-direction="down">
+        <svg viewBox="0 0 16 20"><path d="M8 0 V18 M2 12 L8 18 L14 12"/></svg>
+        <span>validated by</span>
+      </div>
+      <div class="nv-bucket" data-bucket-type="critique">
+        <div class="nv-bucket-label">Critique</div>
+        <div class="nv-agents">
+          ${(sectionDef.critique || []).map((a, i) => `<span class="nv-agent" data-bucket="critique" data-idx="${i}">${a.name}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Anticipation theater (P1 Section 2 · W11) ─────────────────
+const ANTICIPATION_VISUALS = {
+  'sop-doc': `
+    <svg class="nv-sop-doc" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="4" width="62" height="92" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+      <rect x="6" y="4" width="62" height="14" fill="#E0F2FE" stroke="none"/>
+      <text x="12" y="14" font-family="ui-monospace, monospace" font-size="6" font-weight="800" fill="#0369A1">SOP-BFP-VIBR-001</text>
+      <line x1="12" y1="26" x2="62" y2="26" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="34" x2="62" y2="34" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="42" x2="55" y2="42" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="50" x2="62" y2="50" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="58" x2="50" y2="58" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="66" x2="62" y2="66" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="74" x2="58" y2="74" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="12" y1="82" x2="48" y2="82" stroke="#CBD5E1" stroke-width="1"/>
+    </svg>`,
+  'sop-highlight': `
+    <svg class="nv-sop-doc-zoomed" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="4" width="62" height="92" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+      <text x="10" y="16" font-family="ui-monospace, monospace" font-size="5" fill="#64748B">Step 5 · Inspect bearing housing</text>
+      <text x="10" y="26" font-family="ui-monospace, monospace" font-size="5" fill="#64748B">Step 6 · Check bearing temp</text>
+      <rect x="6" y="32" width="62" height="20" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="10" y="42" font-family="ui-monospace, monospace" font-size="5" font-weight="800" fill="#92400E">Step 7 · Verify telemetry vs</text>
+      <text x="10" y="48" font-family="ui-monospace, monospace" font-size="5" font-weight="800" fill="#92400E">baseline (last 15 min RMS)</text>
+      <text x="10" y="62" font-family="ui-monospace, monospace" font-size="5" fill="#64748B">Step 8 · Pull RCA history</text>
+      <text x="10" y="72" font-family="ui-monospace, monospace" font-size="5" fill="#64748B">Step 9 · Dispatch onsite eng</text>
+      <text x="10" y="82" font-family="ui-monospace, monospace" font-size="5" fill="#64748B">Step 10 · Log to incident DB</text>
+    </svg>`,
+  'chart-draw': `
+    <svg class="nv-vibration-chart" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="68" x2="116" y2="68" stroke="#94A3B8" stroke-width="0.8"/>
+      <line x1="12" y1="68" x2="12" y2="8" stroke="#94A3B8" stroke-width="0.8"/>
+      <text x="6" y="14" font-family="ui-monospace, monospace" font-size="4" fill="#64748B" text-anchor="end">10</text>
+      <text x="6" y="38" font-family="ui-monospace, monospace" font-size="4" fill="#64748B" text-anchor="end">5</text>
+      <text x="6" y="68" font-family="ui-monospace, monospace" font-size="4" fill="#64748B" text-anchor="end">0</text>
+      <line x1="12" y1="32" x2="116" y2="32" stroke="#F59E0B" stroke-width="0.5" stroke-dasharray="2 2"/>
+      <text x="116" y="30" font-family="ui-monospace, monospace" font-size="3.5" fill="#F59E0B" text-anchor="end">7.1 alarm</text>
+      <path class="nv-chart-line" d="M 12 60 L 22 56 L 32 54 L 42 50 L 52 46 L 62 42 L 72 38 L 82 32 L 92 26 L 102 22 L 112 18"
+            fill="none" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round"
+            stroke-dasharray="180" stroke-dashoffset="180"/>
+    </svg>`,
+  'snapshot-staged': `
+    <svg class="nv-tablet-with-chart" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="8" width="92" height="60" rx="4" fill="#1F2937" stroke="none"/>
+      <rect x="19" y="13" width="82" height="50" rx="2" fill="#FFFFFF" stroke="none"/>
+      <line x1="24" y1="56" x2="96" y2="56" stroke="#94A3B8" stroke-width="0.6"/>
+      <path d="M 24 50 L 32 47 L 40 44 L 48 40 L 56 35 L 64 30 L 72 25 L 80 20 L 88 17 L 96 14" fill="none" stroke="#DC2626" stroke-width="1.5"/>
+      <text x="60" y="22" font-family="ui-monospace, monospace" font-size="3.5" font-weight="800" fill="#0F1B3D" text-anchor="middle">vibration RMS · last 15 min</text>
+    </svg>`,
+};
+
+function buildAnticipationCanvas(sectionDef) {
+  const stepsHTML = sectionDef.steps.map((s, i) => `
+    <div class="nv-step" data-step="${s.idx}" data-revealed="false">
+      <div class="nv-step-num">${s.idx}</div>
+      <div class="nv-step-visual" data-visual="${s.visual}">
+        ${ANTICIPATION_VISUALS[s.visual] || ''}
+        ${s.visual === 'snapshot-staged' ? '<div class="nv-anticipated-badge">✓ Anticipated · staged for Faye Sit</div>' : ''}
+      </div>
+      <div class="nv-step-agent">${s.agent}</div>
+      <div class="nv-step-caption">${s.caption}</div>
+    </div>
+    ${i < sectionDef.steps.length - 1 ? '<div class="nv-step-arrow" data-arrow="' + (i + 1) + '">→</div>' : ''}
+  `).join('');
+  return `
+    <div class="nv-anticipation-canvas">${stepsHTML}</div>
+  `;
+}
+
+function playAnticipationAnimation(sectionDef) {
+  const timers = [];
+  const reveal = stepIdx => {
+    const body = document.getElementById('narrative-modal-body');
+    if (!body) return;
+    const el = body.querySelector(`.nv-step[data-step="${stepIdx}"]`);
+    if (el) el.dataset.revealed = 'true';
+  };
+  const activateArrow = arrowIdx => {
+    const body = document.getElementById('narrative-modal-body');
+    if (!body) return;
+    const el = body.querySelector(`.nv-step-arrow[data-arrow="${arrowIdx}"]`);
+    if (el) el.dataset.active = 'true';
+  };
+  const drawChart = () => {
+    const body = document.getElementById('narrative-modal-body');
+    if (!body) return;
+    const el = body.querySelector('.nv-chart-line');
+    if (el) el.style.strokeDashoffset = '0';
+  };
+  const pulsePersistent = step => {
+    if (step.persistent && typeof fireAgentCardLifecycle === 'function') {
+      try { fireAgentCardLifecycle(step.persistent, 1500); } catch (_) {}
+    }
+  };
+
+  const steps = sectionDef.steps;
+  // Step 1 reveal · arrow 1→2 · Step 2 · arrow 2→3 · Step 3 + chart · arrow 3→4 · Step 4
+  timers.push(setTimeout(() => { reveal(1); pulsePersistent(steps[0]); }, 200));
+  timers.push(setTimeout(() => activateArrow(1), 2000));
+  timers.push(setTimeout(() => { reveal(2); pulsePersistent(steps[1]); }, 2500));
+  timers.push(setTimeout(() => activateArrow(2), 4500));
+  timers.push(setTimeout(() => { reveal(3); pulsePersistent(steps[2]); drawChart(); }, 5000));
+  timers.push(setTimeout(() => activateArrow(3), 7500));
+  timers.push(setTimeout(() => { reveal(4); pulsePersistent(steps[3]); }, 8000));
+
+  state.w10.modalTimers = timers;
+}
+
+// ── Parallel-match theater (P1 Section 3 · W11) ───────────────
+function buildParallelMatchCanvas(sectionDef) {
+  const colTH = sectionDef.criteria.map(c => {
+    const parts = c.split(' ');
+    const top = parts[0];
+    const bot = parts.slice(1).join(' ');
+    return `<th><div class="nv-pm-col-title">${top}<br><span>${bot}</span></div></th>`;
+  }).join('');
+  const rowsHTML = sectionDef.candidates.map(c => `
+    <tr class="nv-pm-row" data-candidate="${c.id}">
+      <td class="nv-pm-name">${c.name}</td>
+      ${c.results.map((_, i) => `<td class="nv-pm-cell" data-result="pending" data-cell-idx="${i}"></td>`).join('')}
+      <td class="nv-pm-result-badge"></td>
+    </tr>
+  `).join('');
+  return `
+    <div class="nv-parallel-match-canvas">
+      <table class="nv-pm-grid">
+        <thead>
+          <tr><th></th>${colTH}<th></th></tr>
+        </thead>
+        <tbody>
+          ${rowsHTML}
+        </tbody>
+      </table>
+      <div class="nv-pm-counter">
+        <span class="nv-pm-counter-label">${sectionDef.counterLabel}</span>
+        <span class="nv-pm-counter-time">${sectionDef.counterTime}<strong>${sectionDef.counterTimeBold}</strong></span>
+      </div>
+      <div class="nv-pm-dispatch-fire">${sectionDef.dispatchHTML}</div>
+    </div>
+  `;
+}
+
+function playParallelMatchAnimation(sectionDef) {
+  const timers = [];
+  const body = () => document.getElementById('narrative-modal-body');
+
+  // t=2.5s–4s · cells resolve in mixed order
+  // Stagger results: per-candidate-per-cell timing varied so resolution feels parallel-but-not-uniform
+  sectionDef.candidates.forEach((c, rIdx) => {
+    c.results.forEach((res, cIdx) => {
+      const offset = 2500 + rIdx * 120 + cIdx * 380 + Math.floor(Math.random() * 400);
+      timers.push(setTimeout(() => {
+        const root = body();
+        if (!root) return;
+        const cell = root.querySelector(`.nv-pm-row[data-candidate="${c.id}"] .nv-pm-cell[data-cell-idx="${cIdx}"]`);
+        if (cell) cell.dataset.result = res;
+      }, offset));
+    });
+    if (c.winner) {
+      // Highlight winner row + GO badge at t=4.5s
+      timers.push(setTimeout(() => {
+        const root = body();
+        if (!root) return;
+        const row = root.querySelector(`.nv-pm-row[data-candidate="${c.id}"]`);
+        if (row) {
+          row.dataset.winner = 'true';
+          const badge = row.querySelector('.nv-pm-result-badge');
+          if (badge) badge.dataset.winner = 'true';
+        }
+      }, 4500));
+    }
+  });
+
+  // t=6s · dispatch-fire activates
+  timers.push(setTimeout(() => {
+    const root = body();
+    if (!root) return;
+    const fire = root.querySelector('.nv-pm-dispatch-fire');
+    if (fire) fire.dataset.active = 'true';
+    if (typeof fireAgentCardLifecycle === 'function') {
+      try { fireAgentCardLifecycle('workflow', 2000); } catch (_) {}
+    }
+  }, 6000));
+
+  state.w10.modalTimers = timers;
+}
+
+// ── Split-canvas (P2 combined Section A · W11) ────────────────
+function buildSplitCanvas(sectionDef) {
+  const colHTML = (col, key) => `
+    <div class="nv-split-col" data-col="${key}">
+      <div class="nv-split-col-title">${col.colTitle}</div>
+      <div class="nv-split-agents">
+        ${col.agents.map((a, i) => `
+          <div class="nv-split-agent" data-col="${key}" data-idx="${i}">
+            <span class="nv-split-check">✓</span>
+            <span class="nv-split-agent-name">${a.name}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="nv-split-critic" data-col="${key}">${col.critic}</div>
+      <div class="nv-split-outcome" data-col="${key}">${col.outcome}</div>
+    </div>`;
+  return `
+    <div class="nv-split-canvas">
+      <div class="nv-split-banner">${sectionDef.banner}</div>
+      <div class="nv-split-cols">
+        ${colHTML(sectionDef.safety, 'safety')}
+        ${colHTML(sectionDef.tacit,  'tacit')}
+      </div>
+      <div class="nv-split-footer">${sectionDef.footer}</div>
+    </div>
+  `;
+}
+
+function playSplitCanvasAnimation(sectionDef) {
+  const timers = [];
+  const body = () => document.getElementById('narrative-modal-body');
+
+  const revealAgent = (col, idx) => {
+    const root = body();
+    if (!root) return;
+    const el = root.querySelector(`.nv-split-agent[data-col="${col}"][data-idx="${idx}"]`);
+    if (el) el.dataset.revealed = 'true';
+  };
+  const revealCritic = col => {
+    const root = body();
+    if (!root) return;
+    const el = root.querySelector(`.nv-split-critic[data-col="${col}"]`);
+    if (el) el.dataset.revealed = 'true';
+  };
+  const revealOutcome = col => {
+    const root = body();
+    if (!root) return;
+    const el = root.querySelector(`.nv-split-outcome[data-col="${col}"]`);
+    if (el) el.dataset.revealed = 'true';
+  };
+  const revealFooter = () => {
+    const root = body();
+    if (!root) return;
+    const el = root.querySelector('.nv-split-footer');
+    if (el) el.dataset.revealed = 'true';
+  };
+  const pulseCol = col => {
+    col.agents.forEach(a => {
+      if (a.persistent && typeof fireAgentCardLifecycle === 'function') {
+        try { fireAgentCardLifecycle(a.persistent, 1500); } catch (_) {}
+      }
+    });
+  };
+
+  // Left col agents reveal 1-by-1 starting at t=500ms (gap 900ms)
+  sectionDef.safety.agents.forEach((_, i) => {
+    timers.push(setTimeout(() => revealAgent('safety', i), 500 + i * 900));
+  });
+  sectionDef.tacit.agents.forEach((_, i) => {
+    timers.push(setTimeout(() => revealAgent('tacit', i), 500 + i * 900));
+  });
+  timers.push(setTimeout(() => pulseCol(sectionDef.safety), 700));
+  timers.push(setTimeout(() => pulseCol(sectionDef.tacit), 700));
+  // Critics at t=3.5s
+  timers.push(setTimeout(() => { revealCritic('safety'); revealCritic('tacit'); }, 3500));
+  // Outcomes at t=4.5s
+  timers.push(setTimeout(() => { revealOutcome('safety'); revealOutcome('tacit'); }, 4500));
+  // Footer at t=6s
+  timers.push(setTimeout(revealFooter, 6000));
+
+  state.w10.modalTimers = timers;
+}
+
+// ── W12 Section G.2 — Safety stage-gate theater ──────────────
+function buildSafetyGateCanvas(sectionDef) {
+  return `
+    <div class="nv-safety-gate-canvas">
+      <div class="nv-sg-workflow-bar">
+        <div class="nv-sg-stage" data-stage="1" data-state="done">Dispatch</div>
+        <div class="nv-sg-arrow"></div>
+        <div class="nv-sg-stage" data-stage="2" data-state="done">Site arrival</div>
+        <div class="nv-sg-arrow"></div>
+        <div class="nv-sg-stage" data-stage="3" data-state="active">Verify state</div>
+        <div class="nv-sg-arrow"></div>
+        <div class="nv-sg-stage" data-stage="4" data-state="pending">Inspection</div>
+        <div class="nv-sg-arrow"></div>
+        <div class="nv-sg-stage" data-stage="5" data-state="pending">Begin work</div>
+      </div>
+      <div class="nv-sg-alert" data-revealed="false">
+        <div class="nv-sg-alert-icon">⚠</div>
+        <div class="nv-sg-alert-text">
+          <strong>HSE Field Compliance Agent</strong> · self-alert · stage gate required
+        </div>
+      </div>
+      <div class="nv-sg-gate" data-revealed="false">
+        <div class="nv-sg-gate-title">SAFETY GATE · auto-inserted</div>
+        <div class="nv-sg-gate-checks">
+          <div class="nv-sg-check" data-check="hse" data-result="pending">HSE Compliance Agent · checking site safety status</div>
+          <div class="nv-sg-check" data-check="cert" data-result="pending">Safety Cert Validator · checking <span class="dyn-name">Lim Wei Jie</span> certs</div>
+          <div class="nv-sg-check" data-check="ppe" data-result="pending">PPE/LOTO Check Agent · verifying LOTO state</div>
+        </div>
+        <div class="nv-sg-gate-outcome" data-revealed="false">→ Gate cleared · work UNBLOCKED</div>
+      </div>
+    </div>
+  `;
+}
+
+function playSafetyGateAnimation(sectionDef) {
+  const timers = [];
+  const body = () => document.getElementById('narrative-modal-body');
+  const setStage = (stage, st) => {
+    const root = body(); if (!root) return;
+    const el = root.querySelector(`.nv-sg-stage[data-stage="${stage}"]`);
+    if (el) el.dataset.state = st;
+  };
+  const reveal = sel => {
+    const root = body(); if (!root) return;
+    const el = root.querySelector(sel);
+    if (el) el.dataset.revealed = 'true';
+  };
+  const setCheck = (key, res) => {
+    const root = body(); if (!root) return;
+    const el = root.querySelector(`.nv-sg-check[data-check="${key}"]`);
+    if (el) el.dataset.result = res;
+  };
+
+  // t=0-2s · stage 3 active; stage 4 about to activate
+  timers.push(setTimeout(() => { setStage(3, 'done'); setStage(4, 'active'); }, 2000));
+  // t=2s · alert flashes
+  timers.push(setTimeout(() => reveal('.nv-sg-alert'), 2000));
+  // t=2.5s · gate slides in
+  timers.push(setTimeout(() => reveal('.nv-sg-gate'), 2500));
+  // t=3/4.5/6s · checks resolve
+  timers.push(setTimeout(() => setCheck('hse',  'pass'), 3000));
+  timers.push(setTimeout(() => setCheck('cert', 'pass'), 4500));
+  timers.push(setTimeout(() => setCheck('ppe',  'pass'), 6000));
+  // Persistent agent pulses
+  timers.push(setTimeout(() => { try { fireAgentCardLifecycle('hse', 1400); } catch (_) {} }, 3000));
+  // t=6.5s · outcome reveals
+  timers.push(setTimeout(() => reveal('.nv-sg-gate-outcome'), 6500));
+  // t=7s · workflow resumes — stage 4 done, stage 5 active
+  timers.push(setTimeout(() => { setStage(4, 'done'); setStage(5, 'active'); }, 7000));
+
+  state.w10.modalTimers = timers;
+}
+
+// ── W12 Section G.3 — Tacit Singlish-detection theater ───────
+function buildTacitSinglishCanvas(sectionDef) {
+  const bubbles = [
+    '"the pump tio jam already"',
+    '"casing got crack lah"',
+    '"same as Jurong 2 case"',
+    '"4 o\'clock side, near the discharge"',
+    '"Sulzer fail like this also can"',
+  ];
+  const bytes = [
+    { txt: 'Byte · casing weld pattern matches Jurong 2023',  unpromoted: false },
+    { txt: 'Byte · always check 4-o\'clock volute first',      unpromoted: false },
+    { txt: 'Byte · Sulzer-specific failure mode',              unpromoted: false },
+    { txt: 'Byte · vendor service rep visit (casual)',         unpromoted: true  },
+    { txt: 'Byte · Ismail mentioned Banyan case',              unpromoted: true  },
+  ];
+  return `
+    <div class="nv-tacit-singlish-canvas">
+      <div class="nv-ts-audio-strip">
+        <svg class="nv-ts-waveform" viewBox="0 0 320 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M0 20 Q10 8 20 20 T40 20 T60 12 T80 20 T100 6 T120 20 T140 14 T160 20 T180 4 T200 20 T220 16 T240 20 T260 10 T280 20 T300 14 T320 20"
+                stroke="#3B82F6" stroke-width="1.5" fill="none"/>
+        </svg>
+        <div class="nv-ts-audio-meta">Call audio · Lim Wei Jie ↔ <span class="dyn-name">Dr. A. Ismail</span> · 7m 23s</div>
+      </div>
+      <div class="nv-ts-detection" data-revealed="false">
+        🎤 <strong>Detected:</strong> English-Singapore (Singlish) · regional engineering vocabulary
+        <div class="nv-ts-agent">Audio-transcription Agent · language model adapted</div>
+      </div>
+      <div class="nv-ts-bubbles" data-revealed="false">
+        ${bubbles.map((b, i) => `<div class="nv-ts-bubble" data-idx="${i}" data-revealed="false">${b}</div>`).join('')}
+      </div>
+      <div class="nv-ts-extraction" data-revealed="false">
+        <div class="nv-ts-arrow-down">↓</div>
+        <div class="nv-ts-extraction-label">Tacit Knowledge Extractor · 5 bytes coalesced</div>
+        <div class="nv-ts-bytes">
+          ${bytes.map((b, i) => `<div class="nv-ts-byte" data-idx="${i}"${b.unpromoted ? ' data-unpromoted="true"' : ''} data-revealed="false">${b.txt}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function playTacitSinglishAnimation(sectionDef) {
+  const timers = [];
+  const body = () => document.getElementById('narrative-modal-body');
+  const reveal = sel => {
+    const root = body(); if (!root) return;
+    const el = root.querySelector(sel);
+    if (el) el.dataset.revealed = 'true';
+  };
+
+  // t=2s · detection pulse
+  timers.push(setTimeout(() => reveal('.nv-ts-detection'), 2000));
+  timers.push(setTimeout(() => { try { fireAgentCardLifecycle('audio-transcription', 1500); } catch (_) {} }, 2000));
+  // t=2.5s · bubbles container; bubbles 1-by-1 from t=3s
+  timers.push(setTimeout(() => reveal('.nv-ts-bubbles'), 2500));
+  for (let i = 0; i < 5; i++) {
+    timers.push(setTimeout(() => reveal(`.nv-ts-bubble[data-idx="${i}"]`), 3000 + i * 400));
+  }
+  // t=5.5s · extraction reveals (arrow + label)
+  timers.push(setTimeout(() => reveal('.nv-ts-extraction'), 5500));
+  // t=6-9s · 5 bytes reveal sequentially
+  for (let i = 0; i < 5; i++) {
+    timers.push(setTimeout(() => reveal(`.nv-ts-byte[data-idx="${i}"]`), 6000 + i * 600));
+  }
+
+  state.w10.modalTimers = timers;
 }
 
 function applyNarrativeAction(step) {
@@ -4541,7 +5001,7 @@ const KG_NODES = [
   // L1 People & Process (green) — y = 90
   { id: 'r-kumar',         label: 'Faye Sit · Ops',           layer: 'L1', x:  20, y: 90, z:  20 },
   { id: 'lim-wei-jie',     label: 'Lim Wei Jie · Onsite',     layer: 'L1', x: -20, y: 90, z: -20 },
-  { id: 'dr-wong',         label: 'Dr. A. Wong · Offsite',    layer: 'L1', x: -60, y: 90, z:  20 },
+  { id: 'dr-ismail',         label: 'Dr. A. Ismail · Offsite',    layer: 'L1', x: -60, y: 90, z:  20 },
   { id: 'p-sundaram',      label: 'P. Sundaram · Asset Perf', layer: 'L1', x:  60, y: 90, z: -20 },
   { id: 'bu-power-gen',    label: 'BU · Power Gen',           layer: 'L1', x:   0, y: 90, z:  60 },
   { id: 'raci-derate',     label: 'RACI · derate ≥40MW',      layer: 'L1', x: -40, y: 90, z:  60 },
@@ -4588,11 +5048,15 @@ const KG_NODES = [
   { id: 'rec-oem-playbook',          label: 'Recommender · OEM playbook',          layer: 'L4', x: -30, y: -90, z: -30 },
 ];
 
+// W12 Section B.1 — new 7-layer palette · 7 distinct hues
 const KG_LAYER_COLORS = {
-  L1: '#00A651',  // green
-  L2: '#3B82F6',  // blue
-  L3: '#F59E0B',  // amber
-  L4: '#EC4899',  // pink
+  L1: '#10B981',  // emerald — People & Process
+  L2: '#3B82F6',  // blue    — Physical Plant
+  L3: '#F59E0B',  // amber   — Historical State
+  L4: '#EF4444',  // red     — Predictive Intelligence
+  L5: '#A855F7',  // purple  — Markets
+  L6: '#06B6D4',  // cyan    — Contracts
+  L7: '#EC4899',  // pink    — Cross-site Network
 };
 
 const KG_EDGES = [
@@ -4649,7 +5113,7 @@ const KG_EDGES = [
   // L1 persona → L2 asset + L4
   { source: 'r-kumar',         target: 'bfp-3a' },
   { source: 'lim-wei-jie',     target: 'bearing-bfp-3a-nde' },
-  { source: 'dr-wong',         target: 'pump-casing-crack-pattern' },
+  { source: 'dr-ismail',         target: 'pump-casing-crack-pattern' },
   { source: 'p-sundaram',      target: 'pred-mw-derate' },
   { source: 'bu-power-gen',    target: 'bfp-3a' },
   { source: 'raci-derate',     target: 'bfp-derate-cascade-model' },
@@ -4661,7 +5125,15 @@ const KG_EDGES = [
 KG_NODES.forEach(n => { n.canonical = true; });
 KG_EDGES.forEach(e => { e.canonical = true; });
 
-const LAYER_Y = { L1: 90, L2: 30, L3: -30, L4: -90 };
+const LAYER_Y = {
+  L1: 90,
+  L2: 30,
+  L3: -30,
+  L4: -90,
+  L5: 150,    // W11 — Markets
+  L6: 210,    // W11 — Contracts
+  L7: 270,    // W11 — Cross-site Network
+};
 
 const KG_THEATER_NODES = [
   // L1 People & Process (additional roles)
@@ -4814,7 +5286,7 @@ const KG_STATE = {
 // Nodes present from cold load; triggerKGGrowth flashes green halo on tacit cluster 10s post-click.
 const KG_TACIT_NODES = [
   { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern', layer: 'L4', x: 360, y: -90, z:  30, canonical: false, isNew: true, cluster: 'tacit' },
-  { id: 'wong-field-experience-2023',     label: 'Field experience · Wong · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'ismail-field-experience-2023',     label: 'Field experience · Ismail · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
   { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',     layer: 'L1', x: 400, y:  90, z: -20, canonical: false, isNew: true, cluster: 'tacit' },
 ];
 const KG_AUDITOR_NODES = [
@@ -4827,7 +5299,7 @@ KG_NODES.push(...KG_TACIT_NODES, ...KG_AUDITOR_NODES);
 // W7 cluster-flow edges: tacit → auditor (3) · auditor → main KG (3) · auditor internal cohesion (1)
 const KG_CLUSTER_FLOW_EDGES = [
   { source: 'casing-tacit-knowledge',         target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
-  { source: 'wong-field-experience-2023',     target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
+  { source: 'ismail-field-experience-2023',     target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
   { source: 'bfp-casing-inspection-protocol', target: 'workflow-rewire-agent', canonical: false, cluster: 'tk-to-auditor' },
   { source: 'kg-auditor-agent',               target: 'pump-casing-crack-pattern',          canonical: false, cluster: 'auditor-to-main' },
   { source: 'kg-updater-agent',               target: 'casing-rca-jrg-2023',                canonical: false, cluster: 'auditor-to-main' },
@@ -4840,7 +5312,7 @@ KG_EDGES.push(...KG_CLUSTER_FLOW_EDGES);
 const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 
 // ── W10 Section I — Tacit-KG Staging cluster (4-tier flow) ──
-// Tacit bytes (raw from Lim ↔ Wong call) → Knowledge Triage Agent → Process Engineering Review Agent
+// Tacit bytes (raw from Lim ↔ Ismail call) → Knowledge Triage Agent → Process Engineering Review Agent
 // → promoted bytes route up to W7 tacit cluster (knowledge stratum).
 // 4-tier visual: main KG (-100..+100) → Auditor (180..260) → W7 Tacit (340..420) → Staging (500..600).
 const KG_STAGING_NODES = [
@@ -4848,7 +5320,7 @@ const KG_STAGING_NODES = [
   { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Jurong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-2', label: 'Byte · "always check 4-o\'clock volute first"',     layer: 'L4', x: 540, y:  30, z: -20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-3', label: 'Byte · "Sulzer-specific failure mode"',              layer: 'L4', x: 560, y:   0, z:  20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
-  { id: 'tacit-byte-4', label: 'Byte · "Wong mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  { id: 'tacit-byte-4', label: 'Byte · "Ismail mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   { id: 'tacit-byte-5', label: 'Byte · "casual aside · vendor service rep visit"',   layer: 'L4', x: 540, y: -60, z:  30, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   // 2 staging agents — gateway + promoter (blue halo, mirroring auditor cluster)
   { id: 'knowledge-triage-agent',           label: 'Knowledge Triage Agent',           layer: 'L1', x: 580, y:  20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
@@ -4873,7 +5345,7 @@ const KG_STAGING_EDGES = [
   // Promoted bytes link UP to W7 tacit cluster nodes (knowledge stratum)
   { source: 'tacit-byte-1', target: 'casing-tacit-knowledge',     canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
   { source: 'tacit-byte-2', target: 'casing-tacit-knowledge',     canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
-  { source: 'tacit-byte-3', target: 'wong-field-experience-2023', canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
+  { source: 'tacit-byte-3', target: 'ismail-field-experience-2023', canonical: false, cluster: 'staging-to-tacit', isPromotionEdge: true },
 ];
 KG_EDGES.push(...KG_STAGING_EDGES);
 
@@ -4882,14 +5354,36 @@ const KG_STAGING_PROMOTED_IDS = KG_STAGING_NODES.filter(n => n.isPromoted).map(n
 
 // ── W10 Section K — Commercial intelligence cluster (P3 Priya · trader-domain KG extension) ──
 // 5-tier visual: + Commercial (x ∈ [700, 820]). Connects via bfp-3a → merchant-market-sg bridge.
+// W11 Section I — relayered across L5 (Markets) / L6 (Contracts) / L7 (Cross-site Network)
 const KG_COMMERCIAL_NODES = [
-  { id: 'merchant-market-sg',          label: 'Merchant market · USEP · Singapore',     layer: 'L4', x: 720, y:  60, z:  10, canonical: false, cluster: 'commercial' },
-  { id: 'ppa-pso-2026',                label: 'PPA · PSO commitment · 2026',            layer: 'L1', x: 740, y:  30, z: -10, canonical: false, cluster: 'commercial' },
-  { id: 'supply-curve-singapore',      label: 'Supply curve · Singapore · Q3-2026',     layer: 'L4', x: 760, y:   0, z:  20, canonical: false, cluster: 'commercial' },
-  { id: 'demand-forecast-q3-2026',     label: 'Demand forecast · Q3-2026',              layer: 'L4', x: 780, y: -30, z: -20, canonical: false, cluster: 'commercial' },
-  { id: 'cross-site-sakra-availability', label: 'Cross-site availability · Sakra-CCGT-1', layer: 'L3', x: 740, y: -60, z:  10, canonical: false, cluster: 'commercial' },
-  { id: 'cross-site-tuas-availability',  label: 'Cross-site availability · Tuas-Power',   layer: 'L3', x: 780, y:  60, z: -10, canonical: false, cluster: 'commercial' },
-  { id: 'hedge-instrument-catalog',    label: 'Hedge instrument catalog · forward + spot', layer: 'L4', x: 820, y:   0, z:   0, canonical: false, cluster: 'commercial' },
+  // L5 — Markets (W12 Section C: densified 3 → 8)
+  { id: 'merchant-market-sg',         label: 'Merchant market · USEP · Singapore',   layer: 'L5', x: 710, y: LAYER_Y.L5, z:  20, canonical: false, cluster: 'commercial' },
+  { id: 'supply-curve-singapore',     label: 'Supply curve · Singapore · Q3-2026',   layer: 'L5', x: 750, y: LAYER_Y.L5, z:   0, canonical: false, cluster: 'commercial' },
+  { id: 'demand-forecast-q3-2026',    label: 'Demand forecast · Q3-2026',            layer: 'L5', x: 790, y: LAYER_Y.L5, z: -20, canonical: false, cluster: 'commercial' },
+  { id: 'usep-30min-clearing',        label: 'USEP · 30-min clearing price',         layer: 'L5', x: 720, y: LAYER_Y.L5, z:  40, canonical: false, cluster: 'commercial' },
+  { id: 'lng-spot-index-asia',        label: 'LNG spot index · Asia JKM',            layer: 'L5', x: 740, y: LAYER_Y.L5, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'carbon-credit-corsia',       label: 'Carbon credit · CORSIA',               layer: 'L5', x: 770, y: LAYER_Y.L5, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'weather-temp-forecast-sg',   label: 'Weather · temp forecast SG · 7-day',   layer: 'L5', x: 800, y: LAYER_Y.L5, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'gas-pipeline-utilization',   label: 'Gas pipeline · MY-SG utilization',     layer: 'L5', x: 760, y: LAYER_Y.L5, z: -30, canonical: false, cluster: 'commercial' },
+
+  // L6 — Contracts (W12 Section C: densified 2 → 7)
+  { id: 'ppa-pso-2026',               label: 'PPA · PSO commitment · 2026',          layer: 'L6', x: 720, y: LAYER_Y.L6, z:  15, canonical: false, cluster: 'commercial' },
+  { id: 'hedge-instrument-catalog',   label: 'Hedge instrument catalog',             layer: 'L6', x: 780, y: LAYER_Y.L6, z: -15, canonical: false, cluster: 'commercial' },
+  { id: 'pso-bilateral-2024-sembcorp', label: 'PSO bilateral · 2024-Sembcorp',       layer: 'L6', x: 700, y: LAYER_Y.L6, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'industrial-customer-ccaa',   label: 'Industrial customer · CCAA-2026',      layer: 'L6', x: 740, y: LAYER_Y.L6, z:   0, canonical: false, cluster: 'commercial' },
+  { id: 'futures-sgd-monthly',        label: 'Futures · SGD-monthly · Jul-26',       layer: 'L6', x: 760, y: LAYER_Y.L6, z: -30, canonical: false, cluster: 'commercial' },
+  { id: 'vesting-contract-ema',       label: 'Vesting contract · EMA',               layer: 'L6', x: 800, y: LAYER_Y.L6, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'ancillary-services-contract', label: 'Ancillary services · 2026',           layer: 'L6', x: 810, y: LAYER_Y.L6, z: -10, canonical: false, cluster: 'commercial' },
+
+  // L7 — Cross-site Network (W12 Section C: densified 2 → 8)
+  { id: 'cross-site-sakra-availability', label: 'Cross-site · Sakra-CCGT-1 standby', layer: 'L7', x: 720, y: LAYER_Y.L7, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-tuas-availability',  label: 'Cross-site · Tuas-Power available', layer: 'L7', x: 780, y: LAYER_Y.L7, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'banyan-chp-availability',    label: 'Banyan-CHP · availability',            layer: 'L7', x: 700, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'tuas-power-spinning-reserve', label: 'Tuas-Power · spinning reserve',       layer: 'L7', x: 730, y: LAYER_Y.L7, z: -20, canonical: false, cluster: 'commercial' },
+  { id: 'transmission-275kv-ehv',     label: 'Transmission · 275kV EHV',             layer: 'L7', x: 760, y: LAYER_Y.L7, z:  20, canonical: false, cluster: 'commercial' },
+  { id: 'interconnector-malaysia',    label: 'Interconnector · Malaysia',            layer: 'L7', x: 790, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'grid-frequency-50hz',        label: 'Grid frequency · 50 Hz status',        layer: 'L7', x: 810, y: LAYER_Y.L7, z:   0, canonical: false, cluster: 'commercial' },
+  { id: 'sakra-cogen-standby',        label: 'Sakra-Cogen · standby state',          layer: 'L7', x: 750, y: LAYER_Y.L7, z: -30, canonical: false, cluster: 'commercial' },
 ];
 KG_NODES.push(...KG_COMMERCIAL_NODES);
 
@@ -4903,6 +5397,17 @@ const KG_COMMERCIAL_EDGES = [
   { source: 'ppa-pso-2026',                 target: 'cross-site-sakra-availability', canonical: false, cluster: 'commercial-internal' },
   { source: 'ppa-pso-2026',                 target: 'cross-site-tuas-availability',  canonical: false, cluster: 'commercial-internal' },
   { source: 'cross-site-sakra-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
+  // W12 Section C.4 — new inter/intra-layer edges for densified L5/L6/L7
+  { source: 'usep-30min-clearing',         target: 'merchant-market-sg',     canonical: false, cluster: 'commercial-internal' },
+  { source: 'lng-spot-index-asia',         target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'gas-pipeline-utilization',    target: 'lng-spot-index-asia',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'pso-bilateral-2024-sembcorp', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'futures-sgd-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
+  { source: 'banyan-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
+  { source: 'interconnector-malaysia',     target: 'grid-frequency-50hz',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'transmission-275kv-ehv',      target: 'sakra-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
+  // Cross-cluster bridge: L4 predictive → L5 markets
+  { source: 'pump-casing-crack-pattern',   target: 'demand-forecast-q3-2026', canonical: false, cluster: 'main-to-commercial' },
 ];
 KG_EDGES.push(...KG_COMMERCIAL_EDGES);
 
@@ -5147,29 +5652,19 @@ function initKG3D() {
         });
         const sphere = new THREE.Mesh(sphereGeo, sphereMat);
         group.add(sphere);
-        // W10 — ring color rules extended:
-        //   newly-added (green flash) > staging-agent (blue) > staging-promoted (green) > staging-unpromoted (amber)
-        //   > auditor (blue) > tacit (amber) > default (white)
+        // W12 Section B.2 — uniform white thick halo across ALL nodes.
+        // Newly-added (W6 KG growth) keeps green flash; everything else = white halo radius*1.18 opacity 0.95.
+        // Per-cluster ring color logic (staging/auditor/tacit/commercial) DROPPED.
         const isNewlyAdded = KG_STATE.newlyAddedNodes && KG_STATE.newlyAddedNodes.has(node.id);
-        let ringColor;
-        if (isNewlyAdded)                                       ringColor = 0x00A651;
-        else if (node.cluster === 'staging' && node.isStagingAgent) ringColor = 0x3B82F6;
-        else if (node.cluster === 'staging' && node.isPromoted)     ringColor = 0x00A651;
-        else if (node.cluster === 'staging')                        ringColor = 0xF59E0B;
-        else if (node.cluster === 'auditor')                        ringColor = 0x3B82F6;
-        else if (node.cluster === 'tacit')                          ringColor = 0xF59E0B;
-        else if (node.cluster === 'commercial')                     ringColor = 0xA855F7;   // purple
-        else                                                        ringColor = 0xFFFFFF;
-        const ringRadius = isNewlyAdded
-          ? radius * 1.55
-          : (node.cluster === 'staging' && node.isStagingAgent ? radius * 1.40 : radius * 1.30);
+        const ringColor = isNewlyAdded ? 0x00A651 : 0xFFFFFF;
+        const ringRadius = isNewlyAdded ? radius * 1.55 : radius * 1.18;
         const ringGeo = isTacitByte
           ? new THREE.OctahedronGeometry(ringRadius * 1.05, 0)
           : new THREE.SphereGeometry(ringRadius, 32, 20);
         const ringMat = new THREE.MeshBasicMaterial({
           color: ringColor,
           transparent: true,
-          opacity: baseOpacity * stagingOpacityMul,
+          opacity: isNewlyAdded ? (baseOpacity * stagingOpacityMul) : 0.95,
           side: THREE.BackSide,
         });
         const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -5982,9 +6477,38 @@ function toggleGraphWindow() {
     const w = body.clientWidth;
     const h = body.clientHeight;
     KG_STATE.graph.width(w).height(h);
+    // W12 Section A — build-time filter: re-set graphData with persona-specific node list.
+    win.dataset.persona = state.activePersona;
+    applyPersonaKGFilter(state.activePersona);
     // W10 — persona-specific camera pose + cluster flash on open
     openKGForPersona(state.activePersona);
   }
+}
+
+// W12 Section A.1-A.2 — Persona-scoped KG node/edge subset.
+// P2 (Lim · onsite): hide L5/L6/L7 + commercial cluster. All other personas: full graph.
+function getKGNodesForPersona(persona) {
+  if (persona === 'onsite') {
+    return KG_NODES.filter(n => n.layer !== 'L5' && n.layer !== 'L6' && n.layer !== 'L7');
+  }
+  return KG_NODES;
+}
+function getKGEdgesForPersona(persona) {
+  if (persona === 'onsite') {
+    const idSet = new Set(getKGNodesForPersona(persona).map(n => n.id));
+    return KG_EDGES.filter(e => {
+      const s = (e.source && e.source.id) ? e.source.id : e.source;
+      const t = (e.target && e.target.id) ? e.target.id : e.target;
+      return idSet.has(s) && idSet.has(t);
+    });
+  }
+  return KG_EDGES;
+}
+function applyPersonaKGFilter(persona) {
+  if (!KG_STATE.graph) return;
+  const nodes = getKGNodesForPersona(persona).map(n => ({ ...n, fy: n.y }));
+  const edges = getKGEdgesForPersona(persona);
+  KG_STATE.graph.graphData({ nodes, links: edges });
 }
 
 // W10 — persona-specific KG camera pose + flash sequence
@@ -5994,8 +6518,8 @@ function openKGForPersona(persona) {
   state.w10.kgFlashedFor = state.w10.kgFlashedFor || { onsite: false, analyst: false };
 
   const POSE = {
-    onsite:  { cam: { x: 250, y: 0, z: 580 }, lookAt: { x: 300, y: 0, z: 0 }, flashIds: KG_STAGING_PROMOTED_IDS },
-    analyst: { cam: { x: 400, y: 0, z: 700 }, lookAt: { x: 400, y: 0, z: 0 }, flashIds: KG_COMMERCIAL_IDS },
+    onsite:  { cam: { x: 250, y: 0,   z: 580 }, lookAt: { x: 300, y: 0,   z: 0 }, flashIds: KG_STAGING_PROMOTED_IDS },
+    analyst: { cam: { x: 400, y: 150, z: 820 }, lookAt: { x: 400, y: 150, z: 0 }, flashIds: KG_COMMERCIAL_IDS },
     ops:     null, // default camera (no override)
   };
   const pose = POSE[persona];
