@@ -2202,6 +2202,127 @@
     .sr-alt-toggle[data-expanded="true"] .sr-alt-toggle-icon { transform: rotate(90deg); }
     .sr-alt-list { padding-top: 4px; }
 
+    /* W13 R2 — Rationale dropdown (replaces alt-hypotheses on Faye Summary) */
+    .sr-rationale-block {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-subtle);
+    }
+    .sr-rationale-toggle {
+      display: flex; align-items: center; gap: 6px;
+      width: 100%;
+      background: transparent; border: none; padding: 6px 0;
+      font-family: inherit;
+      font-size: 10.5px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .sr-rationale-toggle:hover { color: var(--text-secondary); }
+    .sr-rationale-toggle-icon { transition: transform 200ms; display: inline-block; }
+    .sr-rationale-toggle[data-expanded="true"] .sr-rationale-toggle-icon { transform: rotate(0deg); }
+    .sr-rationale-list { padding: 8px 0 0; }
+    .sr-rationale-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 6px 0;
+      font-size: 11.5px; line-height: 1.45;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .sr-rationale-row:first-child { border-top: none; }
+    .sr-rat-bullet { color: var(--text-muted); }
+    .sr-rat-text { flex: 1; color: var(--text-primary); }
+    .sr-rat-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px;
+      white-space: nowrap; flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
+    .sr-rat-badge-met {
+      background: var(--green-soft);
+      color: var(--green-soft-text);
+    }
+    .sr-rat-badge-partial {
+      background: var(--amber-soft);
+      color: var(--amber-soft-text);
+    }
+
+    /* W13 R2 — Confirm Initial Diagnosis CTA + locked pill */
+    .sr-confirm-row {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sr-confirm-btn {
+      padding: 10px 22px;
+      background: var(--green-vivid);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 200ms, opacity 200ms;
+    }
+    .sr-confirm-btn:hover { background: var(--green-deep); }
+    .sr-confirm-btn[disabled] { opacity: 0.7; cursor: default; }
+    .sr-confirmed-pill {
+      display: inline-flex; align-items: center;
+      padding: 5px 12px;
+      background: var(--green-soft);
+      color: var(--green-soft-text);
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    /* W13 R2 — SOP Anticipation Theater (intermediate, before Step 1) */
+    .sop-anticipation-theater {
+      margin: 0 0 12px;
+      padding: 10px 14px;
+      background: var(--bg-card-hover);
+      border: 1px dashed var(--border-subtle);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sop-anticipation-result {
+      margin: 0 0 12px;
+      padding: 10px 14px;
+      background: var(--green-soft);
+      border-left: 3px solid var(--green-vivid);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 10px;
+      animation: reveal-slide 0.35s ease-out;
+    }
+    .sar-icon { font-size: 16px; }
+    .sar-text {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green-soft-text);
+    }
+
+    /* W13 R2 — Step 1 Add button (replaces auto-spinner) */
+    .as-step-add-btn {
+      padding: 7px 18px;
+      background: var(--green-vivid);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: background 200ms;
+    }
+    .as-step-add-btn:hover { background: var(--green-deep); }
+    .as-step[data-status="awaiting-add"] .as-step-body {
+      display: flex; align-items: center; gap: 8px;
+    }
+
     .action-steps {
       margin: 14px 16px;
       padding: 14px 16px;
@@ -3829,6 +3950,215 @@
       flex: 1; min-height: 0;
       overflow-y: auto;
       padding: 16px 20px 18px;
+    }
+
+    /* W13 R3 — Workflows modal (horizontal stepper · single active canvas) */
+    .narrative-modal-workflows {
+      width: 1000px;
+      max-width: 92vw;
+      max-height: 88vh;
+    }
+    .wf-canvas {
+      padding: 4px 6px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .wf-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .wf-stepper-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: background 200ms, border-color 200ms, color 200ms;
+      flex-shrink: 0;
+    }
+    .wf-stepper-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      transition: background 200ms, color 200ms;
+    }
+    .wf-stepper-conn {
+      flex: 1;
+      height: 2px;
+      background: var(--border-subtle);
+      min-width: 24px;
+      max-width: 80px;
+    }
+    .wf-stepper-pill[data-state="active"] {
+      background: var(--green-soft);
+      border-color: var(--green-vivid);
+      color: var(--green-soft-text);
+    }
+    .wf-stepper-pill[data-state="active"] .wf-stepper-num {
+      background: var(--green-vivid);
+      color: white;
+    }
+    .wf-stepper-pill[data-state="done"] {
+      background: var(--bg-card);
+      border-color: var(--green-vivid);
+      color: var(--green-soft-text);
+    }
+    .wf-stepper-pill[data-state="done"] .wf-stepper-num {
+      background: var(--green-vivid);
+      color: white;
+    }
+    .wf-step-card {
+      padding: 18px 20px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-subtle);
+      border-radius: 12px;
+    }
+    .wf-step-tagline {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+    .wf-buckets {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+    }
+    .wf-bucket {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      background: var(--bg-stage);
+      border-radius: 8px;
+    }
+    .wf-bucket-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .wf-bucket-agents {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .wf-agent-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: var(--shadow-card);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 350ms ease-out, transform 350ms ease-out;
+    }
+    .wf-agent-dot.wf-agent-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .wf-agent-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-vivid);
+      flex-shrink: 0;
+      animation: wf-agent-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes wf-agent-pulse {
+      0%, 100% { transform: scale(1);   opacity: 1; }
+      50%      { transform: scale(1.6); opacity: 0.5; }
+    }
+    .wf-agent-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .wf-bucket-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 400;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .wf-step-output {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: var(--green-soft);
+      border-left: 3px solid var(--green-vivid);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 350ms ease-out, transform 350ms ease-out;
+    }
+    .wf-step-output.wf-step-output-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .wf-step-output-check {
+      color: var(--green-vivid);
+      font-weight: 800;
+    }
+    .wf-step-output-caption {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green-soft-text);
+    }
+    .wf-hitl-note {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--amber-soft);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      color: var(--amber-soft-text);
+      font-weight: 600;
+    }
+    .wf-hitl-badge {
+      background: var(--amber-vivid);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .wf-advance-hint {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .wf-advance-hint[data-state="done"] {
+      color: var(--green-soft-text);
+      font-weight: 700;
+      font-style: normal;
     }
 
     /* Modal canvas — buckets + arrows + loop + sources */
@@ -5834,6 +6164,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w12"></script>
+  <script src="app.js?v=w13r2"></script>
 </body>
 </html>

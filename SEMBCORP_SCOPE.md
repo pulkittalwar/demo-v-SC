@@ -2360,3 +2360,182 @@ Human-check items (subjective; flagged not auto-asserted):
 
 W13 R1 = COMPLETE. R2 (LHS gating) + R3 (P1 RHS rewrite) remain.
 STOPPING HERE — awaiting coach sign-off on R1.
+
+### W13 Round 2 deployment confirmation (2026-05-25) — LHS STRUCTURAL GATING
+
+2-item structural batch — Faye-side gating mechanic. Changes W6 vertical-flow gating: Action Steps no longer auto-spawn at t=10s; gated on Confirm click. Step 1 no longer auto-verifies; gated on Add click after intermediate SOP Compliance Agent theater.
+
+**Section A — Initial Diagnosis + Rationale + Confirm CTA:**
+- Faye Summary heading "Predicted diagnosis" → "Initial Diagnosis" (paintSummaryComplete @ app.js:799 final paint + line 750 t=5s placeholder shell).
+- "Alternative hypotheses considered" dropdown → "Rationale" dropdown w/ 5 rationale rows + match-strength badges.
+- NEW constant `INITIAL_DIAGNOSIS_RATIONALE` @ app.js:184 (5 entries · 3 fully met + 2 partially met).
+- NEW `wireRationaleToggle` @ app.js:1343 (▸/▾ icon swap on expand/collapse).
+- NEW `Confirm` CTA in `.sr-confirm-row` (rendered pre-confirm; replaced with `.sr-confirmed-pill` "✓ Initial diagnosis locked" post-confirm).
+- NEW state init `state.faye = { diagnosisConfirmed: false, actionStepsSpawned: false }` @ app.js:53.
+- `wireAltHypothesesToggle` kept as dead code per WA #5 (Lim summary @ app.js:1719 still wires it).
+
+**Section B — Action Steps gating on Confirm click + lock-in theater:**
+- Removed `pushReveal(paintActionStepsInitial + startActionStep1, 10000)` from `startScreenDRevealW39`.
+- NEW `wireConfirmInitialDiagnosis` + `onInitialDiagnosisConfirmClick`:
+  - Sets `state.faye.diagnosisConfirmed = true`.
+  - Disables Confirm button + sets text "Locking in…".
+  - Fires 3 agent-card pulses synced over 2s: inspection / triage / critic-power-gen.
+  - Fires `flashKGDiagnosisNodes` (re-uses `KG_STATE.newlyAddedNodes` from `flashKGGrowthHalo` mechanism) on nodes `bearing-spalling-pattern` (L4) + `bearing-bfp-3a-nde` (L2). Prompt mentioned `hyp-bearing-spalling` + `bfp-3a-nde-bearing` which don't exist in KG_NODES — substituted with the real canonical IDs.
+  - Appends orchestrator log line "Initial diagnosis confirmed by Faye Sit · workflow handoff to SOP-relevant next-best actions".
+  - After 2s: replaces `.sr-confirm-row` contents w/ `.sr-confirmed-pill` "✓ Initial diagnosis locked" + calls `spawnSOPRelevantNextBestActions`.
+- NEW `flashKGDiagnosisNodes` (2s flash; cleanup deletes added IDs + refreshKGStyles).
+- NEW `spawnSOPRelevantNextBestActions` (guarded by `state.faye.actionStepsSpawned`; mounts SOP Relevant section).
+
+**Section C — SOP Relevant next best actions + intermediate theater + Step 1 manual Add CTA:**
+- NEW `paintSOPRelevantInitial`: heading "SOP Relevant next best actions" + `.as-sop-theater-slot` + 2 empty `.as-step-slot[data-step-slot="1|2"]` slots + Confirm CTA (disabled).
+- NEW `playSOPAnticipationTheater`:
+  - Phase 1 (2s): "SOP Compliance Agent · confirming SOP specific steps for BFP vibration investigation" (dots animation, `.sop-anticipation-theater`).
+  - Fires `fireAgentCardLifecycle('sop-action', 2000)` synced w/ phase 1.
+  - Appends sop-action log line "SOP Compliance Agent · confirming SOP-BFP-VIBR-001 specific steps · checking pre-conditions".
+  - Phase 2: swap to `.sop-anticipation-result` "📋 SOP requires telemetry to be checked before on-site dispatch" + call `revealStep1WithAddButton`.
+- NEW `revealStep1WithAddButton`: paints Step 1 (status `awaiting-add`, title "Step 1 · Inspect and confirm telemetry", body w/ msg "Telemetry snapshot pre-fetched by Hyperspace OS · pending operator confirmation" + `.as-step-add-btn` "Add") + Step 2 (status `locked`, "Locked — complete Step 1 first.").
+- NEW `wireAddTelemetryButton` + `onAddTelemetryClick`:
+  - Click → step1 status `verifying` → spinner + "Confirming telemetry…" → `fireAgentCardLifecycle('pl', 1000)` → 1s spinner → step1 status `done` (✓ + "Telemetry confirmed for INC-2026-0537" + paperclip attach) → `unlockActionStep2()` (existing 5s find-engineer flow unchanged).
+- `paintActionStepsInitial` + `startActionStep1` kept as dead code per WA #5.
+- `paintActionStepsComplete` updated for re-entry consistency: heading "SOP Relevant next best actions", Step 1 title "Inspect and confirm telemetry", message "Telemetry confirmed for INC-2026-0537", notes re-attach block REMOVED.
+
+**Section D — Faye onsite-notes tile dropped from Step 2:**
+- `insertOpsNotesIntoStep2()` call removed from `unlockActionStep2` (app.js:996 in pre-R2 numbering).
+- Notes re-attach block (`buildNotesSectionStandalone` + `insertBefore` confirmed) removed from `paintActionStepsComplete`.
+- `wireNotesMic()` removed from re-entry path.
+- `insertOpsNotesIntoStep2`, `buildNotesSectionStandalone`, `wireNotesMic` all kept as dead code per WA #5.
+
+**Re-entry handling:**
+- `renderOpsIncidentDetail` actioned-path: force `state.faye.diagnosisConfirmed = true` + `state.faye.actionStepsSpawned = true` so `paintSummaryComplete` renders locked pill (no Confirm).
+- Reveal timeline mid-flow re-entry: if user backs out + reopens after Confirm but pre-dispatch, the t=10s `paintSummaryComplete` detects `diagnosisConfirmed && !document.querySelector('.action-steps')` and re-spawns SOP Relevant section (resets `actionStepsSpawned` flag to bypass spawn guard).
+
+**Cache-bust:** `<script src="app.js?v=w12">` → `?v=w13r2`.
+
+**Per-test observed-vs-expected table (Chrome MCP verified):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1A | Initial Diagnosis heading | `.sr-heading` = "Initial Diagnosis" | "Initial Diagnosis" | ✓ |
+| 1B | Rationale dropdown exists + collapsed by default | `.sr-rationale-toggle` present, `.sr-rationale-list[style*=display:none]` | present, hidden | ✓ |
+| 1B' | Rationale expand on click | display=block, icon "▾" | block + ▾ | ✓ |
+| 1C | Rationale 5 rows w/ badges | rowCount=5, badges=[fully met, partially met, fully met, partially met, fully met] | 3-5 rows, badge text matches | ✓ |
+| 1D | Confirm button pre-click | text="Confirm", no locked pill | exact "Confirm", no pill | ✓ |
+| 1E | Action Steps NOT spawned pre-Confirm | `#action-steps-slot` empty (innerLen=0), no `.action-steps` | empty | ✓ |
+| 1F | Confirm click → 2s → pill replaces button + Action Steps spawn | pillText="✓ Initial diagnosis locked", confirmBtn gone, actionStepsSpawned=true | exact | ✓ |
+| 1G | Lock-in theater fires 3 agent pulses | inspection/triage/critic-power-gen all transitioned to dataset.state="done" after 2s (evidence pulse fired) | pulse cycle observed | ✓ |
+| 2A | Action Steps heading rename | `.as-heading` = "SOP Relevant next best actions" | exact | ✓ |
+| 2B | Intermediate SOP theater | At t≈4s post-Confirm: `.sop-anticipation-result` w/ text "📋 SOP requires telemetry to be checked before on-site dispatch" (after Phase 1 → 2 transition) | exact result text | ✓ |
+| 2C | Step 1 reveals w/ Add button (NO auto-spinner) | step1.status="awaiting-add", title="Step 1 · Inspect and confirm telemetry", addBtnText="Add" | exact | ✓ |
+| 2D | Add click → step1 ✓ + step2 unlocks | step1.status="done", num="✓", msg="Telemetry confirmed for INC-2026-0537", attachBtn present, step2.status="selecting", engineerCard visible | exact | ✓ |
+| 2E | No onsite-notes tile in Faye Step 2 | `.notes-in-step2` count=0, `.notes-standalone` count=0 | 0,0 | ✓ |
+| E2E-R2 | Full Faye flow | Cold reload → open INC → t=5s placeholder w/ "Initial Diagnosis" heading → t=10s summary lands w/ Rationale + Confirm → rationale toggles → Confirm click → 2s lock-in theater (agent pulses · KG flash) → locked pill → SOP Relevant section spawns w/ SOP Compliance Agent theater → 2s → "SOP requires telemetry…" result → Step 1 reveals w/ Add button → Add click → 1s spinner → Step 1 ✓ → Step 2 unlocks via existing 5s find-engineer flow → engineer card → click → Step 2 ✓ "Lim Wei Jie selected" → Confirm on-site dispatch CTA enabled · no notes tile anywhere · no console errors | end-to-end pass | ✓ |
+| REENTRY | Back chevron mid-flow + reopen pre-dispatch | Re-entry t=10s: `.sr-confirmed-pill` present, `.sr-confirm-btn` absent, `.action-steps` present w/ "SOP Relevant next best actions" heading + Step 1 awaiting-add | recovery paint correct | ✓ |
+| FN | All R2 fns + dead-code fns present | hasFlashKGDiagnosisNodes, hasPaintSOPRelevantInitial, hasPlaySOPAnticipationTheater, hasRevealStep1WithAddButton, hasOnAddTelemetryClick, hasWireRationaleToggle, hasWireConfirmInitialDiagnosis, hasOldDeadCode_paintActionStepsInitial, hasOldDeadCode_startActionStep1, hasOldDeadCode_insertOpsNotesIntoStep2, hasOldDeadCode_buildNotesSectionStandalone, hasOldDeadCode_wireNotesMic, hasOldDeadCode_wireAltHypothesesToggle → all true | all present | ✓ |
+
+**Human-check items (subjective; flagged not auto-asserted):**
+
+- **Lock-in theater 2s feel.** Browser observation: agent cards visibly pulse + KG green flash + locked pill replaces Confirm in one smooth beat. Projector dry-run still recommended to confirm cadence reads at venue.
+- **KG node flash visibility.** `bearing-spalling-pattern` (L4) + `bearing-bfp-3a-nde` (L2) flash via `KG_STATE.newlyAddedNodes`. Visual on 3D KG may need to confirm both nodes are visible in default camera framing for the demo audience.
+- **Match-strength badge legibility on projector.** `fully met` green + `partially met` amber pills at 10px font-size — confirm at venue.
+
+**Files changed:**
+- `/Users/talwarpulkit/code/demo-v-SC/app.js` — added `INITIAL_DIAGNOSIS_RATIONALE`, added `state.faye` init, renamed t=5s placeholder heading, rewrote `paintSummaryComplete` (Initial Diagnosis + Rationale + Confirm), removed pushReveal Action Steps spawn, added `onInitialDiagnosisConfirmClick` + `flashKGDiagnosisNodes` + `spawnSOPRelevantNextBestActions`, added `wireRationaleToggle` + `wireConfirmInitialDiagnosis`, added `paintSOPRelevantInitial` + `playSOPAnticipationTheater` + `revealStep1WithAddButton` + `wireAddTelemetryButton` + `onAddTelemetryClick`, updated `paintActionStepsComplete` (new heading + step 1 title + notes re-attach removed), removed `insertOpsNotesIntoStep2()` call from `unlockActionStep2`, forced `state.faye` flags on actioned re-entry, added re-entry safeguard for confirmed-but-undispatched.
+- `/Users/talwarpulkit/code/demo-v-SC/index.html` — added CSS for `.sr-rationale-block`, `.sr-rationale-toggle`, `.sr-rationale-list`, `.sr-rationale-row`, `.sr-rat-bullet`, `.sr-rat-text`, `.sr-rat-badge`, `.sr-rat-badge-met`, `.sr-rat-badge-partial`, `.sr-confirm-row`, `.sr-confirm-btn`, `.sr-confirmed-pill`, `.sop-anticipation-theater`, `.sop-anticipation-result`, `.sar-icon`, `.sar-text`, `.as-step-add-btn`, `.as-step[data-status="awaiting-add"]`. Cache-bust `v=w12` → `v=w13r2`.
+
+**Files intentionally not touched:**
+- Lim Screen D — finalized in R1.
+- Ismail summary builder (app.js:2578-2594) — same R1 follow-up; unchanged.
+- P1 right pane (`renderRightPaneFaye`) — R3 territory.
+- KG node definitions, KG render path (only `KG_STATE.newlyAddedNodes` mechanism re-used).
+- `pushReveal` queue mechanism, `revealTimers`, `cancelInProgressReveal`.
+- Priya laptop, transcript modal, escalation report, banner copy, call flow.
+- `paintActionStepsInitial`, `startActionStep1`, `wireAltHypothesesToggle`, `insertOpsNotesIntoStep2`, `buildNotesSectionStandalone`, `wireNotesMic` — kept as dead code per WA #5.
+
+**Follow-up needed (per Karpathy rule 3 — flagged, not touched):**
+- Ismail-summary builder "Predicted diagnosis" + "Revised diagnosis ·" labels (carried from R1; out of R2 scope).
+- Right-pane log line "Diagnosis Verdict gated open" (carried from R1; out of R2 scope).
+- AGENTS.md "Wong" references (carried; not in W13 scope).
+- If R3 (P1 RHS rewrite) introduces agent IDs that differ from `inspection / triage / critic-power-gen`, the 3-agent pulse list in `onInitialDiagnosisConfirmClick` may need a follow-up alignment.
+
+W13 R2 = COMPLETE. R3 (P1 RHS rewrite — 3-workflow stage-gated modal) remains.
+STOPPING HERE — awaiting coach sign-off on R2.
+
+### W13 Round 3 deployment confirmation (2026-05-25) — P1 RHS REWRITE
+
+2-item major restructure — P1 right pane collapses to 1 clickable + single 1000px modal w/ 3 stage-gated workflows via horizontal stepper. Replaces W10/W11 3-section P1 narrative pattern.
+
+**Section A — P1 right pane = 1 section:**
+- `renderRightPaneFaye` (app.js:4393) rebuilt to render single "Agentic workflows for Faye" card.
+- Header copy: "Agents at work · 1 capability" / "Stage-gated agentic workflows — triage · action planner · scheduling."
+- Card uses `data-section="workflows"` selector. Played key = `state.w10.playedSections.p1['workflows']`.
+- W10/W11 3-section iteration over `P1_NARRATIVE_SECTIONS` dropped from live dispatch.
+- Old defs (`P1_NARRATIVE_SECTIONS`, `P1_SECTION_1/2/3`, `P1_SECTION_BY_NUM`, `openP1NarrativeModal`) retained as dead code per WA #5.
+
+**Section B — `P1_WORKFLOWS` def (app.js ~4498):**
+- 3 stage-gated steps:
+  - Triage (6s) — Reasoning [Sensor Anomaly Inspector → inspection, Turbine Diagnostic Agent → triage] · Critic [Critic · Power Gen → critic-power-gen, Criticality Standards Critic] · Vertical [Criticality Scoring Agent, Incident Summary Synthesizer]
+  - Action planner (7s · HITL note) — Reasoning [SOP Retrieval Agent, Sensor Anomaly Inspector → inspection] · Critic [SOP Adherence Critic] · Vertical [Telemetry Snapshot Compiler, SOP Compliance Agent → sop-action]
+  - Scheduling (5s) — Reasoning [Roster Lookup Agent, Expertise Match Agent] · Critic [Certs Validator] · Vertical [A2A Coordination Agent → workflow]
+- Persistent-agent mapping fires `fireAgentCardLifecycle` for synced right-pane card pulses.
+- Triage bucket lineup (`inspection` / `triage` / `critic-power-gen`) matches the 3 persistent agents pulsed by R2's `onInitialDiagnosisConfirmClick` — alignment preserved.
+
+**Section C — Horizontal-stepper modal:**
+- 1000px wide `.narrative-modal-workflows` extends base `.narrative-modal`.
+- Header: nm-section-num = "FAYE" · title = "Agentic workflows for Faye".
+- Body: 3-pill stepper at top (active / pending / done states · green-vivid active) + single active canvas + auto-advance hint at bottom.
+- CSS appended to index.html after `.narrative-modal-body` block (`.wf-canvas`, `.wf-stepper-pill`, `.wf-stepper-conn`, `.wf-step-card`, `.wf-buckets`, `.wf-bucket`, `.wf-agent-dot`, `.wf-agent-pulse`, `.wf-bucket-arrow`, `.wf-step-output`, `.wf-hitl-note`, `.wf-hitl-badge`, `.wf-advance-hint`).
+
+**Section D — Per-workflow canvas:**
+- `buildWorkflowStepCanvas(stepDef)` paints tagline + 3-bucket columns w/ bucket arrows + output reveal + (optional) HITL note.
+- Agent dots reveal sequentially over step duration with `wf-agent-pulse` 1.4s ease-in-out animation on the dot indicator.
+- HITL note only present on Step 2 (Action planner) — copy: "Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Add)".
+
+**Section E — Stage-gate sequencer:**
+- `startWorkflowSequencer` kicks off `playWorkflowStep(1)`.
+- `playWorkflowStep(N)` updates stepper pill states, swaps canvas (for N>1), staggers agent reveals, fires persistent card lifecycle, reveals output caption near end, advances to N+1 or `onWorkflowsComplete`.
+- All timers registered in `state.w10.modalTimers` — `closeNarrativeModal` clears them, preventing memory leak on mid-sequence close.
+- On completion: all pills → done · hint → "All workflows complete ✓" · `state.w10.playedSections.p1['workflows'] = true` · RHS button flips to "✓ Replay".
+
+**Section F — Dead code retained per WA #5:**
+- `P1_NARRATIVE_SECTIONS`, `P1_SECTION_1`, `P1_SECTION_2`, `P1_SECTION_3`, `P1_SECTION_BY_NUM`, `openP1NarrativeModal`, anticipation canvas template (`buildAnticipationCanvas` + `ANTICIPATION_VISUALS`), parallel-match canvas template — all preserved.
+
+**Verification — Chrome MCP per-test observed-vs-expected table:**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | A1 — P1 RHS section count | 1 | 1 | ✓ |
+| 2 | A2 — P1 RHS section title | "Agentic workflows for Faye" | "Agentic workflows for Faye" | ✓ |
+| 3 | A3 — Old 3-section titles in DOM | 0 of {Criticality·Diagnosis·Summary, SOP-driven telemetry confirmation, Scheduling·Expertise match·Dispatch} | 0 | ✓ |
+| 4 | B1 — Play opens workflows modal | `.narrative-modal-workflows` present · title "Agentic workflows for Faye" | present | ✓ |
+| 5 | B2 — Stepper renders 3 pills | 3 pills · labels [Agentic triage, Action planner, Scheduling] | 3 pills + correct labels | ✓ |
+| 6 | C1 — Step 1 active on open | pill1=active · pill2=pending · pill3=pending | same | ✓ |
+| 7 | C2 — Step 1 canvas buckets + agents | 3 buckets [Reasoning, Critic, Vertical-aligned] · 6 agents total (2+2+2) | same | ✓ |
+| 8 | C3 — Step 1 progressive reveal | t=200ms: 1/6 revealed · t=3000ms: 5/6 · t=5500ms: 6/6 | sequential reveal | ✓ |
+| 9 | C4 — Step 1 output reveals near end | t=5500ms: output `.wf-step-output-revealed` present | revealed near end | ✓ |
+| 10 | D1 — Auto-advance to step 2 | t=6500ms: pill1=done · pill2=active · pill3=pending · canvas swapped to step 2 | same | ✓ |
+| 11 | D2 — Step 2 HITL note | `.wf-hitl-note` present on step 2 only | present step 2 | ✓ |
+| 12 | E1 — Auto-advance to step 3 | t=13500ms: pill2=done · pill3=active · canvas=step 3 · totalDots=4 | same | ✓ |
+| 13 | E2 — Sequence complete | t=18500ms: all 3 pills=done · hint="All workflows complete ✓" · output revealed | same | ✓ |
+| 14 | E3 — Close mid-sequence clears timers | modal removed · `modalTimers.length=0` · `modalOpen=false` · played=false (incomplete) | clean teardown | ✓ |
+| 15 | E4 — Replay state persists after complete | playedFlag=true · RHS button text="✓ Replay" · pn-s-played class present · pn-section-played class present | replay state set | ✓ |
+| 16 | E5 — R2 LHS gating preserved (regression) | "Initial Diagnosis" headings present on Screen D · Confirm CTA renders | R2 preserved | ✓ |
+
+**Files changed:**
+- `app.js` — `renderRightPaneFaye` + `wireFayeRightPanePlayButtons` rewritten · added `P1_WORKFLOWS` def + `openP1WorkflowsModal` + `buildWorkflowsModalCanvas` + `buildWorkflowStepCanvas` + `startWorkflowSequencer` + `playWorkflowStep` + `onWorkflowsComplete`
+- `index.html` — appended W13 R3 CSS block after `.narrative-modal-body` (`.narrative-modal-workflows` + `.wf-*` rules)
+- `SEMBCORP_SCOPE.md` — this confirmation block
+
+**Files intentionally not touched:**
+- LHS Faye lifecycle (R2 lock — `onInitialDiagnosisConfirmClick`, SOP Relevant section, Step 1 Add gating)
+- P2 Lim right pane (R1 lock — single Section C only)
+- P3 Priya right pane (W12 — laptop modal)
+- KG node defs · KG render path
+- Persistent agent roster (W8 — 17 agents)
+- Tablet bezel + persona panel · Screen D paint structure
+
+**Follow-up notes (none required for demo):**
+- `state.w10.modalScope` set to `'p1-workflows'` (was `'p1'/'p2'`); downstream code referencing scope keys is dead so no breakage.
+- `playNarrativeModalAnimation` + `applyNarrativeAction` paths remain wired for `openP1NarrativeModal` dead-code path.
+
+W13 R3 = COMPLETE. W13 = COMPLETE. No more code waves planned before demo (2026-05-27).
+STOPPING HERE — awaiting coach sign-off on R3.

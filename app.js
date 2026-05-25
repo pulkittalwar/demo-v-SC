@@ -50,6 +50,11 @@ const state = {
     step2: { status: 'locked', selectedEngineer: null },      // locked | finding | selecting | selected
     ctaEnabled: false,
   },
+  // ── W13 R2 — Faye Initial Diagnosis gating ──
+  faye: {
+    diagnosisConfirmed: false,    // true after Faye clicks Confirm on Initial Diagnosis
+    actionStepsSpawned: false,    // true after SOP Relevant section painted
+  },
   // ── W4 — Lim curated Screen D state ──
   lim: {
     checked: {},                       // map of inspection-item-id → true
@@ -179,6 +184,20 @@ const POST_DISPATCH_STATE_PILL = {
   ops:     'DISPATCHED_TO_ONSITE',
   // W7 — onsite/offsite no longer dispatch via this CTA path
 };
+
+// ── W13 R2 — Faye Summary "Initial Diagnosis" rationale rows ──
+const INITIAL_DIAGNOSIS_RATIONALE = [
+  { text: 'Vibration spectrum matches NDE bearing race spalling signature',
+    strength: 'met',     badgeLabel: 'fully met' },
+  { text: '1×RPM dominance · synchronous vibration component elevated',
+    strength: 'partial', badgeLabel: 'partially met' },
+  { text: 'Pattern-match · 3 prior BFP race-spalling failures across fleet (Jurong-CCGT-2 · Sakra-CCGT-1 · Banyan-CHP)',
+    strength: 'met',     badgeLabel: 'fully met' },
+  { text: 'Bearing temperature trend · NDE housing rising over last 4 hours',
+    strength: 'partial', badgeLabel: 'partially met' },
+  { text: 'Phase angle NDE-DE shift consistent with race-defect signature',
+    strength: 'met',     badgeLabel: 'fully met' },
+];
 
 // ── Hardcoded incident data (Jurong-CCGT-1 BFP-3A) — W3.9 pivot ──
 const INCIDENT = {
@@ -687,12 +706,15 @@ function renderOpsIncidentDetail(root) {
   // Drive content into the slots based on per-persona state
   const personaState = activePersonaTicketState();
   if (personaState.actioned) {
-    // Already actioned — paint completed Summary + Action Steps + capture footer
+    // Already actioned — paint completed Summary + Action Steps + capture footer.
+    // W13 R2 — re-entry must reflect locked diagnosis state.
+    state.faye.diagnosisConfirmed = true;
+    state.faye.actionStepsSpawned = true;
     paintSummaryComplete(summarySlot);
     paintActionStepsComplete(actionSlot);
     setTimeout(appendDispatchCaptureFooter, 200);
   } else {
-    // First open or in-progress — kick off the 2-stage reveal + Action Steps lifecycle
+    // First open or in-progress — kick off the 2-stage reveal; Action Steps now gated on Confirm click.
     startScreenDRevealW39(summarySlot, actionSlot);
   }
 }
@@ -734,7 +756,7 @@ function startScreenDRevealW39(summarySlot, actionSlot) {
   pushReveal(() => {
     summarySlot.innerHTML = `
       <div class="summary-report" data-block-real="summary">
-        <div class="sr-heading">Predicted diagnosis</div>
+        <div class="sr-heading">Initial Diagnosis</div>
         <div class="sr-body" id="sr-body">
           <div class="reveal-pending" data-stage="hypothesis">
             <div class="reveal-dots"><span></span><span></span><span></span></div>
@@ -749,48 +771,171 @@ function startScreenDRevealW39(summarySlot, actionSlot) {
     fireAgentCardsParallel(['triage', 'critic-power-gen'], 5000);
   }, 5000);
 
-  // Stage 3 at t=10s: swap Triage placeholder for diagnosis hypothesis + alternates + HITL pill
+  // Stage 3 at t=10s: swap Triage placeholder for Initial Diagnosis summary + Rationale + Confirm CTA
   pushReveal(() => {
     paintSummaryComplete(summarySlot);
+    // W13 R2 — re-entry mid-flow (Faye exits + returns before dispatch while diagnosisConfirmed=true):
+    // re-paint Action Steps in their current state. DOM was wiped; flag stays true so re-spawn helper bypasses guard.
+    if (state.faye.diagnosisConfirmed && !document.querySelector('.action-steps')) {
+      state.faye.actionStepsSpawned = false;
+      spawnSOPRelevantNextBestActions();
+    }
   }, 10000);
 
-  // Action Steps appear at t=10s; Step 1 starts verifying
-  pushReveal(() => {
-    paintActionStepsInitial(actionSlot);
-    startActionStep1();
-  }, 10000);
+  // W13 R2 — Action Steps NO LONGER auto-spawned at t=10s on first open.
+  // Action Steps gated on Confirm click → onInitialDiagnosisConfirmClick → spawnSOPRelevantNextBestActions.
 }
 
 function paintSummaryComplete(summarySlot) {
-  // W3.10 — drop duplicate "Summary" subheading, premature engineer subtitle,
-  // confidence percentages, HITL pill. Alternative hypotheses become collapsible.
+  // W13 R2 — heading "Initial Diagnosis", Rationale dropdown (replaces Alt-hypotheses),
+  // Confirm CTA pre-confirm OR locked pill post-confirm.
   const hyp = INCIDENT.hypothesis;
-  const altsHtml = INCIDENT.alternates.map(a =>
-    `<div class="sr-alt-row"><span>${a.name}</span></div>`
-  ).join('');
+  const rationaleHtml = INITIAL_DIAGNOSIS_RATIONALE.map(r => `
+    <div class="sr-rationale-row" data-strength="${r.strength}">
+      <span class="sr-rat-bullet">·</span>
+      <span class="sr-rat-text">${r.text}</span>
+      <span class="sr-rat-badge sr-rat-badge-${r.strength}">${r.badgeLabel}</span>
+    </div>
+  `).join('');
+  const confirmed = state.faye && state.faye.diagnosisConfirmed;
+  const confirmRowHtml = confirmed
+    ? `<span class="sr-confirmed-pill">✓ Initial diagnosis locked</span>`
+    : `<button class="sr-confirm-btn" type="button">Confirm</button>`;
   summarySlot.innerHTML = `
     <div class="summary-report" data-block-real="summary">
-      <div class="sr-heading">Predicted diagnosis</div>
+      <div class="sr-heading">Initial Diagnosis</div>
       <div class="sr-section">
         <div class="sr-hypothesis">
           <div class="sr-hyp-row">
             <span class="sr-hyp-name">${hyp.primary}</span>
           </div>
         </div>
-        <div class="sr-alternates">
-          <button class="sr-alt-toggle" data-expanded="false" type="button">
-            <span class="sr-alt-toggle-icon">▸</span>
-            <span class="sr-alt-toggle-lbl">Alternative hypotheses considered</span>
+        <div class="sr-rationale-block">
+          <button class="sr-rationale-toggle" data-expanded="false" type="button">
+            <span class="sr-rationale-toggle-icon">▸</span>
+            <span class="sr-rationale-toggle-lbl">Rationale</span>
           </button>
-          <div class="sr-alt-list" style="display:none">
-            ${altsHtml}
+          <div class="sr-rationale-list" style="display:none">
+            ${rationaleHtml}
           </div>
+        </div>
+        <div class="sr-confirm-row">
+          ${confirmRowHtml}
         </div>
       </div>
     </div>`;
-  wireAltHypothesesToggle();
+  wireRationaleToggle();
+  wireConfirmInitialDiagnosis();
 }
 
+// ── W13 R2 — SOP Relevant next best actions (replaces paintActionStepsInitial in live flow) ──
+function paintSOPRelevantInitial(actionSlot) {
+  actionSlot.innerHTML = `
+    <div class="action-steps" data-variant="sop-relevant">
+      <div class="as-heading">SOP Relevant next best actions</div>
+      <div class="as-sop-theater-slot"></div>
+      <div class="as-step-slot" data-step-slot="1"></div>
+      <div class="as-step-slot" data-step-slot="2"></div>
+      <button class="action-cta" disabled type="button">
+        Confirm on-site dispatch
+      </button>
+    </div>`;
+}
+
+function playSOPAnticipationTheater() {
+  const theaterSlot = document.querySelector('.as-sop-theater-slot');
+  if (!theaterSlot) return;
+  // Phase 1: SOP Compliance Agent checking SOP-specific steps (2s)
+  theaterSlot.innerHTML = `
+    <div class="sop-anticipation-theater" data-phase="checking">
+      <span class="reveal-dots"><span></span><span></span><span></span></span>
+      <span class="reveal-msg">
+        <span class="reveal-agent">SOP Compliance Agent</span> · confirming SOP specific steps for BFP vibration investigation
+      </span>
+    </div>`;
+  if (window.LOG) {
+    window.LOG.appendLine({
+      ts: currentSGTLog(),
+      source: 'sop-action',
+      text: 'SOP Compliance Agent · confirming SOP-BFP-VIBR-001 specific steps · checking pre-conditions',
+      dataSource: 'Hyperspace OS',
+      nodeChain: ['sop-bfp-vibration-investigation'],
+    });
+  }
+  fireAgentCardLifecycle('sop-action', 2000);
+
+  pushReveal(() => {
+    // Phase 2: result lands · "SOP requires telemetry to be checked"
+    theaterSlot.innerHTML = `
+      <div class="sop-anticipation-result">
+        <span class="sar-icon">📋</span>
+        <span class="sar-text">SOP requires telemetry to be checked before on-site dispatch</span>
+      </div>`;
+    revealStep1WithAddButton();
+  }, 2000);
+}
+
+function revealStep1WithAddButton() {
+  const slot1 = document.querySelector('.as-step-slot[data-step-slot="1"]');
+  const slot2 = document.querySelector('.as-step-slot[data-step-slot="2"]');
+  if (!slot1 || !slot2) return;
+  slot1.innerHTML = `
+    <div class="as-step" data-step="1" data-status="awaiting-add">
+      <div class="as-step-head">
+        <span class="as-step-num">○</span>
+        <span class="as-step-title">Step 1 · Inspect and confirm telemetry</span>
+      </div>
+      <div class="as-step-body">
+        <span class="as-step-msg">Telemetry snapshot pre-fetched by Hyperspace OS · pending operator confirmation</span>
+        <button class="as-step-add-btn" type="button">Add</button>
+      </div>
+    </div>`;
+  slot2.innerHTML = `
+    <div class="as-step" data-step="2" data-status="locked">
+      <div class="as-step-head">
+        <span class="as-step-num">○</span>
+        <span class="as-step-title">Step 2 · Find available engineer <span class="as-step-optional">(optional)</span></span>
+      </div>
+      <div class="as-step-body">
+        <span class="as-step-msg">Locked — complete Step 1 first.</span>
+      </div>
+    </div>`;
+  wireAddTelemetryButton();
+}
+
+function wireAddTelemetryButton() {
+  const btn = document.querySelector('.as-step-add-btn');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', onAddTelemetryClick);
+}
+
+function onAddTelemetryClick() {
+  const step1 = document.querySelector('.as-step[data-step="1"]');
+  if (!step1) return;
+  step1.dataset.status = 'verifying';
+  state.actionSteps.step1.status = 'verifying';
+  step1.querySelector('.as-step-body').innerHTML = `
+    <span class="as-step-spinner"><span class="reveal-dots"><span></span><span></span><span></span></span></span>
+    <span class="as-step-msg">Confirming telemetry…</span>`;
+  fireAgentCardLifecycle('pl', 1000);
+  pushReveal(() => {
+    step1.dataset.status = 'done';
+    step1.querySelector('.as-step-num').textContent = '✓';
+    step1.querySelector('.as-step-body').innerHTML = `
+      <span class="as-step-msg italic">Telemetry confirmed for INC-2026-0537</span>
+      <button class="as-step-attach" type="button" aria-label="View verified metrics">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <path d="M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10a1 1 0 0 1-2 0V6h-1.5v9a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6z"/>
+        </svg>
+      </button>`;
+    state.actionSteps.step1.status = 'done';
+    wireTelemetryModal();
+    unlockActionStep2();
+  }, 1000);
+}
+
+// ── Legacy (W3.9) — paintActionStepsInitial + startActionStep1 kept as dead code per WA #5 ──
 function paintActionStepsInitial(actionSlot) {
   actionSlot.innerHTML = `
     <div class="action-steps">
@@ -822,16 +967,18 @@ function paintActionStepsInitial(actionSlot) {
 
 function paintActionStepsComplete(actionSlot) {
   // Already actioned (re-render after dispatch). Show both steps ✓.
+  // W13 R2 — heading "SOP Relevant next best actions"; Step 1 title "Inspect and confirm telemetry";
+  // notes re-attach block dropped (Faye onsite notes removed from Step 2).
   actionSlot.innerHTML = `
-    <div class="action-steps">
-      <div class="as-heading">Action steps</div>
+    <div class="action-steps" data-variant="sop-relevant">
+      <div class="as-heading">SOP Relevant next best actions</div>
       <div class="as-step" data-step="1" data-status="done">
         <div class="as-step-head">
           <span class="as-step-num">✓</span>
-          <span class="as-step-title">Step 1 · Verify metrics</span>
+          <span class="as-step-title">Step 1 · Inspect and confirm telemetry</span>
         </div>
         <div class="as-step-body">
-          <span class="as-step-msg italic">Metrics for INC-2026-0537 confirmed</span>
+          <span class="as-step-msg italic">Telemetry confirmed for INC-2026-0537</span>
           <button class="as-step-attach" type="button" aria-label="View verified metrics">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
               <path d="M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10a1 1 0 0 1-2 0V6h-1.5v9a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6z"/>
@@ -850,16 +997,7 @@ function paintActionStepsComplete(actionSlot) {
       </div>
       <div class="dispatch-confirmed">✓ Dispatched at ${currentSGTTime()} · ${DISPATCH_LABEL[state.activePersona] || 'next persona'} notified</div>
     </div>`;
-  // W8 B — Notes tile lives inside the action-steps container even in re-entry view.
-  const stepsRoot = actionSlot.querySelector('.action-steps');
-  const confirmed = stepsRoot && stepsRoot.querySelector('.dispatch-confirmed');
-  if (stepsRoot && confirmed) {
-    const notes = buildNotesSectionStandalone();
-    notes.classList.add('notes-in-step2');
-    stepsRoot.insertBefore(notes, confirmed);
-  }
   wireTelemetryModal();
-  wireNotesMic();
 }
 
 function startActionStep1() {
@@ -906,8 +1044,7 @@ function unlockActionStep2() {
         <div class="as-eng-hint">Click to select</div>
       </div>`;
     wireEngineerCardClick();
-    // W8 B — insert Notes tile inside Step 2, between Lim engineer card + Confirm CTA.
-    insertOpsNotesIntoStep2();
+    // W13 R2 — Faye onsite notes tile DROPPED from Step 2. `insertOpsNotesIntoStep2` kept as dead code per WA #5.
   }, 5000);
 }
 
@@ -1324,7 +1461,91 @@ function wireSeeReasoningToggle() {
   });
 }
 
-// ── W3.10 — Alt-hypotheses collapsible ──
+// ── W13 R2 — Confirm Initial Diagnosis (gates Action Steps spawn) ──
+function wireConfirmInitialDiagnosis() {
+  const btn = document.querySelector('.sr-confirm-btn');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', onInitialDiagnosisConfirmClick);
+}
+
+function onInitialDiagnosisConfirmClick() {
+  if (state.faye.diagnosisConfirmed) return;
+  state.faye.diagnosisConfirmed = true;
+
+  // Disable button + show "Locking in…"
+  const btn = document.querySelector('.sr-confirm-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Locking in…';
+  }
+
+  // 2s lock-in theater — 3 agent pulses + KG flash on diagnosis-related nodes
+  fireAgentCardLifecycle('inspection',        2000);
+  fireAgentCardLifecycle('triage',            2000);
+  fireAgentCardLifecycle('critic-power-gen',  2000);
+  flashKGDiagnosisNodes();
+
+  if (window.LOG) {
+    window.LOG.appendLine({
+      ts: currentSGTLog(),
+      source: 'orchestrator',
+      text: 'Initial diagnosis confirmed by Faye Sit · workflow handoff to SOP-relevant next-best actions',
+      dataSource: 'Hyperspace OS',
+      nodeChain: ['bearing-spalling-pattern', 'sop-bfp-vibration-investigation'],
+    });
+  }
+
+  pushReveal(() => {
+    // Replace Confirm button row w/ locked pill
+    const row = document.querySelector('.sr-confirm-row');
+    if (row) {
+      row.innerHTML = `<span class="sr-confirmed-pill">✓ Initial diagnosis locked</span>`;
+    }
+    spawnSOPRelevantNextBestActions();
+  }, 2000);
+}
+
+// W13 R2 — KG green flash on diagnosis pattern + physical bearing nodes
+function flashKGDiagnosisNodes() {
+  if (!KG_STATE || !KG_STATE.graph) return;
+  if (!KG_STATE.newlyAddedNodes) KG_STATE.newlyAddedNodes = new Set();
+  KG_STATE.newlyAddedNodes.add('bearing-spalling-pattern');
+  KG_STATE.newlyAddedNodes.add('bearing-bfp-3a-nde');
+  refreshKGStyles();
+  setTimeout(() => {
+    if (!KG_STATE.newlyAddedNodes) return;
+    KG_STATE.newlyAddedNodes.delete('bearing-spalling-pattern');
+    KG_STATE.newlyAddedNodes.delete('bearing-bfp-3a-nde');
+    refreshKGStyles();
+  }, 2000);
+}
+
+function spawnSOPRelevantNextBestActions() {
+  if (state.faye.actionStepsSpawned) return;
+  state.faye.actionStepsSpawned = true;
+  const actionSlot = document.getElementById('action-steps-slot');
+  if (!actionSlot) return;
+  paintSOPRelevantInitial(actionSlot);
+  playSOPAnticipationTheater();
+}
+
+// ── W13 R2 — Rationale collapsible (Faye Initial Diagnosis summary) ──
+function wireRationaleToggle() {
+  const btn = document.querySelector('.sr-rationale-toggle');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', () => {
+    const expanded = btn.dataset.expanded === 'true';
+    btn.dataset.expanded = String(!expanded);
+    const icon = btn.querySelector('.sr-rationale-toggle-icon');
+    if (icon) icon.textContent = expanded ? '▸' : '▾';
+    const list = document.querySelector('.sr-rationale-list');
+    if (list) list.style.display = expanded ? 'none' : 'block';
+  });
+}
+
+// ── W3.10 — Alt-hypotheses collapsible (kept as dead code per WA #5; Lim summary may still wire) ──
 function wireAltHypothesesToggle() {
   const btn = document.querySelector('.sr-alt-toggle');
   if (!btn || btn.dataset.wired === '1') return;
@@ -4169,10 +4390,13 @@ state.w10 = state.w10 || {
   modalTimers: [],
 };
 
+// W13 R3 — P1 right pane collapsed to single section.
+// 3-section iteration over P1_NARRATIVE_SECTIONS dropped from live dispatch.
+// Old defs (P1_NARRATIVE_SECTIONS, P1_SECTION_1/2/3, P1_SECTION_BY_NUM, openP1NarrativeModal)
+// retained as dead code per WA #5.
 function renderRightPaneFaye() {
   const host = document.getElementById('persona-narrative-host');
   if (!host) return;
-  // Build once per persona; subsequent calls preserve play/replay state on existing buttons
   if (host.dataset.personaBuilt === 'ops') return;
   host.innerHTML = '';
   host.dataset.personaBuilt = 'ops';
@@ -4181,24 +4405,24 @@ function renderRightPaneFaye() {
   wrap.className = 'persona-narrative';
   wrap.dataset.persona = 'ops';
 
+  const played = !!(state.w10.playedSections.p1 && state.w10.playedSections.p1['workflows']);
+
   wrap.innerHTML = `
     <div class="pn-header">
-      <div class="pn-h-title">Agents at work · 3 capabilities</div>
-      <div class="pn-h-sub">Diagnosis · SOP-confirmed telemetry · dispatch — Pulkit clicks Play to land each beat.</div>
+      <div class="pn-h-title">Agents at work · 1 capability</div>
+      <div class="pn-h-sub">Stage-gated agentic workflows — triage · action planner · scheduling.</div>
     </div>
-    ${P1_NARRATIVE_SECTIONS.map(s => `
-      <div class="pn-section ${state.w10.playedSections.p1[s.num] ? 'pn-section-played' : ''}" data-section="${s.num}">
-        <div class="pn-s-num">${s.num}</div>
-        <div class="pn-s-body">
-          <div class="pn-s-title">${s.title}</div>
-          <div class="pn-s-sub">${s.sub}</div>
-        </div>
-        <button class="pn-s-play ${state.w10.playedSections.p1[s.num] ? 'pn-s-played' : ''}" type="button" data-section="${s.num}">
-          <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
-          <span>${state.w10.playedSections.p1[s.num] ? '✓ Replay' : 'Play'}</span>
-        </button>
+    <div class="pn-section ${played ? 'pn-section-played' : ''}" data-section="workflows">
+      <div class="pn-s-num">▸</div>
+      <div class="pn-s-body">
+        <div class="pn-s-title">Agentic workflows for Faye</div>
+        <div class="pn-s-sub">3 stage-gated workflows behind the scenes · click to walk through.</div>
       </div>
-    `).join('')}
+      <button class="pn-s-play ${played ? 'pn-s-played' : ''}" type="button" data-section="workflows">
+        <svg class="pn-s-play-icon" viewBox="0 0 12 12"><path d="M2 1 L10 6 L2 11 Z" fill="currentColor"/></svg>
+        <span>${played ? '✓ Replay' : 'Play'}</span>
+      </button>
+    </div>
   `;
 
   host.appendChild(wrap);
@@ -4210,8 +4434,7 @@ function wireFayeRightPanePlayButtons() {
     if (btn.dataset.wired === '1') return;
     btn.dataset.wired = '1';
     btn.addEventListener('click', () => {
-      const num = btn.dataset.section;
-      openP1NarrativeModal(num);
+      openP1WorkflowsModal();
     });
   });
 }
@@ -4275,6 +4498,250 @@ const P1_SECTION_3 = {
 };
 
 const P1_SECTION_BY_NUM = { '1': P1_SECTION_1, '2': P1_SECTION_2, '3': P1_SECTION_3 };
+
+// ═══════════════════════════════════════════════════════════════
+// W13 R3 — Single-section 3-workflow stage-gated modal (P1)
+// Replaces the 3-section W10/W11 P1 narrative pattern.
+// ═══════════════════════════════════════════════════════════════
+
+const P1_WORKFLOWS = {
+  title: 'Agentic workflows for Faye',
+  steps: [
+    {
+      num: 1,
+      label: 'Agentic triage',
+      tagline: 'Sensor anomaly · severity scoring · KG path-trace',
+      durationMs: 6000,
+      buckets: [
+        { name: 'Reasoning',        agents: ['Sensor Anomaly Inspector', 'Turbine Diagnostic Agent'],       persistent: ['inspection', 'triage'] },
+        { name: 'Critic',           agents: ['Critic · Power Gen', 'Criticality Standards Critic'],         persistent: ['critic-power-gen', null] },
+        { name: 'Vertical-aligned', agents: ['Criticality Scoring Agent', 'Incident Summary Synthesizer'],  persistent: [null, null] },
+      ],
+      outputCaption: 'Triage Agent · 78% confidence · KG path traced',
+    },
+    {
+      num: 2,
+      label: 'Action planner',
+      tagline: 'SOP retrieval · adherence check · telemetry pre-fetch',
+      durationMs: 7000,
+      buckets: [
+        { name: 'Reasoning',        agents: ['SOP Retrieval Agent', 'Sensor Anomaly Inspector'],            persistent: [null, 'inspection'] },
+        { name: 'Critic',           agents: ['SOP Adherence Critic'],                                       persistent: [null] },
+        { name: 'Vertical-aligned', agents: ['Telemetry Snapshot Compiler', 'SOP Compliance Agent'],        persistent: [null, 'sop-action'] },
+      ],
+      outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Add',
+      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Add)',
+    },
+    {
+      num: 3,
+      label: 'Scheduling',
+      tagline: 'Roster · expertise match · dispatch payload',
+      durationMs: 5000,
+      buckets: [
+        { name: 'Reasoning',        agents: ['Roster Lookup Agent', 'Expertise Match Agent'],               persistent: [null, null] },
+        { name: 'Critic',           agents: ['Certs Validator'],                                            persistent: [null] },
+        { name: 'Vertical-aligned', agents: ['A2A Coordination Agent'],                                     persistent: ['workflow'] },
+      ],
+      outputCaption: 'A2A Coordination Agent · dispatching to Lim Wei Jie · payload pre-attached',
+    },
+  ],
+};
+
+function openP1WorkflowsModal() {
+  closeNarrativeModal();
+  state.w10.modalOpen = true;
+  state.w10.modalScope = 'p1-workflows';
+  state.w10.modalSectionNum = 'workflows';
+  state.w10.workflowStep = 1;
+
+  // Pulse the single P1 RHS card while modal is open
+  const card = document.querySelector('.persona-narrative[data-persona="ops"] .pn-section[data-section="workflows"]');
+  if (card) card.classList.add('pn-section-pulse');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'narrative-modal-backdrop';
+  backdrop.id = 'narrative-modal-backdrop';
+  backdrop.innerHTML = `
+    <div class="narrative-modal narrative-modal-workflows" role="dialog" aria-modal="true">
+      <div class="narrative-modal-header">
+        <div class="nm-section-num">FAYE</div>
+        <div class="nm-section-title">${P1_WORKFLOWS.title}</div>
+        <button class="nm-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="narrative-modal-body" id="narrative-modal-body">
+        ${buildWorkflowsModalCanvas()}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(backdrop);
+
+  backdrop.querySelector('.nm-close').addEventListener('click', () => closeNarrativeModal());
+  backdrop.addEventListener('click', e => {
+    if (e.target === backdrop) closeNarrativeModal();
+  });
+  state.w10.modalEscHandler = e => {
+    if (e.key === 'Escape') closeNarrativeModal();
+  };
+  document.addEventListener('keydown', state.w10.modalEscHandler);
+
+  startWorkflowSequencer();
+}
+
+function buildWorkflowsModalCanvas() {
+  const pillsHtml = P1_WORKFLOWS.steps.map((s, i) => {
+    const arrow = i < P1_WORKFLOWS.steps.length - 1 ? '<span class="wf-stepper-conn"></span>' : '';
+    return `<div class="wf-stepper-pill" data-step="${s.num}" data-state="${s.num === 1 ? 'active' : 'pending'}">
+      <span class="wf-stepper-num">${s.num}</span>
+      <span class="wf-stepper-label">${s.label}</span>
+    </div>${arrow}`;
+  }).join('');
+
+  const firstStep = P1_WORKFLOWS.steps[0];
+  return `
+    <div class="wf-canvas">
+      <div class="wf-stepper">${pillsHtml}</div>
+      <div class="wf-active-canvas" id="wf-active-canvas">
+        ${buildWorkflowStepCanvas(firstStep)}
+      </div>
+      <div class="wf-advance-hint" id="wf-advance-hint">
+        Auto-advance to step 2 in ${Math.round(firstStep.durationMs / 1000)}s ▸
+      </div>
+    </div>
+  `;
+}
+
+function buildWorkflowStepCanvas(stepDef) {
+  const bucketsHtml = stepDef.buckets.map((b, bi) => {
+    const agentsHtml = b.agents.map((a, ai) => `
+      <div class="wf-agent-dot" data-agent="${a}" data-bucket-idx="${bi}" data-agent-idx="${ai}">
+        <span class="wf-agent-pulse"></span>
+        <span class="wf-agent-name">${a}</span>
+      </div>`).join('');
+    const arrow = bi < stepDef.buckets.length - 1 ? '<div class="wf-bucket-arrow">→</div>' : '';
+    return `
+      <div class="wf-bucket" data-bucket="${b.name.toLowerCase().replace(/[^a-z]+/g, '-')}">
+        <div class="wf-bucket-label">${b.name}</div>
+        <div class="wf-bucket-agents">${agentsHtml}</div>
+      </div>${arrow}`;
+  }).join('');
+
+  const hitlHtml = stepDef.hitlNote
+    ? `<div class="wf-hitl-note"><span class="wf-hitl-badge">HITL</span><span>${stepDef.hitlNote}</span></div>`
+    : '';
+
+  return `
+    <div class="wf-step-card" data-step="${stepDef.num}">
+      <div class="wf-step-tagline">${stepDef.tagline}</div>
+      <div class="wf-buckets">${bucketsHtml}</div>
+      <div class="wf-step-output">
+        <span class="wf-step-output-check">✓</span>
+        <span class="wf-step-output-caption">${stepDef.outputCaption}</span>
+      </div>
+      ${hitlHtml}
+    </div>
+  `;
+}
+
+function startWorkflowSequencer() {
+  state.w10.modalTimers = state.w10.modalTimers || [];
+  playWorkflowStep(1);
+}
+
+function playWorkflowStep(stepNum) {
+  state.w10.workflowStep = stepNum;
+  const stepDef = P1_WORKFLOWS.steps[stepNum - 1];
+  if (!stepDef) return;
+
+  // Update stepper pill states
+  document.querySelectorAll('.wf-stepper-pill').forEach(pill => {
+    const n = parseInt(pill.dataset.step, 10);
+    if (n < stepNum)      pill.dataset.state = 'done';
+    else if (n === stepNum) pill.dataset.state = 'active';
+    else                  pill.dataset.state = 'pending';
+  });
+
+  // Swap canvas for non-first steps
+  if (stepNum > 1) {
+    const canvas = document.getElementById('wf-active-canvas');
+    if (canvas) canvas.innerHTML = buildWorkflowStepCanvas(stepDef);
+  }
+
+  // Flatten agents w/ their persistent mappings (preserve bucket+agent order)
+  const flatAgents = [];
+  stepDef.buckets.forEach(b => {
+    b.agents.forEach((name, idx) => {
+      flatAgents.push({ name, persistent: (b.persistent || [])[idx] || null });
+    });
+  });
+
+  const reveals = Math.max(1, flatAgents.length);
+  const stagger = Math.max(400, Math.floor((stepDef.durationMs - 1500) / reveals));
+  const dots = document.querySelectorAll('#wf-active-canvas .wf-agent-dot');
+
+  dots.forEach((el, i) => {
+    const meta = flatAgents[i];
+    const t = setTimeout(() => {
+      el.classList.add('wf-agent-revealed');
+      if (meta && meta.persistent) {
+        const remaining = Math.max(1500, stepDef.durationMs - i * stagger);
+        fireAgentCardLifecycle(meta.persistent, remaining);
+      }
+    }, i * stagger);
+    state.w10.modalTimers.push(t);
+  });
+
+  // Output caption reveal near end of step
+  const outputDelay = Math.max(1000, stepDef.durationMs - 800);
+  const tOutput = setTimeout(() => {
+    const out = document.querySelector('#wf-active-canvas .wf-step-output');
+    if (out) out.classList.add('wf-step-output-revealed');
+  }, outputDelay);
+  state.w10.modalTimers.push(tOutput);
+
+  // Advance hint copy update
+  const hint = document.getElementById('wf-advance-hint');
+  if (hint) {
+    if (stepNum < P1_WORKFLOWS.steps.length) {
+      hint.textContent = `Auto-advance to step ${stepNum + 1} in ${Math.round(stepDef.durationMs / 1000)}s ▸`;
+      hint.dataset.state = '';
+    } else {
+      hint.textContent = `Running final workflow ▸`;
+      hint.dataset.state = '';
+    }
+  }
+
+  // Auto-advance OR completion
+  const tNext = setTimeout(() => {
+    if (stepNum < P1_WORKFLOWS.steps.length) {
+      playWorkflowStep(stepNum + 1);
+    } else {
+      onWorkflowsComplete();
+    }
+  }, stepDef.durationMs);
+  state.w10.modalTimers.push(tNext);
+}
+
+function onWorkflowsComplete() {
+  // Mark final pill done
+  document.querySelectorAll('.wf-stepper-pill').forEach(pill => { pill.dataset.state = 'done'; });
+  const hint = document.getElementById('wf-advance-hint');
+  if (hint) {
+    hint.textContent = 'All workflows complete ✓';
+    hint.dataset.state = 'done';
+  }
+  state.w10.playedSections.p1 = state.w10.playedSections.p1 || {};
+  state.w10.playedSections.p1['workflows'] = true;
+
+  // Flip the RHS card label so closing the modal shows ✓ Replay
+  const playBtn = document.querySelector('.persona-narrative[data-persona="ops"] .pn-s-play[data-section="workflows"]');
+  if (playBtn) {
+    playBtn.classList.add('pn-s-played');
+    const sp = playBtn.querySelector('span');
+    if (sp) sp.textContent = '✓ Replay';
+    const sectionEl = playBtn.closest('.pn-section');
+    if (sectionEl) sectionEl.classList.add('pn-section-played');
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // W10 Section D — pop-out narrative modal mechanic
