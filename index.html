@@ -3511,13 +3511,14 @@
     .dv-buttons { display: flex; gap: 10px; }
     .dv-btn {
       flex: 1;
-      padding: 14px 16px;
+      padding: 12px 10px;
       border: 1px solid;
       border-radius: 8px;
-      font-family: inherit; font-size: 13px; font-weight: 700;
+      font-family: inherit; font-size: 12.5px; font-weight: 700;
       cursor: pointer;
       transition: transform 200ms, border-color 200ms, background 200ms;
       text-align: center;
+      white-space: nowrap;
     }
     .dv-reject {
       background: #FEE2E2;
@@ -3525,6 +3526,13 @@
       color: #991B1B;
     }
     .dv-reject:hover { background: #FECACA; transform: translateY(-1px); border-color: #DC2626; }
+    /* W13 R1 — Review with Senior Engineer (replaces Reject). Neutral grey. */
+    .dv-review-senior {
+      background: #E2E8F0;
+      border-color: #CBD5E1;
+      color: #334155;
+    }
+    .dv-review-senior:hover { background: #CBD5E1; transform: translateY(-1px); border-color: #94A3B8; }
     .dv-confirm {
       background: #D1FAE5;
       border-color: #6EE7B7;

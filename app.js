@@ -1562,8 +1562,7 @@ function buildLimDetailScaffold() {
   });
   content.appendChild(grid);
 
-  // W4.1 — notes section moved between metrics + summary
-  content.appendChild(buildLimNotesSection());
+  // W13 R1 — inbound Faye-notes section dropped from Lim Screen D (caller removed; buildLimNotesSection kept as dead code per WA #5).
 
   // Summary report slot
   const summarySlot = el('div', 'summary-slot');
@@ -1682,7 +1681,7 @@ function paintLimSummaryComplete(revised) {
       <div class="sr-hypothesis">
         <div class="sr-hyp-row">
           <span class="sr-hyp-name">${hyp.primary}</span>
-          <span class="sr-hyp-status-pill">✓ confirmed by Hyperspace OS · pending onsite verification</span>
+          <span class="sr-hyp-status-pill">pending onsite verification</span>
         </div>
       </div>
       <div class="sr-alternates">
@@ -1698,7 +1697,7 @@ function paintLimSummaryComplete(revised) {
 
   slot.innerHTML = `
     <div class="summary-report">
-      <div class="sr-heading">Predicted diagnosis</div>
+      <div class="sr-heading">Diagnosis</div>
       <div class="sr-section">
         ${tileHtml}
       </div>
@@ -1717,7 +1716,7 @@ function buildRevisedDiagnosisTileHTML() {
         <span class="sr-hyp-flag">SUPERSEDED</span>
       </div>
       <div class="sr-hyp-row sr-hyp-revised">
-        <span class="sr-hyp-revised-label">Revised diagnosis ·</span>
+        <span class="sr-hyp-revised-label">Revised fault ·</span>
         <span class="sr-hyp-name"><span class="dyn-name">Crack in pump casing on BFP-3A</span></span>
       </div>
       <div class="sr-hyp-revised-detail">
@@ -1964,11 +1963,11 @@ function paintDiagnosisVerdict() {
 
   slot.innerHTML = `
     <div class="diagnosis-verdict">
-      <div class="dv-heading">Diagnosis verdict</div>
-      <div class="dv-sub">Confirm Hyperspace OS hypothesis OR reject and escalate to senior engineer.</div>
+      <div class="dv-heading">Fault review</div>
+      <div class="dv-sub">Accept the fault diagnosis OR route the fault for senior engineer review.</div>
       <div class="dv-buttons">
-        <button class="dv-btn dv-reject" type="button">Reject</button>
-        <button class="dv-btn dv-confirm" type="button">Confirm</button>
+        <button class="dv-btn dv-review-senior" type="button">Review with Senior Engineer</button>
+        <button class="dv-btn dv-confirm" type="button">Accept fault diagnosis</button>
       </div>
     </div>`;
   wireVerdictButtons();
@@ -1976,7 +1975,7 @@ function paintDiagnosisVerdict() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'workflow',
-      text: 'Inspection workflow complete · 10/10 checks logged · Diagnosis Verdict gated open',
+      text: 'Inspection workflow complete · 10/10 checks logged · Fault review gated open',
       dataSource: 'Hyperspace OS',
       nodeChain: ['sop-bfp-vibration-investigation'],
     });
@@ -1984,7 +1983,8 @@ function paintDiagnosisVerdict() {
 }
 
 function wireVerdictButtons() {
-  const reject = document.querySelector('.dv-reject');
+  // W13 R1 — Reject button renamed → `.dv-review-senior` (grey · "Review with Senior Engineer"). Handler `onVerdictReject` unchanged — same downstream flow.
+  const reject = document.querySelector('.dv-review-senior');
   const confirm = document.querySelector('.dv-confirm');
   if (reject && reject.dataset.wired !== '1') {
     reject.dataset.wired = '1';
@@ -2343,12 +2343,12 @@ function spawnReviseDiagnosisTile() {
         </svg>
       </div>
       <div class="rdt-body">
-        <div class="rdt-heading">REVISE DIAGNOSIS</div>
+        <div class="rdt-heading">REVISED FAULT</div>
         <div class="rdt-text">
-          Hyperspace OS detected the correct diagnosis was <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Ismail</span>.
+          Hyperspace OS detected that in addition to the bearings the main reason for this was actually a <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Ismail</span>.
         </div>
       </div>
-      <button class="rdt-confirm-btn" type="button">Confirm revised diagnosis</button>
+      <button class="rdt-confirm-btn" type="button">Add review finding</button>
     </div>`);
   wireReviseDiagnosisTile();
 }
@@ -4039,22 +4039,11 @@ function wirePriyaRightPaneButtons() {
 // W10 Section H — P2 Lim right-pane narrative (Safety · Tacit · KG promotion)
 // ═══════════════════════════════════════════════════════════════
 
-// W12 Section G — Lim right pane reverts to 3 sections (A safety · B tacit · C KG)
+// W13 R1 Item #10 — P2 Lim right pane collapsed to Section C only (KG promotion).
+// Sections A (safety stage-gate theater) + B (tacit Singlish theater) dropped from markup;
+// their defs (P2_SECTION_A / P2_SECTION_B) + the openP2NarrativeModal path stay as dead code per WA #5.
+// Section C label retained ('C') for traceability against W12 selectors — not renumbered to '1'.
 const P2_NARRATIVE_SECTIONS = [
-  {
-    num: 'A',
-    title: 'Safety protocol enforcement · workflow stage gate',
-    sub: 'HSE agents inject a self-alert mid-workflow. Work blocks until safety checks clear, then resumes.',
-    action: 'modal',
-    buttonLabel: 'Play',
-  },
-  {
-    num: 'B',
-    title: 'Tacit knowledge capture · Singlish-aware transcription',
-    sub: 'Audio in. Language detected: English-Singapore. Engineering nuance captured.',
-    action: 'modal',
-    buttonLabel: 'Play',
-  },
   {
     num: 'C',
     title: 'Tacit knowledge → Knowledge Graph promotion',
@@ -4077,8 +4066,8 @@ function renderRightPaneLim() {
 
   wrap.innerHTML = `
     <div class="pn-header">
-      <div class="pn-h-title">On-site agents at work · 3 capabilities</div>
-      <div class="pn-h-sub">Safety enforcement · tacit knowledge capture · KG learning loop.</div>
+      <div class="pn-h-title">On-site agents at work · 1 capability</div>
+      <div class="pn-h-sub">Tacit knowledge → Knowledge Graph promotion.</div>
     </div>
     ${P2_NARRATIVE_SECTIONS.map(s => {
       const isKG = s.action === 'open-kg';
@@ -4137,7 +4126,10 @@ const P2_SECTION_B = {
   template: 'tacit-singlish',
 };
 
-const P2_SECTION_BY_NUM = { 'A': P2_SECTION_A, 'B': P2_SECTION_B };
+// W13 R1 — P2 modal targets dropped; no Section C modal def (C opens floating KG directly via toggleGraphWindow).
+// Prompt's `{ 'C': P2_SECTION_C }` shape not applicable — `P2_SECTION_C` never existed. Reduce to {}.
+// P2_SECTION_A + P2_SECTION_B defs above retained as dead code per WA #5.
+const P2_SECTION_BY_NUM = {};
 
 function openP2NarrativeModal(num) {
   const sectionDef = P2_SECTION_BY_NUM[String(num)];

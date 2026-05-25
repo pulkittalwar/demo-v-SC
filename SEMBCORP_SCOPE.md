@@ -2262,3 +2262,101 @@ Follow-up notes:
 - `wong-field-experience-2023` KG ID renamed to `ismail-field-experience-2023` (coach allowed either; renamed for grep zero-match).
 - `<script src="app.js?v=w12">` cache-bust updated.
 - W12 = COMPLETE. Demo build remains FEATURE COMPLETE for the 2026-05-27 ITP presentation. Remaining work = projector dry-run + narration rehearsal.
+
+### W13 Round 1 deployment confirmation (2026-05-25) — SURGICAL POLISH
+
+6-item surgical batch — text renames, color swaps, P2 right-pane collapse. LHS gating + P1 RHS rewrite deferred to R2 + R3 of W13.
+
+**Section A — Lim Screen D heading + status pill + inbound Faye notes:**
+- `paintLimSummaryComplete` heading: "Predicted diagnosis" → "Diagnosis" (app.js:1700; Faye-side paintSummaryComplete @ 737 + 773 intentionally LEFT for R2 Item #1a; Ismail-summary @ 2584 also left — not R1 scope, flagged as follow-up).
+- Status pill: dropped "✓ confirmed by Hyperspace OS · " prefix · keeps "pending onsite verification" (app.js:1685).
+- Inbound Faye-notes section removed from Lim Screen D (caller at app.js:1566 dropped; `buildLimNotesSection` function @ 1593 stays as dead code per WA #5).
+
+**Section B — Lim Fault Review section (W7 verdict relabel + recolor):**
+- "Diagnosis verdict" → "Fault review" (app.js:1967).
+- dv-sub copy → "Accept the fault diagnosis OR route the fault for senior engineer review." (app.js:1968).
+- Reject button → `.dv-review-senior` · "Review with Senior Engineer" · slate-200 bg (#E2E8F0) · slate-600 text (#334155) · new CSS rule at index.html:3534+ · `.dv-reject` CSS retained as dead code.
+- Confirm button → "Accept fault diagnosis" · `.dv-confirm` class unchanged · green-vivid styling preserved (app.js:1971).
+- `wireVerdictButtons` updated to select `.dv-review-senior` (app.js:1987). Handler `onVerdictReject` unchanged — same downstream SOP-suggest dialogue → call → revise flow.
+- `.dv-btn` CSS tightened: padding 14px 16px → 12px 10px; font-size 13px → 12.5px; added `white-space: nowrap` to prevent wrap on longer "Review with Senior Engineer" label. Both buttons fit on one row at 720px tablet width (verified: same-row top alignment, 312px each, 40.4px row height).
+
+**Section C — Revise Diagnosis tile (Items #8 + #9):**
+- Heading: "REVISE DIAGNOSIS" → "REVISED FAULT" (app.js:2346).
+- Body copy: "Hyperspace OS detected that in addition to the bearings the main reason for this was actually a crack in pump casing on BFP-3A based on call with Dr. A. Ismail." (app.js:2348).
+- Button: "Confirm revised diagnosis" → "Add review finding" (app.js:2351). `rdt-confirm-btn` class + `onConfirmRevisedDiagnosisClick` handler + `state.lim.confirmRevisedClicked` flag unchanged for traceability.
+- Revised-tile label inside `buildRevisedDiagnosisTileHTML`: "Revised diagnosis ·" → "Revised fault ·" (app.js:1719). Ismail-summary builder at app.js:2594 has same string — NOT updated (out of R1 scope, flagged as follow-up).
+
+**Section D — P2 right pane collapsed to 1 section:**
+- `P2_NARRATIVE_SECTIONS` array trimmed: A safety + B tacit entries dropped; only Section C (KG promotion) retained.
+- P2 header copy: "On-site agents at work · 3 capabilities" → "On-site agents at work · 1 capability"; sub "Safety enforcement · tacit knowledge capture · KG learning loop." → "Tacit knowledge → Knowledge Graph promotion."
+- Section C `data-section="C"` label retained for traceability (not renumbered to `1`).
+- `P2_SECTION_A` + `P2_SECTION_B` defs stay as dead code per WA #5.
+- `P2_SECTION_BY_NUM` map reduced to `{}`. Prompt called for `{ 'C': P2_SECTION_C }` but `P2_SECTION_C` never existed (C uses `open-kg` action via `toggleGraphWindow()`, not modal). Empty map is the correct end state.
+- P2 Section C "Open KG" button verified: still opens floating KG window (`state.graphWinOpen = true`, `.kg-fw` mounts).
+
+**Section E — Consistency sweep results:**
+
+Live-UI grep (post-R1):
+- `Predicted diagnosis`: 0 stale matches in Lim path; 3 remain (737/773 Faye = R2 territory · INTENTIONAL · 2584 Ismail = follow-up not in R1 scope).
+- `Diagnosis verdict` / `Diagnosis Verdict`: 0 live-UI matches; remaining matches are comments + CSS section banners + log line "Diagnosis Verdict gated open" at app.js:1978 (right-pane log strip — flagged as follow-up).
+- `REVISE DIAGNOSIS` / `Revise diagnosis`: 0 live-UI matches; remaining are comments only.
+- `confirmed by Hyperspace OS`: 0 matches ✓
+- `Confirm revised diagnosis`: 0 matches ✓
+- `Revised diagnosis ·`: 1 match @ 2594 (Ismail summary — follow-up).
+
+Browser body-text regex (live, post full E2E):
+- `/Diagnosis verdict/`: false ✓
+- `/^Reject$/m`: false ✓
+- `/REVISE DIAGNOSIS/`: false ✓
+- `/confirmed by Hyperspace OS/`: false ✓
+
+**Per-test observed-vs-expected table (Chrome MCP verified):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| A1 | Lim Screen D heading | `.sr-heading` → "Diagnosis" | "Diagnosis" | ✓ |
+| A2 | Status pill copy | `.sr-hyp-status-pill` → "pending onsite verification" | exact "pending onsite verification" | ✓ |
+| A3 | Inbound Faye notes dropped | `.notes-incoming` count = 0 | 0 | ✓ |
+| B1 | Fault review heading | `.dv-heading` → "Fault review" | "Fault review" | ✓ |
+| B2 | dv-sub copy | "Accept the fault diagnosis OR route the fault for senior engineer review." | exact match | ✓ |
+| B3 | Review w/ Senior Engineer button | text="Review with Senior Engineer", bg=rgb(226,232,240)=#E2E8F0, color=rgb(51,65,85)=#334155, `.dv-reject` removed | all match | ✓ |
+| B4 | Accept fault diagnosis button | text="Accept fault diagnosis", `.dv-confirm` class kept | match | ✓ |
+| B5 | Buttons fit on one row | seniorWidth=312.2px, confirmWidth=312.2px, same top (sameRow=true), row height=40.4px | no wrap | ✓ |
+| C1 | Revise tile heading | `.rdt-heading` → "REVISED FAULT" | "REVISED FAULT" | ✓ |
+| C2 | Revise tile body copy | "Hyperspace OS detected that in addition to the bearings the main reason for this was actually a crack in pump casing on BFP-3A based on call with Dr. A. Ismail." | exact match | ✓ |
+| C3 | Add review finding button | `.rdt-confirm-btn` → "Add review finding" | match | ✓ |
+| C4 | Revised fault label inside revised tile | `.sr-hyp-revised-label` → "Revised fault ·" | "Revised fault ·" | ✓ |
+| D1 | P2 RHS section count + label | sections = ["C"] | 1 section, data-section="C" | ✓ |
+| D2 | No P2 Section A in DOM | selector returns null | null | ✓ |
+| D3 | No P2 Section B in DOM | selector returns null | null | ✓ |
+| D4 | P2 Open KG still works | `state.graphWinOpen=true`, `.kg-fw` mounted | KG opens | ✓ |
+| E1 | Browser body-text regex sweep | all 4 stale-label regexes return false | all false | ✓ |
+| E2E-R1 | End-to-end Lim flow | dashboard → Faye summary → engineer select Lim → dispatch → handoff → Lim header click → land incident → open INC → Lim Screen D ("Diagnosis" heading + "pending onsite verification" pill + no inbound notes) → force-complete 10/10 inspection → Fault review section (grey "Review with Senior Engineer" + green "Accept fault diagnosis") → click Review → SOP-suggest dialogue → Call → End → REVISED FAULT tile w/ new copy + "Add review finding" button → click → SOP review theater → morph → "Revised fault ·" label + statePill=REVISED_DIAGNOSIS_ROUTED | match | ✓ |
+
+Human-check items (subjective; flagged not auto-asserted):
+
+- **Projector legibility of grey "Review with Senior Engineer" button.** Slate-200 bg + slate-600 text passes WCAG AA contrast; projector dry-run still recommended to confirm vs the green "Accept fault diagnosis" button next to it.
+- **Button label length on 720px tablet width.** "Review with Senior Engineer" fits without wrap with current padding (12px 10px) + font-size (12.5px) + `white-space: nowrap`. Tested in Chrome MCP at 1645×846 viewport. Visual on actual venue projector resolution to be confirmed.
+
+**Files changed:**
+- `/Users/talwarpulkit/code/demo-v-SC/app.js` — surgical edits: Lim sr-heading rename, status-pill prefix drop, `buildLimNotesSection` caller drop, dv-heading rename, dv-sub copy, Reject → Review-with-Senior class+text, Confirm button text, `wireVerdictButtons` selector, rdt-heading + rdt-text + rdt-confirm-btn text, sr-hyp-revised-label, `P2_NARRATIVE_SECTIONS` array trim, P2 header copy, `P2_SECTION_BY_NUM` trim.
+- `/Users/talwarpulkit/code/demo-v-SC/index.html` — 2 CSS edits: added `.dv-review-senior` rule (placed after `.dv-reject` rule); tightened `.dv-btn` padding + font-size + added `white-space: nowrap`.
+
+**Files intentionally not touched:**
+- Faye-side `paintSummaryComplete` (app.js:737 + 773) "Predicted diagnosis" — R2 territory (Item #1a will rename to "Initial Diagnosis").
+- Faye action-steps spawn timing + lifecycle — R2 territory.
+- Faye right-pane (`renderRightPaneFaye`) — R3 territory.
+- Ismail summary builder (app.js:2578-2594) "Predicted diagnosis" + "Revised diagnosis ·" — out of R1 scope; not specified in plan.
+- KG state, KG nodes, KG render path.
+- Priya laptop, transcript modal, escalation report, banner copy, call flow.
+- `P2_SECTION_A` + `P2_SECTION_B` defs (kept as dead code per WA #5).
+- `buildLimNotesSection` function body (kept as dead code per WA #5).
+- `.dv-reject` CSS rule (kept as dead code per WA #5).
+
+**Follow-up needed (per Karpathy rule 3 — flagged, not touched):**
+- Ismail-summary builder (app.js:2578-2594) has lingering "Predicted diagnosis" heading + "Revised diagnosis ·" label. If Ismail path remains reachable in any flow, these will be inconsistent with Lim Screen D after R1. Confirm with coach whether Ismail-summary is reachable post-W7 or fully dead code.
+- Right-pane log line "Diagnosis Verdict gated open" (app.js:1978) prints to log strip after 10/10 checks. Cosmetic stale label in log only — flag for optional later cleanup.
+- AGENTS.md still references "Wong" in 3 places (carried from W12 — not in W13 scope).
+
+W13 R1 = COMPLETE. R2 (LHS gating) + R3 (P1 RHS rewrite) remain.
+STOPPING HERE — awaiting coach sign-off on R1.
