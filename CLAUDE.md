@@ -202,7 +202,7 @@ NDE bearing race spalling (early-stage). 78% confidence. Pattern-matched against
 Bent shaft on BFP-3A. Lim discovers via dial-indicator runout test during onsite inspection. Offsite senior engineer (Dr. A. Ismail) confirms via remote vibration phase analysis (1×RPM dominant + ~180° NDE-DE phase shift = textbook bent shaft signature).
 
 **Operational impact:**
-BFP-3A trip risk → HRSG-3 feedwater starvation → ST-3 derate ~50 MW. PSO commitment window 09:00–18:00 SGT affected. Revenue at risk ~SGD 240k (50 MW × 4h × SGD 120/MWh peak — illustrative). Action required within 45 min.
+BFP-3A trip risk → HRSG-3 feedwater starvation → ST-3 derate ~50 MW. PSO commitment window 09:00–18:00 SGT affected. Revenue at risk ~SGD 2.4M (50 MW × 4h × SGD 120/MWh peak — illustrative). Action required within 45 min.
 
 **Resolution arc:**
 1. **Faye (P1)** verifies metrics + dispatches Lim onsite (W3.9).

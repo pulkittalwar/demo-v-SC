@@ -1167,7 +1167,7 @@ function buildOpsImpactCard() {
   const card = el('div', 'ops-card');
   // [illustrative — confirm w/ Sembcorp before 2026-05-27]
   const tariff = 'SGD 120/MWh peak';
-  const revenueRisk = 'SGD 240k';
+  const revenueRisk = 'SGD 2.4M';
   card.innerHTML = `
     <div class="ops-card-lbl">Operational + revenue impact</div>
     <div class="ops-impact-text">
@@ -1426,7 +1426,7 @@ function fireRevealBlock2Agents() {
   const lines = [
     { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 SGT',         dataSource: 'Hyperspace OS', nodeChain: ['esc-pso','pred-mw-derate'] },
     { ts: '02:47:17', source: 'pl', text: 'revenue at risk · 50MW × 4h × SGD 120/MWh peak tariff', dataSource: 'NetZeroOS',     nodeChain: ['pred-mw-derate'] },
-    { ts: '02:47:18', source: 'pl', text: 'exposure ~SGD 240k · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
+    { ts: '02:47:18', source: 'pl', text: 'exposure ~SGD 2.4M · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
   ];
   lines.forEach((line, idx) => {
     pushReveal(() => {
@@ -3253,7 +3253,7 @@ function spawnEscalationReportContent() {
         </div>
         <div class="oer-impact">
           <div class="oer-imp-label">Impact</div>
-          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 SGT · 4h peak tariff exposure · ~SGD 240k revenue at risk · curtailment / hedge eligible</div>
+          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 SGT · 4h peak tariff exposure · ~SGD 2.4M revenue at risk · curtailment / hedge eligible</div>
         </div>
       </div>
     </div>
@@ -3335,7 +3335,7 @@ function fireWorkflowAgentArcNotify() {
   const lines = [
     { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Faye Sit · trading desk notification queued · commercial impact context attached', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
     { delay: 900, line: { ts: '02:59:03', source: 'workflow', text: 'Handoff sequence recorded · P1 Ops Tower → P4 Asset Perf · trading desk action queued', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'p-sundaram'] } },
-    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~SGD 240k revenue exposure attached · Trader desk routing complete', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
+    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~SGD 2.4M revenue exposure attached · Trader desk routing complete', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
