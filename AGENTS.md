@@ -2,6 +2,8 @@
 
 > **Engagement scope spec:** see `SEMBCORP_SCOPE.md` — the load-bearing spec for this build (engagement params, vocabulary, split-pane layout, persona workflow, KG schema, agent+critic mechanics, scope tier, 8-wave plan). Read AFTER this file every session.
 >
+> **W17 spec (preserved 2026-05-26):** see `WAVE_17.md` — KG enrichment (3x nodes per persona · P2 ~72 · P3 ~115) + Obsidian-style force simulation + drag-to-move + reset button. Implementation pending coach green-light. KG-only wave · W13-W16 locks preserved · cache-bust `v=w16` → `v=w17` on land.
+>
 > **Demo architecture deltas this build introduces:**
 > 1. **Split-pane layout** — LEFT 2/3 = tablet view; RIGHT 1/3 = under-the-hood architecture viz with 3 zones (Agent View 64% / 3D KG 24% / Learning Flywheel 12%).
 > 2. **4-persona top strip** on the tablet pane — Ops Control Tower → Onsite Eng → Offsite Expert → Asset Perf Analyst. CSS-illustration silhouette scenes (no real photos). Active = full color; previous persona greys on handoff.

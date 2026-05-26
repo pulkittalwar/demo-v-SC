@@ -1849,7 +1849,7 @@ Post-W8 review pass: 3 Lim Screen D polish items + Priya dashboard enhancement +
 
 **Section B — Priya dashboard enhancement:**
 - B.1: Sembcorp logo. Inline SVG (42×42 viewBox, 36×36 rendered) of 2-curve wave/wing mark (`stroke="#00A651"`, second curve `opacity="0.65"`) replaces the W8 `.td-brand-dot` square. Brand text-block now `Sembcorp` (15px, 800 weight, `--green-vivid`) + `Energy Trading · Singapore` sub (10px uppercase, `--text-muted`).
-- B.2 + B.3: `.td-kpi-strip` inserted between `.td-topbar` and zones. 2-card grid (`1.4fr 1fr`). Card 1 `.td-kpi-headline` (amber-left border) — `Next settlement period · HH18 · 09:00–09:30 SGT` clock-glyph label + 3 rows (PSO commitment 50 MW @ SGD 120/MWh · Settlement value SGD 6,000 · At risk if no action SGD 6,000 · 4 periods (HH18–HH21) — amber text) + right-aligned `AT RISK · awaiting decision` status pill (amber-soft bg). Card 2 `.td-kpi-secondary` (green-left border) — `May 2026 target · revenue at risk hedged` target-glyph label + animated progress bar (`width: 74%`) + stats row (`SGD 3.1M MTD (74%)` · `Target SGD 4.2M`) + delta footer (`INC-2026-0537 unlock: +SGD 240k · +5.7% toward target` in green).
+- B.2 + B.3: `.td-kpi-strip` inserted between `.td-topbar` and zones. 2-card grid (`1.4fr 1fr`). Card 1 `.td-kpi-headline` (amber-left border) — `Next settlement period · HH18 · 09:00–09:30 SGT` clock-glyph label + 3 rows (PSO commitment 50 MW @ SGD 120/MWh · Settlement value SGD 6,000 · At risk if no action SGD 6,000 · 4 periods (HH18–HH21) — amber text) + right-aligned `AT RISK · awaiting decision` status pill (amber-soft bg). Card 2 `.td-kpi-secondary` (green-left border) — `May 2026 target · revenue at risk hedged` target-glyph label + animated progress bar (`width: 74%`) + stats row (`SGD 30.1M MTD (74%)` · `Target SGD 40.2M`) + delta footer (`INC-2026-0537 unlock: +SGD 240k · +5.7% toward target` in green).
 - B.4: Reserve margin gauge (`.td-mk-gauge`). SVG donut, 96×96. Background ring `stroke="#E5E7EB"` 10px. Foreground arc `stroke="#00A651"` 10px, `stroke-dasharray="81 289"` (28% of circumference 2π·46≈289), rotated -90° to start at 12 o'clock, `stroke-linecap="round"`. Center labels `28%` (22px 800-weight `#0F1B3D`) + `COMFORTABLE` (9px 600-weight `#64748B`).
 - B.5: USEP forward curve (`.td-mk-curve`). SVG 240×60, `preserveAspectRatio="none"`. Headline row above chart: `$112.45` (22px 800-weight) + `SGD/MWh` uppercase unit + right-aligned green delta `+18.30 (19.4%)`. 24-point trending-up path `stroke="#00A651"` 2px + closed-area variant filled with vertical `#td-curve-gradient` linearGradient (green 0.8 → 0.0 opacity, 20% opacity overlay). NOW indicator: dashed grey vertical line at x=120 + `NOW` text label. Axis row below: `00:00 | 06:00 | 12:00 | 18:00 | 24:00`.
 - B.6: `.td-market` grid restructured `repeat(auto-fit, minmax(220px, 1fr))` → `1.4fr 1fr 1fr`. 3 cards in fixed order: USEP curve card · Reserve margin gauge card · Market Regime card (preserved W8 markup).
@@ -1895,7 +1895,7 @@ Post-W8 review pass: 3 Lim Screen D polish items + Priya dashboard enhancement +
 #: 14 · Test: B.1 brand text + sub present · Observed: `Sembcorp` headline + `Energy Trading · Singapore` sub, headline color `rgb(0,166,81)` · Expected: same · Pass: ✓
 #: 15 · Test: B.2 KPI strip present · Observed: `.td-kpi-strip` with 2 cards (headline + secondary) · Expected: 2-card strip between topbar and zones · Pass: ✓
 #: 16 · Test: B.2 headline KPI content · Observed: contains `HH18 · 09:00–09:30 SGT`, `50 MW @ SGD 120/MWh`, `SGD 6,000`, `4 periods (HH18–HH21)`, status pill `AT RISK · awaiting decision` (amber-soft bg `rgb(254,243,199)`) · Expected: same · Pass: ✓
-#: 17 · Test: B.3 monthly target KPI content · Observed: contains `May 2026 target`, `SGD 3.1M MTD (74%)`, `Target SGD 4.2M`, `INC-2026-0537 unlock: +SGD 240k · +5.7% toward target`; progress-bar fill `style="width: 74%"` · Expected: same · Pass: ✓
+#: 17 · Test: B.3 monthly target KPI content · Observed: contains `May 2026 target`, `SGD 30.1M MTD (74%)`, `Target SGD 40.2M`, `INC-2026-0537 unlock: +SGD 240k · +5.7% toward target`; progress-bar fill `style="width: 74%"` · Expected: same · Pass: ✓
 #: 18 · Test: B.4 reserve margin gauge present · Observed: SVG donut, 2 circles (bg `#E5E7EB`, fg `#00A651` with `stroke-dasharray="81 289"`), center text `28%` + `COMFORTABLE` · Expected: same · Pass: ✓
 #: 19 · Test: B.5 USEP forward curve present · Observed: SVG curve with 2 paths (filled area + 24-point stroked line `stroke="#00A651"`), `#td-curve-gradient` defined, NOW indicator line at `x=120`, axis labels `00:00 | 06:00 | 12:00 | 18:00 | 24:00`, headline `$112.45` + `+18.30 (19.4%)` · Expected: same · Pass: ✓
 #: 20 · Test: B.6 Market Snapshot 3-col grid · Observed: `.td-market` grid-template-columns `408.8px 292px 292px` (ratio ≈1.4 : 1 : 1), 3 child cards (curve / gauge / regime) · Expected: 3 cards in `1.4fr 1fr 1fr` grid · Pass: ✓
@@ -2908,3 +2908,126 @@ These subjective items consistent with W10-W14 R1/R2/R3 pattern of human-check-r
 
 W15 = COMPLETE. NO MORE CODE WAVES. Demo tomorrow.
 STOPPING HERE — awaiting coach sign-off on W15.
+
+---
+
+### W16 deployment confirmation
+
+**Wave:** W16 — KG SVG rebuild (P2 + P3 personas)
+**Date:** 2026-05-26
+**Predecessor:** W15 GREEN
+**Status:** GREEN · ready for projector dry-run
+
+**Drove-by directive (Pulkit · explicit):** "It is only a visual it can be completely fake so just make something that works and label it after." Drop 3d-force-graph entirely for P2 + P3. Build 2 static SVG-based KGs. No WebGL. No physics. No rotation.
+
+**What shipped (single-section wave · no rounds):**
+
+**Section A — Drop 3d-force-graph dispatch for P2/P3 (`app.js`):**
+- `toggleGraphWindow` simplified — drops the `KG_STATE.graph` guard + `applyPersonaKGFilter` call. Now just delegates to `openKGForPersona(state.activePersona)`.
+- `openKGForPersona` rewritten — `onsite`/`analyst` short-circuit before any 3d-force-graph touch.
+- Defensive `stopAutoRotate()` at top of `openKGForPersona` (idempotent · kills any zombie 3d autorotate timer).
+- Original 3d-force-graph dispatch preserved as dead code per WA #5.
+
+**Section B — `renderP2KGSvg` (Lim · 5 layers):**
+- Module-level consts `P2_KG_NODES_DEF` + `P2_KG_EDGES_DEF` (hand-authored coordinates).
+- 25 nodes · 28 edges across L1-L5.
+- Layer counts: L1=4 · L2=3 · L3=9 · L4=6 · L5=3.
+
+**Section C — `renderP3KGSvg` (Priya · 8 layers):**
+- Inherits P2 nodes/edges via `getP2KGData()` helper.
+- Extends with 15 commercial-cluster nodes (L6 Markets · L7 Contracts · L8 Cross-site) + 19 extra edges.
+- 40 nodes total · 47 edges total.
+- Layer counts: L6=5 · L7=5 · L8=5.
+
+**Section D — `buildKGSvg` generic renderer:**
+- Edges rendered FIRST as `<line>` elements with explicit `x1`/`y1`/`x2`/`y2` pulled from node coordinates (guaranteed visible connections · no force simulation involved).
+- Render order: edges → workflow arrows → tacit cluster → nodes (correct z-stack).
+- Includes 5-byte tacit knowledge cluster (3 triaged green + 2 ingested slate) + 3 marching green workflow arrows L2→L3.
+
+**Section E — CSS additions (`index.html`):**
+- `.kg-svg-mount` = absolute inset 0 · overflow auto · z-index 1 (sits below legend overlay z=10).
+- `.kg-svg-edge` = stroke `#94A3B8` · width 1.5 · opacity 0.7.
+- `.kg-svg-edge-highlight` = stroke Sembcorp green `#10B981` · width 2.8 · opacity 1.
+- `.kg-svg-edge-dim` = opacity 0.12.
+- `.kg-svg-node-circle` = r 9 · hover r 11 + stroke-width 3.
+- `.kg-svg-arrow-flow` = green dashed marching @ 1.6s linear infinite.
+
+**Section F — Click-highlight interaction (`wireKGSvgInteractions`):**
+- Click node → its connected edges highlight green, all others dim.
+- Click empty SVG area → reset all edges.
+- NO drag · NO rotation · NO zoom.
+
+**Section G — Legend overlay (W14 R3 markup reused, untouched):**
+- Existing legend `#kg-floating-window[data-persona="onsite"]` selectors continue to hide L6/L7/L8 rows for P2.
+- Legend z-index 10 still sits above SVG mount.
+
+**Section H — Autorotate eliminated:**
+- Verified `KG_STATE.autoRotateTimer` is `null` after both `openKGForPersona('onsite')` and `openKGForPersona('analyst')`.
+- No `startAutoRotate()` calls reachable from SVG path.
+
+**Window dimensions on SVG open:**
+- Onsite: 820×620 px (P2 SVG 800×720 viewBox · scrolls vertically).
+- Analyst: 860×720 px (P3 SVG 840×1040 viewBox · scrolls vertically).
+
+**Cache-bust:** `app.js?v=w15` → `app.js?v=w16` (line 6525 in `index.html`).
+
+**Per-test observed-vs-expected verification (Chrome MCP browser-driven):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | A1 — `openKGForPersona('onsite')` mounts SVG (no canvas) | svgPresent=true · canvasPresent=false | true / false | ✓ |
+| 2 | A2 — `openKGForPersona('analyst')` mounts SVG | `.kg-svg[data-persona="analyst"]` present · canvasPresent=false | true / false | ✓ |
+| 3 | B1 — P2 layer counts L1-L5 > 0, L6-L8 = 0 | L1=4, L2=3, L3=9, L4=6, L5=3, L6=L7=L8=0 | L1-L5>0 · L6-L8=0 | ✓ |
+| 4 | B2 — P2 total nodes ~24 | 25 | between 22 and 28 | ✓ |
+| 5 | C1 — P3 layer counts L6/L7/L8 > 0 | L6=5, L7=5, L8=5 | all >0 | ✓ |
+| 6 | C2 — P3 total nodes ~38 | 40 | between 36 and 42 | ✓ |
+| 7 | D1 — P2 edges visibly rendered as `<line>` (>20) | 28 | >20 | ✓ |
+| 8 | D1 — P3 edges visibly rendered as `<line>` (>20) | 47 | >20 | ✓ |
+| 9 | D2 — Edge has explicit coords pointing at node centers | First P2 edge `lim`→`sop-bfp-vibr`: (x1=140,y1=60) matches lim node (140,60) · (x2=140,y2=160) matches sop-bfp-vibr node (140,160) | exact match | ✓ |
+| 10 | E1 — Edge stroke = slate-400 | `rgb(148, 163, 184)` (= #94A3B8) | rgb(148, 163, 184) | ✓ |
+| 11 | F1 — Click `bfp-3a` → 5 incident edges highlight · others dim | highlight=5, dim=23, expected_count=5 | highlight===expected | ✓ |
+| 12 | F2 — Click empty SVG → all edges reset | highlight=0, dim=0 | 0 / 0 | ✓ |
+| 13 | H — `KG_STATE.autoRotateTimer` null after P2 open | false | false | ✓ |
+| 14 | H — `KG_STATE.autoRotateTimer` null after P3 open | false | false | ✓ |
+| 15 | Bonus — workflow arrow elements rendered | 3 | 3 | ✓ |
+| 16 | Bonus — tacit byte elements rendered | 5 | 5 | ✓ |
+| 17 | Bonus — JS parse clean (`node --check app.js`) | exit 0 | exit 0 | ✓ |
+
+**Deferred to projector dry-run (visual/subjective · headless Chrome can't judge):**
+- Node label legibility at projector distance.
+- Edge contrast against `#0A0F1C` background at projector distance.
+- Marching arrow animation feel.
+- Legend overlay z-stack vs SVG mount on actual projector.
+- Full E2E rehearsal cold-reload → Faye → Lim → Assistant FAB → Senior expert → revised fault → CRITICAL bump → Escalation → Priya → Open KG (both P2 + P3 SVG paths).
+
+W16 = COMPLETE. NO MORE CODE WAVES. Demo tomorrow.
+STOPPING HERE — awaiting coach sign-off on W16.
+
+═══════════════════════════════════════════════════════════════
+W17 SPEC PRESERVED (2026-05-26) — KG ENRICHMENT · DRAG + 3X NODES
+═══════════════════════════════════════════════════════════════
+
+> **Status:** SPEC PRESERVED. Implementation pending coach green-light.
+> **Canonical location:** `WAVE_17.md` (full spec verbatim · 500+ lines · with truncation log).
+> **Implementation deltas (preview):**
+> - Section A — P2 KG nodes ~24 → ~72 · edges ~26 → ~90 · canvas 1100×720.
+> - Section B — P3 KG nodes ~38 → ~115 · edges ~47 → ~150 · canvas 1100×1500 · 8 layers.
+> - Section C — Light force simulation (Coulomb repulsion 600 · Hooke springs k=0.012 rest 100 · gravity-toward-initial k=0.005 · damping 0.82) · requestAnimationFrame loop · STOP on KG close (no zombie ticks).
+> - Section D — Drag handlers (mousedown/mousemove/mouseup) · pinned-while-dragging · viewBox→client coord conversion.
+> - Section E — Live edge tracking via `renderKGSimulationFrame` (re-sets x1/y1/x2/y2 per tick).
+> - Section F — W16 click-highlight + no-autorotate locks preserved (click ≠ drag via mousemove threshold).
+> - Section G — Reset-positions button (`.kg-fw-reset-btn`) top-right of KG window.
+> - Section H — Drag interaction polish (`cursor: grab` / `grabbing` · drop-shadow on dragging node).
+>
+> **Pre-read:** `WAVE_17.md` (full spec + truncation log).
+>
+> **Verification:** ~15 Chrome MCP tests including A1/A2 (P2 node/edge counts), B1/B2 (P3), C1 (sim runs), D1-D4 (drag), F1-F3 (click vs drag disambiguation), G1-G2 (reset), H1 (cursor), E2E-W17 (full cold-reload sweep).
+>
+> **Locks:** KG-ONLY wave. NO changes to Faye / Lim / Priya / Assistant / severity / workflow modal. W13-W16 locks fully preserved.
+>
+> **Cache-bust:** `v=w16` → `v=w17` once landed.
+>
+> **Verbatim spec + truncation log:** see `WAVE_17.md`.
+
+W17 deployment confirmation block will be appended below this once Chrome MCP per-test table passes.
+

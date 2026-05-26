@@ -1850,6 +1850,81 @@
       z-index: 2;
     }
 
+    /* ═══════════════════════════════════════════════
+       W16 — Static SVG KG (P2 + P3 personas)
+       ═══════════════════════════════════════════════ */
+    .kg-svg-mount {
+      position: absolute;
+      inset: 0;
+      overflow: auto;
+      background: #0A0F1C;
+      z-index: 1;
+    }
+    .kg-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #0A0F1C;
+      overflow: visible;
+    }
+    .kg-svg-edge {
+      stroke: #94A3B8;
+      stroke-width: 1.5;
+      opacity: 0.7;
+      transition: stroke 200ms, stroke-width 200ms, opacity 200ms;
+    }
+    .kg-svg-edge-highlight {
+      stroke: #10B981 !important;
+      stroke-width: 2.8 !important;
+      opacity: 1 !important;
+    }
+    .kg-svg-edge-dim {
+      opacity: 0.12 !important;
+    }
+    .kg-svg-node { cursor: pointer; }
+    .kg-svg-node-circle {
+      transition: r 220ms, stroke-width 220ms;
+    }
+    .kg-svg-node:hover .kg-svg-node-circle {
+      r: 11;
+      stroke-width: 3;
+    }
+    .kg-svg-label {
+      font-size: 10px;
+      fill: white;
+      font-family: inherit;
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .kg-svg-tacit-title {
+      font-size: 10px;
+      fill: #94A3B8;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: inherit;
+    }
+    .kg-svg-tacit-label {
+      font-size: 9.5px;
+      fill: #CBD5E1;
+      font-family: inherit;
+      pointer-events: none;
+    }
+    .kg-svg-tacit-byte { cursor: pointer; }
+    .kg-svg-arrow-flow {
+      stroke: #10B981;
+      stroke-width: 2;
+      stroke-dasharray: 4 4;
+      marker-end: url(#kg-arrow-head);
+      animation: kg-arrow-march 1.6s linear infinite;
+      pointer-events: none;
+      fill: none;
+    }
+    @keyframes kg-arrow-march {
+      from { stroke-dashoffset: 0; }
+      to   { stroke-dashoffset: -16; }
+    }
+
     /* W14 R3 — KG legend overlay: 2-column horizontal flex (Layers · Tacit knowledge) */
     .kg-legend-overlay {
       position: absolute;
@@ -5307,8 +5382,9 @@
     }
     /* W12 Section H.1 — Sembcorp hexagonal logo */
     .td-brand-logo {
-      width: 36px; height: 36px;
+      height: 36px; width: auto;
       flex-shrink: 0;
+      object-fit: contain;
     }
     .td-brand-text-block {
       display: flex; flex-direction: column;
@@ -6522,6 +6598,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w15"></script>
+  <script src="app.js?v=w16"></script>
 </body>
 </html>

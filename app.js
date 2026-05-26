@@ -3431,7 +3431,7 @@ function spawnAnalystScreenContent() {
         <div class="ac-context-row ac-context-exposure">
           <div class="ac-ctx-label">EXPOSURE</div>
           <div class="ac-ctx-content">
-            <div class="ac-ctx-primary">50 MW derate · SGD 240k revenue at risk</div>
+            <div class="ac-ctx-primary">50 MW derate · SGD 2.4M revenue at risk</div>
             <div class="ac-ctx-secondary">4× 30-min settlement periods · HH18 (09:00 SGT) → HH21 (10:30 SGT) · PSO commitment window</div>
           </div>
         </div>
@@ -3455,7 +3455,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5" stroke="#00A651" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 240k</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 2.4M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+5.7% toward May target</div>
               </div>
             </div>
@@ -3474,7 +3474,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 198k</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.98M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+4.7% toward May target</div>
               </div>
             </div>
@@ -3493,7 +3493,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 156k</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.56M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+3.7% toward May target</div>
               </div>
             </div>
@@ -3512,7 +3512,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 14 L 60 14 L 70 32 L 120 32" stroke="#DC2626" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-negative">-SGD 88k</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-negative">-SGD 0.88M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-negative">-2.1% toward May target</div>
               </div>
             </div>
@@ -4088,11 +4088,7 @@ function paintLaptopDashboard(content) {
     <div class="trader-dash">
       <div class="td-topbar">
         <div class="td-brand">
-          <svg class="td-brand-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <polygon points="16,3 27,9 27,23 16,29 5,23 5,9" fill="#00A651"/>
-            <circle cx="16" cy="16" r="5" fill="#FFFFFF"/>
-            <polygon points="16,11 21,16 16,21 11,16" fill="#00A651"/>
-          </svg>
+          <img class="td-brand-logo" src="vendor/sembcorp-logo.png" alt="Sembcorp"/>
           <div class="td-brand-text-block">
             <span class="td-brand-text">Sembcorp</span>
             <span class="td-brand-text-sub">Energy Trading · Singapore</span>
@@ -4145,11 +4141,11 @@ function paintLaptopDashboard(content) {
             <div class="td-kpi-target-fill" style="width: 74%"></div>
           </div>
           <div class="td-kpi-target-stats">
-            <span class="td-kpi-target-mtd"><strong>SGD 3.1M</strong> MTD <span class="td-kpi-target-pct">(74%)</span></span>
-            <span class="td-kpi-target-goal">Target SGD 4.2M</span>
+            <span class="td-kpi-target-mtd"><strong>SGD 30.1M</strong> MTD <span class="td-kpi-target-pct">(74%)</span></span>
+            <span class="td-kpi-target-goal">Target SGD 40.2M</span>
           </div>
           <div class="td-kpi-target-delta">
-            INC-2026-0537 unlock: <strong class="td-kpi-target-delta-amt">+SGD 240k</strong> · <span class="td-kpi-target-delta-pct">+5.7% toward target</span>
+            INC-2026-0537 unlock: <strong class="td-kpi-target-delta-amt">+SGD 2.4M</strong> · <span class="td-kpi-target-delta-pct">+5.7% toward target</span>
           </div>
         </div>
       </div>
@@ -4261,7 +4257,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">Cover Sakra-CCGT-1 standby balancing position</div>
       <div class="td-task-why">Cross-site availability window · 14:00–22:00 SGT</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 85k spread potential</span>
+        <span class="td-task-money">~SGD 0.85M spread potential</span>
         <span class="td-task-timer">⏱ 45 min</span>
       </div>
     </div>
@@ -4269,7 +4265,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">USEP forward curve · Q3 hedge eligibility review</div>
       <div class="td-task-why">Position review before settlement window close</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 120k hedge exposure</span>
+        <span class="td-task-money">~SGD 1.2M hedge exposure</span>
         <span class="td-task-timer">⏱ 2h</span>
       </div>
     </div>
@@ -4277,7 +4273,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">PSO dispatch reconciliation · variance check</div>
       <div class="td-task-why">Yesterday's actual vs scheduled · settle by EOD</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 40k variance impact</span>
+        <span class="td-task-money">~SGD 0.4M variance impact</span>
         <span class="td-task-timer">⏱ 4h</span>
       </div>
     </div>`;
@@ -4298,7 +4294,7 @@ function updateLaptopActiveTasks() {
         <div class="td-task-what">Buy USEP forward · Jul-26 · 50 MW · Q3 peak window</div>
         <div class="td-task-why">JRG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT</div>
         <div class="td-task-meta">
-          <span class="td-task-money">~SGD 240k at risk</span>
+          <span class="td-task-money">~SGD 2.4M at risk</span>
           <span class="td-task-timer">⏱ 28 min</span>
         </div>
         <button class="td-task-action" type="button">Open</button>
@@ -7312,15 +7308,8 @@ function toggleGraphWindow() {
   const icon = btn.querySelector('.rp-toggle-icon');
   if (icon) icon.textContent = state.graphWinOpen ? '◫' : '⊞';
 
-  if (state.graphWinOpen && KG_STATE.graph) {
-    const body = win.querySelector('.kg-fw-body');
-    const w = body.clientWidth;
-    const h = body.clientHeight;
-    KG_STATE.graph.width(w).height(h);
-    // W12 Section A — build-time filter: re-set graphData with persona-specific node list.
+  if (state.graphWinOpen) {
     win.dataset.persona = state.activePersona;
-    applyPersonaKGFilter(state.activePersona);
-    // W10 — persona-specific camera pose + cluster flash on open
     openKGForPersona(state.activePersona);
   }
 }
@@ -7353,41 +7342,396 @@ function applyPersonaKGFilter(persona) {
   KG_STATE.graph.graphData({ nodes, links: edges });
 }
 
-// W10 — persona-specific KG camera pose + flash sequence
+// W16 — Persona-specific KG mount.
+// P2 (onsite · Lim) + P3 (analyst · Priya) use static SVG renderers (this wave).
+// 3d-force-graph init code preserved as dead code per WA #5 for other personas.
 function openKGForPersona(persona) {
+  const win = document.getElementById('kg-floating-window');
+  if (!win) return;
+  const body = win.querySelector('.kg-fw-body');
+  if (!body) return;
+
+  // Defensive: stop any zombie 3d autorotate timer regardless of persona path.
+  if (typeof stopAutoRotate === 'function') stopAutoRotate();
+
+  // SVG path — P2 + P3
+  if (persona === 'onsite' || persona === 'analyst') {
+    mountSvgKG(body, win, persona);
+    return;
+  }
+
+  // ── DEAD CODE (W16 · per WA #5) — original 3d-force-graph dispatch for other personas ──
   if (!KG_STATE.graph) return;
+  const w = body.clientWidth;
+  const h = body.clientHeight;
+  KG_STATE.graph.width(w).height(h);
+  applyPersonaKGFilter(persona);
+
   state.w10 = state.w10 || {};
   state.w10.kgFlashedFor = state.w10.kgFlashedFor || { onsite: false, analyst: false };
 
   const POSE = {
-    onsite:  { cam: { x: 250, y: 0,   z: 580 }, lookAt: { x: 300, y: 0,   z: 0 }, flashIds: KG_STAGING_PROMOTED_IDS },
-    analyst: { cam: { x: 400, y: 150, z: 820 }, lookAt: { x: 400, y: 150, z: 0 }, flashIds: KG_COMMERCIAL_IDS },
-    ops:     null, // default camera (no override)
+    ops: null,
   };
   const pose = POSE[persona];
   if (!pose) return;
 
-  // Pause auto-rotate for the panning + flash window
-  stopAutoRotate();
   KG_STATE.graph.cameraPosition(pose.cam, pose.lookAt, 2000);
-
-  // First-open per persona: flash the promoted-byte cluster green for 4s after camera arrives
-  if (!state.w10.kgFlashedFor[persona] && pose.flashIds && pose.flashIds.length) {
-    setTimeout(() => {
-      pose.flashIds.forEach(id => KG_STATE.newlyAddedNodes.add(id));
-      refreshKGStyles();
-      setTimeout(() => {
-        pose.flashIds.forEach(id => KG_STATE.newlyAddedNodes.delete(id));
-        refreshKGStyles();
-      }, 4000);
-    }, 2000);
-    state.w10.kgFlashedFor[persona] = true;
-  }
-
-  // Resume auto-rotate after 6s (camera pan + flash settled)
   setTimeout(() => {
     if (!anyChainActive()) startAutoRotate();
   }, 6000);
+}
+
+// ═══════════════════════════════════════════════
+// W16 — Static SVG KG (P2 + P3)
+// ═══════════════════════════════════════════════
+
+function mountSvgKG(body, win, persona) {
+  // Hide 3d mount (if present); show svg mount
+  const threeMount = body.querySelector('#kg-3d-mount');
+  if (threeMount) threeMount.style.display = 'none';
+
+  let svgMount = body.querySelector('#kg-svg-mount');
+  if (!svgMount) {
+    svgMount = document.createElement('div');
+    svgMount.id = 'kg-svg-mount';
+    svgMount.className = 'kg-svg-mount';
+    body.appendChild(svgMount);
+  }
+  svgMount.style.display = 'block';
+  svgMount.innerHTML = persona === 'onsite' ? renderP2KGSvg() : renderP3KGSvg();
+  wireKGSvgInteractions(svgMount);
+
+  // Resize floating window so SVG legible (default 460x360 too small).
+  // W17 Section A: onsite bumped 820×620 → 1180×780 to fit 1100×720 viewBox at full scale.
+  const dims = persona === 'onsite'
+    ? { w: 1180, h: 780 }
+    : { w: 860, h: 720 };
+  win.style.width = dims.w + 'px';
+  win.style.height = dims.h + 'px';
+  state.graphWinSize = dims;
+}
+
+// ── P2 (Lim · onsite) — 5 layers (L1-L5) ──
+// W17 Section A: enriched 25 → 72 nodes · canvas widened 800→1100, height stays 720.
+// Layout grid: L1 (y=60), L2 (y=160), L3 (y=270/340/410 · 3 rows), L4 (y=510/580 · 2 rows), L5 (y=670).
+const P2_KG_NODES_DEF = [
+  // L1 Org Structure (y=60 · 10 nodes · x spacing ~104px)
+  { id: 'lim',                label: 'Lim Wei Jie',                 layer: 'L1', x: 80,   y: 60 },
+  { id: 'faye',               label: 'Faye Sit',                    layer: 'L1', x: 184,  y: 60 },
+  { id: 'ismail',             label: 'Dr. A. Ismail',               layer: 'L1', x: 289,  y: 60 },
+  { id: 'supervisor',         label: 'Block 2 Supervisor',          layer: 'L1', x: 393,  y: 60 },
+  { id: 'block1-supervisor',  label: 'Block 1 Supervisor',          layer: 'L1', x: 498,  y: 60 },
+  { id: 'maint-lead',         label: 'Maint Lead · S. Ibrahim',     layer: 'L1', x: 602,  y: 60 },
+  { id: 'hse-officer',        label: 'HSE · P. Subramaniam',        layer: 'L1', x: 707,  y: 60 },
+  { id: 'trading-lead',       label: 'Trading Lead · P. Sundaram',  layer: 'L1', x: 811,  y: 60 },
+  { id: 'asset-perf-mgr',     label: 'Asset Perf Mgr · J. Tan',     layer: 'L1', x: 916,  y: 60 },
+  { id: 'plant-mgr',          label: 'Plant Manager · M. Lim',      layer: 'L1', x: 1020, y: 60 },
+
+  // L2 SOPs (y=160 · 10 nodes)
+  { id: 'sop-bfp-vibr',       label: 'SOP-BFP-VIBR-001',            layer: 'L2', x: 80,   y: 160 },
+  { id: 'sop-escalation',     label: 'Escalation playbook',         layer: 'L2', x: 184,  y: 160 },
+  { id: 'sop-safety',         label: 'Safety procedure',            layer: 'L2', x: 289,  y: 160 },
+  { id: 'sop-vibr-trending',  label: 'SOP · vibration trending',    layer: 'L2', x: 393,  y: 160 },
+  { id: 'sop-wo-creation',    label: 'SOP · WO creation',           layer: 'L2', x: 498,  y: 160 },
+  { id: 'sop-maximo-entry',   label: 'SOP · Maximo entry',          layer: 'L2', x: 602,  y: 160 },
+  { id: 'sop-shift-handover', label: 'SOP · shift handover',        layer: 'L2', x: 707,  y: 160 },
+  { id: 'sop-loto',           label: 'SOP · LOTO',                  layer: 'L2', x: 811,  y: 160 },
+  { id: 'sop-confined-space', label: 'SOP · confined space',        layer: 'L2', x: 916,  y: 160 },
+  { id: 'sop-overspeed',      label: 'SOP · GT overspeed',          layer: 'L2', x: 1020, y: 160 },
+
+  // L3 row 1 (y=270) — BFP-3A + sub-assemblies (10 nodes)
+  { id: 'bfp-3a',             label: 'BFP-3A',                      layer: 'L3', x: 80,   y: 270 },
+  { id: 'impeller',           label: 'Impeller · Sulzer',           layer: 'L3', x: 184,  y: 270 },
+  { id: 'shaft',              label: 'Shaft',                       layer: 'L3', x: 289,  y: 270 },
+  { id: 'seals',              label: 'Seals · John Crane',          layer: 'L3', x: 393,  y: 270 },
+  { id: 'casing',             label: 'Pump casing (Sulzer)',        layer: 'L3', x: 498,  y: 270 },
+  { id: 'coupling',           label: 'Coupling',                    layer: 'L3', x: 602,  y: 270 },
+  { id: 'bearing-nde',        label: 'NDE bearing (SKF)',           layer: 'L3', x: 707,  y: 270 },
+  { id: 'bearing-de',         label: 'DE bearing (SKF)',            layer: 'L3', x: 811,  y: 270 },
+  { id: 'lube-oil',           label: 'Lube oil system',             layer: 'L3', x: 916,  y: 270 },
+  { id: 'base-plate',         label: 'Pump base plate',             layer: 'L3', x: 1020, y: 270 },
+
+  // L3 row 2 (y=340) — valves, sensors, asset chain (10 nodes)
+  { id: 'suction-valve',      label: 'Suction valve',               layer: 'L3', x: 80,   y: 340 },
+  { id: 'discharge-valve',    label: 'Discharge valve',             layer: 'L3', x: 184,  y: 340 },
+  { id: 'sensor-bn3500',      label: 'Sensor · Bently Nevada 3500', layer: 'L3', x: 289,  y: 340 },
+  { id: 'telemetry-vib',      label: 'Telemetry · vibration RMS',   layer: 'L3', x: 393,  y: 340 },
+  { id: 'telemetry-temp',     label: 'Telemetry · bearing temp',    layer: 'L3', x: 498,  y: 340 },
+  { id: 'telemetry-flow',     label: 'Telemetry · flow rate',       layer: 'L3', x: 602,  y: 340 },
+  { id: 'hrsg-3',             label: 'HRSG-3',                      layer: 'L3', x: 707,  y: 340 },
+  { id: 'st-3',               label: 'Steam turbine ST-3',          layer: 'L3', x: 811,  y: 340 },
+  { id: 'gen-3',              label: 'Generator-3',                 layer: 'L3', x: 916,  y: 340 },
+  { id: 'transformer-3',      label: 'Transformer-3',               layer: 'L3', x: 1020, y: 340 },
+
+  // L3 row 3 (y=410) — switchyard + failure modes + manuals (10 nodes)
+  { id: 'switchyard-a',       label: 'Switchyard-A',                layer: 'L3', x: 80,   y: 410 },
+  { id: 'fm-race',            label: 'Failure · race spalling',     layer: 'L3', x: 184,  y: 410 },
+  { id: 'fm-crack',           label: 'Failure · casing crack',      layer: 'L3', x: 289,  y: 410 },
+  { id: 'fm-imbalance',       label: 'Failure · imbalance',         layer: 'L3', x: 393,  y: 410 },
+  { id: 'fm-misalignment',    label: 'Failure · misalignment',      layer: 'L3', x: 498,  y: 410 },
+  { id: 'fm-cavitation',      label: 'Failure · cavitation',        layer: 'L3', x: 602,  y: 410 },
+  { id: 'manual-sulzer',      label: 'Manual · Sulzer BFP',         layer: 'L3', x: 707,  y: 410 },
+  { id: 'manual-ge9ha',       label: 'Manual · GE 9HA',             layer: 'L3', x: 811,  y: 410 },
+  { id: 'manual-bn',          label: 'Manual · Bently Nevada',      layer: 'L3', x: 916,  y: 410 },
+  { id: 'manual-abb',         label: 'Manual · ABB drives',         layer: 'L3', x: 1020, y: 410 },
+
+  // L4 row 1 (y=510) — WOs + RCAs (7 nodes · x spacing ~157px)
+  { id: 'wo-jrg-2025',        label: 'WO · Jurong 2025',            layer: 'L4', x: 80,   y: 510 },
+  { id: 'wo-skr-2024',        label: 'WO · Sakra 2024',             layer: 'L4', x: 237,  y: 510 },
+  { id: 'wo-banyan-2024',     label: 'WO · Banyan 2024',            layer: 'L4', x: 393,  y: 510 },
+  { id: 'wo-tuas-2023',       label: 'WO · Tuas 2023',              layer: 'L4', x: 550,  y: 510 },
+  { id: 'rca-jrg-2025',       label: 'RCA · Jurong 2025',           layer: 'L4', x: 707,  y: 510 },
+  { id: 'rca-banyan-2024',    label: 'RCA · Banyan 2024',           layer: 'L4', x: 863,  y: 510 },
+  { id: 'rca-sakra-coupling', label: 'RCA · Sakra coupling 2025',   layer: 'L4', x: 1020, y: 510 },
+
+  // L4 row 2 (y=580) — historical telemetry + logs (7 nodes)
+  { id: 'vib-90d',            label: 'Vibration history · 90d',     layer: 'L4', x: 80,   y: 580 },
+  { id: 'temp-30d',           label: 'Temp history · 30d',          layer: 'L4', x: 237,  y: 580 },
+  { id: 'trend-90d',          label: 'Vibration trend · aggregate', layer: 'L4', x: 393,  y: 580 },
+  { id: 'spec-compliance',    label: 'Spec compliance reports',     layer: 'L4', x: 550,  y: 580 },
+  { id: 'maint-log',          label: 'Maintenance log · 12-mo',     layer: 'L4', x: 707,  y: 580 },
+  { id: 'align-history',      label: 'Shaft alignment history',     layer: 'L4', x: 863,  y: 580 },
+  { id: 'brg-replace-log',    label: 'Bearing replacement log',     layer: 'L4', x: 1020, y: 580 },
+
+  // L5 Predictive Intelligence (y=670 · 8 nodes · x spacing ~134px)
+  { id: 'pattern-race',       label: 'Pattern · race spalling',     layer: 'L5', x: 80,   y: 670 },
+  { id: 'pattern-crack',      label: 'Pattern · casing crack',      layer: 'L5', x: 214,  y: 670 },
+  { id: 'pattern-imbalance',  label: 'Pattern · impeller imbalance',layer: 'L5', x: 348,  y: 670 },
+  { id: 'pattern-misalign',   label: 'Pattern · shaft misalignment',layer: 'L5', x: 483,  y: 670 },
+  { id: 'pattern-cavitation', label: 'Pattern · cavitation',        layer: 'L5', x: 617,  y: 670 },
+  { id: 'derate-model',       label: 'Derate cascade model',        layer: 'L5', x: 751,  y: 670 },
+  { id: 'oem-playbook',       label: 'OEM · Sulzer playbook',       layer: 'L5', x: 886,  y: 670 },
+  { id: 'mtbf-model',         label: 'MTBF · BFP fleet model',      layer: 'L5', x: 1020, y: 670 },
+];
+
+// W17 Section A: edges enriched 26 → ~97 across all layer transitions.
+const P2_KG_EDGES_DEF = [
+  // L1 → L2 (12 edges · each person uses multiple SOPs)
+  ['lim', 'sop-bfp-vibr'], ['lim', 'sop-safety'], ['lim', 'sop-loto'], ['lim', 'sop-wo-creation'],
+  ['faye', 'sop-bfp-vibr'], ['faye', 'sop-escalation'], ['faye', 'sop-shift-handover'],
+  ['ismail', 'sop-escalation'], ['ismail', 'sop-vibr-trending'],
+  ['supervisor', 'sop-safety'], ['maint-lead', 'sop-maximo-entry'], ['hse-officer', 'sop-confined-space'],
+
+  // L2 → L3 (16 edges)
+  ['sop-bfp-vibr', 'bfp-3a'], ['sop-bfp-vibr', 'telemetry-vib'],
+  ['sop-bfp-vibr', 'bearing-nde'], ['sop-bfp-vibr', 'bearing-de'],
+  ['sop-safety', 'casing'], ['sop-vibr-trending', 'telemetry-vib'], ['sop-vibr-trending', 'sensor-bn3500'],
+  ['sop-loto', 'bfp-3a'], ['sop-loto', 'suction-valve'], ['sop-loto', 'discharge-valve'],
+  ['sop-overspeed', 'hrsg-3'], ['sop-overspeed', 'st-3'],
+  ['sop-wo-creation', 'fm-race'], ['sop-maximo-entry', 'bfp-3a'],
+  ['sop-confined-space', 'casing'], ['sop-shift-handover', 'telemetry-temp'],
+
+  // L3 intra (26 edges · sub-assemblies → parent · sensors → monitored · asset chain)
+  ['bfp-3a', 'bearing-nde'], ['bfp-3a', 'casing'], ['bfp-3a', 'coupling'],
+  ['bfp-3a', 'impeller'], ['bfp-3a', 'shaft'], ['bfp-3a', 'seals'],
+  ['bfp-3a', 'bearing-de'], ['bfp-3a', 'lube-oil'],
+  ['bfp-3a', 'suction-valve'], ['bfp-3a', 'discharge-valve'],
+  ['bfp-3a', 'manual-sulzer'],
+  ['bearing-nde', 'fm-race'], ['casing', 'fm-crack'],
+  ['shaft', 'fm-misalignment'], ['impeller', 'fm-imbalance'], ['impeller', 'fm-cavitation'],
+  ['bearing-nde', 'telemetry-vib'], ['bearing-nde', 'telemetry-temp'],
+  ['bearing-de', 'telemetry-temp'], ['sensor-bn3500', 'telemetry-vib'],
+  // Asset chain (canonical): BFP-3A → HRSG-3 → ST-3 → GEN-3 → TX-3 → SY-A
+  ['bfp-3a', 'hrsg-3'], ['hrsg-3', 'st-3'], ['st-3', 'gen-3'],
+  ['gen-3', 'transformer-3'], ['transformer-3', 'switchyard-a'],
+  ['manual-bn', 'sensor-bn3500'],
+
+  // L3 → L4 (11 edges)
+  ['telemetry-vib', 'vib-90d'], ['telemetry-temp', 'temp-30d'],
+  ['telemetry-vib', 'trend-90d'], ['telemetry-temp', 'trend-90d'],
+  ['telemetry-flow', 'spec-compliance'],
+  ['bearing-nde', 'brg-replace-log'], ['bearing-de', 'brg-replace-log'],
+  ['shaft', 'align-history'], ['coupling', 'align-history'],
+  ['bfp-3a', 'maint-log'], ['hrsg-3', 'maint-log'],
+
+  // L4 intra (9 edges)
+  ['wo-jrg-2025', 'rca-jrg-2025'], ['wo-skr-2024', 'rca-banyan-2024'],
+  ['wo-banyan-2024', 'rca-banyan-2024'], ['wo-tuas-2023', 'rca-sakra-coupling'],
+  ['vib-90d', 'trend-90d'], ['temp-30d', 'trend-90d'],
+  ['trend-90d', 'spec-compliance'], ['maint-log', 'align-history'],
+  ['brg-replace-log', 'maint-log'],
+
+  // L4 → L5 (11 edges)
+  ['rca-jrg-2025', 'pattern-race'], ['rca-banyan-2024', 'pattern-crack'],
+  ['vib-90d', 'pattern-race'], ['temp-30d', 'pattern-race'],
+  ['rca-sakra-coupling', 'pattern-misalign'], ['align-history', 'pattern-misalign'],
+  ['brg-replace-log', 'pattern-race'],
+  ['spec-compliance', 'mtbf-model'], ['maint-log', 'mtbf-model'],
+  ['trend-90d', 'pattern-imbalance'], ['wo-banyan-2024', 'pattern-cavitation'],
+
+  // L5 intra + L5 → L3 (12 edges)
+  ['pattern-race', 'derate-model'], ['pattern-crack', 'derate-model'],
+  ['pattern-imbalance', 'derate-model'], ['pattern-misalign', 'derate-model'],
+  ['pattern-cavitation', 'derate-model'],
+  ['pattern-race', 'fm-race'], ['pattern-crack', 'fm-crack'],
+  ['pattern-imbalance', 'fm-imbalance'], ['pattern-misalign', 'fm-misalignment'],
+  ['oem-playbook', 'pattern-race'], ['oem-playbook', 'pattern-misalign'],
+  ['mtbf-model', 'pattern-race'],
+];
+
+function getP2KGData() {
+  return { nodes: P2_KG_NODES_DEF, edges: P2_KG_EDGES_DEF };
+}
+
+function renderP2KGSvg() {
+  const { nodes, edges } = getP2KGData();
+  // W17 Section A: width 800 → 1100 to fit 72-node 5-layer grid (10 nodes per L1/L2 row).
+  // Height bumped to 840 to leave room for relocated tacit cluster below L5 (y=670).
+  return buildKGSvg({ nodes, edges, persona: 'onsite', width: 1100, height: 840 });
+}
+
+// ── P3 (Priya · analyst) — all 8 layers ──
+function renderP3KGSvg() {
+  const p2 = getP2KGData();
+
+  const extraNodes = [
+    // L6 Markets (y=710)
+    { id: 'usep',        label: 'USEP · 30-min',       layer: 'L6', x: 100, y: 710 },
+    { id: 'lng-spot',    label: 'LNG spot · JKM',      layer: 'L6', x: 260, y: 710 },
+    { id: 'carbon',      label: 'Carbon · CORSIA',     layer: 'L6', x: 420, y: 710 },
+    { id: 'weather',     label: 'Weather · SG 7-day',  layer: 'L6', x: 580, y: 710 },
+    { id: 'demand-q3',   label: 'Demand forecast Q3',  layer: 'L6', x: 740, y: 710 },
+
+    // L7 Contracts (y=830)
+    { id: 'ppa-pso',         label: 'PPA · PSO 2026',     layer: 'L7', x: 100, y: 830 },
+    { id: 'hedges',          label: 'Hedge catalog',      layer: 'L7', x: 260, y: 830 },
+    { id: 'futures',         label: 'Futures · SGD-Jul',  layer: 'L7', x: 420, y: 830 },
+    { id: 'industrial-cust', label: 'Industrial · CCAA',  layer: 'L7', x: 580, y: 830 },
+    { id: 'ancillary',       label: 'Ancillary services', layer: 'L7', x: 740, y: 830 },
+
+    // L8 Cross-site (y=950)
+    { id: 'banyan',          label: 'Banyan-CHP',         layer: 'L8', x: 100, y: 950 },
+    { id: 'tuas-power',      label: 'Tuas-Power',         layer: 'L8', x: 260, y: 950 },
+    { id: 'sakra-cogen',     label: 'Sakra-Cogen',        layer: 'L8', x: 420, y: 950 },
+    { id: 'interconnect-my', label: 'Interconnector MY',  layer: 'L8', x: 580, y: 950 },
+    { id: 'grid-50hz',       label: 'Grid · 50 Hz',       layer: 'L8', x: 740, y: 950 },
+  ];
+
+  const extraEdges = [
+    // L5 → L6
+    ['derate-model', 'demand-q3'], ['pattern-crack', 'demand-q3'],
+    // L6 intra
+    ['usep', 'lng-spot'], ['lng-spot', 'carbon'], ['weather', 'demand-q3'],
+    // L6 → L7
+    ['usep', 'ppa-pso'], ['usep', 'hedges'], ['lng-spot', 'futures'],
+    ['demand-q3', 'industrial-cust'],
+    // L7 intra
+    ['ppa-pso', 'hedges'], ['hedges', 'futures'], ['ppa-pso', 'ancillary'],
+    // L7 → L8
+    ['ppa-pso', 'banyan'], ['ancillary', 'tuas-power'], ['hedges', 'sakra-cogen'],
+    // L8 intra
+    ['banyan', 'tuas-power'], ['tuas-power', 'interconnect-my'], ['sakra-cogen', 'grid-50hz'],
+    // L8 → L3 (cross-site touches plant)
+    ['banyan', 'bfp-3a'],
+  ];
+
+  return buildKGSvg({
+    nodes: [...p2.nodes, ...extraNodes],
+    edges: [...p2.edges, ...extraEdges],
+    persona: 'analyst',
+    width: 840,
+    height: 1040,
+  });
+}
+
+function buildKGSvg({ nodes, edges, persona, width, height }) {
+  const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]));
+
+  // Edges first (behind nodes per SVG z-order)
+  const edgesHtml = edges.map(([srcId, dstId]) => {
+    const s = nodeMap[srcId], d = nodeMap[dstId];
+    if (!s || !d) {
+      console.warn(`[KG] orphan edge skipped: ${srcId} → ${dstId}`);
+      return '';
+    }
+    return `<line class="kg-svg-edge" data-src="${srcId}" data-dst="${dstId}" x1="${s.x}" y1="${s.y}" x2="${d.x}" y2="${d.y}" />`;
+  }).join('');
+
+  // Tacit byte cluster (preserve W14 narrative)
+  // W17 Section A: onsite cluster relocated to bottom margin (x=30, y=730) so it doesn't
+  // collide with the enriched L5 row at y=670. P3/analyst position unchanged.
+  const tacitX = (persona === 'onsite') ? 30 : 800;
+  const tacitYStart = (persona === 'onsite') ? 730 : 600;
+  const tacitBytes = [
+    { state: 'triaged' }, { state: 'triaged' }, { state: 'triaged' },
+    { state: 'ingested' }, { state: 'ingested' },
+  ];
+  const tacitHtml = `
+    <g class="kg-svg-tacit">
+      <text class="kg-svg-tacit-title" x="${tacitX - 6}" y="${tacitYStart - 12}">TACIT</text>
+      ${tacitBytes.map((b, i) => {
+        const y = tacitYStart + i * 22;
+        const color = b.state === 'triaged' ? '#10B981' : '#94A3B8';
+        return `
+          <g class="kg-svg-tacit-byte" data-state="${b.state}" transform="translate(${tacitX}, ${y})">
+            <rect x="-6" y="-6" width="12" height="12" fill="${color}" stroke="white" stroke-width="1.5" transform="rotate(45)" />
+          </g>
+          <text class="kg-svg-tacit-label" x="${tacitX + 14}" y="${y + 3}">Tacit byte [${b.state}]</text>`;
+      }).join('')}
+    </g>`;
+
+  // Workflow arrows (preserve W14 narrative · dashed marching L2→L3)
+  const arrowsHtml = `
+    <g class="kg-svg-workflow-arrows">
+      <line class="kg-svg-arrow-flow" x1="140" y1="180" x2="80"  y2="250" />
+      <line class="kg-svg-arrow-flow" x1="340" y1="180" x2="340" y2="250" />
+      <line class="kg-svg-arrow-flow" x1="540" y1="180" x2="580" y2="250" />
+    </g>`;
+
+  // Nodes last (z-order: above edges/arrows)
+  const nodesHtml = nodes.map(n => {
+    const color = KG_LAYER_COLORS[n.layer] || '#94A3B8';
+    return `
+      <g class="kg-svg-node" data-id="${n.id}" data-layer="${n.layer}" transform="translate(${n.x},${n.y})">
+        <circle class="kg-svg-node-circle" r="9" fill="${color}" stroke="white" stroke-width="2" />
+        <text class="kg-svg-label" y="22" text-anchor="middle">${n.label}</text>
+      </g>`;
+  }).join('');
+
+  return `
+    <svg class="kg-svg" data-persona="${persona}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="kg-arrow-head" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L6,3 L0,6 z" fill="#10B981" />
+        </marker>
+      </defs>
+      ${edgesHtml}
+      ${arrowsHtml}
+      ${tacitHtml}
+      ${nodesHtml}
+    </svg>`;
+}
+
+function wireKGSvgInteractions(mount) {
+  const svg = mount.querySelector('.kg-svg');
+  if (!svg) return;
+
+  mount.querySelectorAll('.kg-svg-node').forEach(node => {
+    node.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = node.dataset.id;
+      // Dim all edges first
+      mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
+        edge.classList.remove('kg-svg-edge-highlight');
+        edge.classList.add('kg-svg-edge-dim');
+      });
+      // Highlight edges touching this node
+      mount.querySelectorAll(`.kg-svg-edge[data-src="${id}"], .kg-svg-edge[data-dst="${id}"]`).forEach(edge => {
+        edge.classList.add('kg-svg-edge-highlight');
+        edge.classList.remove('kg-svg-edge-dim');
+      });
+    });
+  });
+
+  // Click empty SVG area → reset
+  svg.addEventListener('click', e => {
+    if (e.target === svg || e.target.tagName === 'svg') {
+      mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
+        edge.classList.remove('kg-svg-edge-highlight', 'kg-svg-edge-dim');
+      });
+    }
+  });
 }
 
 function initFloatingWindowHandlers() {
