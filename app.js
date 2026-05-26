@@ -7311,6 +7311,9 @@ function toggleGraphWindow() {
   if (state.graphWinOpen) {
     win.dataset.persona = state.activePersona;
     openKGForPersona(state.activePersona);
+  } else {
+    // W17 Section C — stop physics loop + drop document-level drag listeners on close.
+    if (typeof stopKGSimulation === 'function') stopKGSimulation();
   }
 }
 
@@ -7404,12 +7407,16 @@ function mountSvgKG(body, win, persona) {
 
   // Resize floating window so SVG legible (default 460x360 too small).
   // W17 Section A: onsite bumped 820×620 → 1180×780 to fit 1100×720 viewBox at full scale.
+  // W17 Section B: analyst bumped to 1180×880 to fit 1100×1500 viewBox.
   const dims = persona === 'onsite'
     ? { w: 1180, h: 780 }
-    : { w: 860, h: 720 };
+    : { w: 1180, h: 880 };
   win.style.width = dims.w + 'px';
   win.style.height = dims.h + 'px';
   state.graphWinSize = dims;
+
+  // W17 Section C — kick off force simulation after SVG mounted + wired.
+  initKGSimulation(persona);
 }
 
 // ── P2 (Lim · onsite) — 5 layers (L1-L5) ──
@@ -7582,47 +7589,112 @@ function renderP2KGSvg() {
 }
 
 // ── P3 (Priya · analyst) — all 8 layers ──
+// W17 Section B: L6/L7/L8 each expanded 5 → 15 nodes (total P3 = 72 P2 + 45 P3-only = 117).
+// Canvas widened 840→1100, height 1040→1500 to fit 8-layer commercial cluster.
 function renderP3KGSvg() {
   const p2 = getP2KGData();
 
   const extraNodes = [
-    // L6 Markets (y=710)
-    { id: 'usep',        label: 'USEP · 30-min',       layer: 'L6', x: 100, y: 710 },
-    { id: 'lng-spot',    label: 'LNG spot · JKM',      layer: 'L6', x: 260, y: 710 },
-    { id: 'carbon',      label: 'Carbon · CORSIA',     layer: 'L6', x: 420, y: 710 },
-    { id: 'weather',     label: 'Weather · SG 7-day',  layer: 'L6', x: 580, y: 710 },
-    { id: 'demand-q3',   label: 'Demand forecast Q3',  layer: 'L6', x: 740, y: 710 },
+    // L6 Markets row 1 (y=800 · 8 nodes · spacing ~134px)
+    { id: 'usep',                label: 'USEP · 30-min',          layer: 'L6', x: 80,   y: 800 },
+    { id: 'usep-day-ahead',      label: 'USEP · day-ahead',       layer: 'L6', x: 214,  y: 800 },
+    { id: 'lng-spot',            label: 'LNG spot · JKM',         layer: 'L6', x: 348,  y: 800 },
+    { id: 'lng-charter',         label: 'LNG charter rate',       layer: 'L6', x: 482,  y: 800 },
+    { id: 'gas-spot',            label: 'Gas spot index',         layer: 'L6', x: 616,  y: 800 },
+    { id: 'coal-price',          label: 'Coal price · API4',      layer: 'L6', x: 750,  y: 800 },
+    { id: 'carbon',              label: 'Carbon · CORSIA',        layer: 'L6', x: 884,  y: 800 },
+    { id: 'weather',             label: 'Weather · SG 7-day',     layer: 'L6', x: 1020, y: 800 },
 
-    // L7 Contracts (y=830)
-    { id: 'ppa-pso',         label: 'PPA · PSO 2026',     layer: 'L7', x: 100, y: 830 },
-    { id: 'hedges',          label: 'Hedge catalog',      layer: 'L7', x: 260, y: 830 },
-    { id: 'futures',         label: 'Futures · SGD-Jul',  layer: 'L7', x: 420, y: 830 },
-    { id: 'industrial-cust', label: 'Industrial · CCAA',  layer: 'L7', x: 580, y: 830 },
-    { id: 'ancillary',       label: 'Ancillary services', layer: 'L7', x: 740, y: 830 },
+    // L6 Markets row 2 (y=870 · 7 nodes · spacing ~157px)
+    { id: 'demand-q3',           label: 'Demand forecast Q3',     layer: 'L6', x: 80,   y: 870 },
+    { id: 'vesting-price',       label: 'Vesting price',          layer: 'L6', x: 237,  y: 870 },
+    { id: 'imbalance-settle',    label: 'Imbalance settlement',   layer: 'L6', x: 393,  y: 870 },
+    { id: 'electricity-futures', label: 'Electricity futures',    layer: 'L6', x: 550,  y: 870 },
+    { id: 'spinning-reserve',    label: 'Spinning reserve price', layer: 'L6', x: 707,  y: 870 },
+    { id: 'reg-ancillary',       label: 'Regulatory ancillary',   layer: 'L6', x: 863,  y: 870 },
+    { id: 'grid-rel-levy',       label: 'Grid-reliability levy',  layer: 'L6', x: 1020, y: 870 },
 
-    // L8 Cross-site (y=950)
-    { id: 'banyan',          label: 'Banyan-CHP',         layer: 'L8', x: 100, y: 950 },
-    { id: 'tuas-power',      label: 'Tuas-Power',         layer: 'L8', x: 260, y: 950 },
-    { id: 'sakra-cogen',     label: 'Sakra-Cogen',        layer: 'L8', x: 420, y: 950 },
-    { id: 'interconnect-my', label: 'Interconnector MY',  layer: 'L8', x: 580, y: 950 },
-    { id: 'grid-50hz',       label: 'Grid · 50 Hz',       layer: 'L8', x: 740, y: 950 },
+    // L7 Contracts row 1 (y=980 · 8 nodes)
+    { id: 'ppa-pso',             label: 'PPA · PSO 2026',         layer: 'L7', x: 80,   y: 980 },
+    { id: 'ppa-banyan-2025',     label: 'PPA · Banyan 2025',      layer: 'L7', x: 214,  y: 980 },
+    { id: 'ppa-tuas-2028',       label: 'PPA · Tuas 2028',        layer: 'L7', x: 348,  y: 980 },
+    { id: 'ppa-10yr',            label: 'PPA · 10-yr',            layer: 'L7', x: 482,  y: 980 },
+    { id: 'ppa-5yr',             label: 'PPA · 5-yr',             layer: 'L7', x: 616,  y: 980 },
+    { id: 'longterm-sakra',      label: 'Long-term · Sakra',      layer: 'L7', x: 750,  y: 980 },
+    { id: 'vesting-baseline',    label: 'Vesting baseline',       layer: 'L7', x: 884,  y: 980 },
+    { id: 'embedded-gen',        label: 'Embedded gen contract',  layer: 'L7', x: 1020, y: 980 },
+
+    // L7 Contracts row 2 (y=1050 · 7 nodes)
+    { id: 'hedges',              label: 'Hedge catalog',          layer: 'L7', x: 80,   y: 1050 },
+    { id: 'futures',             label: 'Futures · SGD-Jul',      layer: 'L7', x: 237,  y: 1050 },
+    { id: 'trader-hedge-book',   label: 'Trader hedge book',      layer: 'L7', x: 393,  y: 1050 },
+    { id: 'spot-trader-desk',    label: 'Spot trader desk',       layer: 'L7', x: 550,  y: 1050 },
+    { id: 'industrial-cust',     label: 'Industrial · CCAA',      layer: 'L7', x: 707,  y: 1050 },
+    { id: 'esco-industrial',     label: 'ESCO industrial cust',   layer: 'L7', x: 863,  y: 1050 },
+    { id: 'ancillary',           label: 'Ancillary services',     layer: 'L7', x: 1020, y: 1050 },
+
+    // L8 Cross-site row 1 (y=1170 · 8 nodes)
+    { id: 'banyan',              label: 'Banyan-CHP',             layer: 'L8', x: 80,   y: 1170 },
+    { id: 'tuas-power',          label: 'Tuas-Power',             layer: 'L8', x: 214,  y: 1170 },
+    { id: 'sakra-cogen',         label: 'Sakra-Cogen',            layer: 'L8', x: 348,  y: 1170 },
+    { id: 'senoko',              label: 'Senoko',                 layer: 'L8', x: 482,  y: 1170 },
+    { id: 'tuaspring',           label: 'Tuaspring',              layer: 'L8', x: 616,  y: 1170 },
+    { id: 'ytl-power-seraya',    label: 'YTL PowerSeraya',        layer: 'L8', x: 750,  y: 1170 },
+    { id: 'pulau-seraya',        label: 'Pulau Seraya',           layer: 'L8', x: 884,  y: 1170 },
+    { id: 'interconnect-my',     label: 'Interconnector MY-SG',   layer: 'L8', x: 1020, y: 1170 },
+
+    // L8 Cross-site row 2 (y=1240 · 7 nodes)
+    { id: 'interconnect-id',     label: 'Interconnector IND-SG',  layer: 'L8', x: 80,   y: 1240 },
+    { id: 'pasir-panjang-sw',    label: 'Pasir Panjang switching',layer: 'L8', x: 237,  y: 1240 },
+    { id: 'bukit-panjang-fdr',   label: 'Bukit Panjang feeder',   layer: 'L8', x: 393,  y: 1240 },
+    { id: 'tuas-substation',     label: 'Tuas substation',        layer: 'L8', x: 550,  y: 1240 },
+    { id: 'jurong-substation',   label: 'Jurong substation',      layer: 'L8', x: 707,  y: 1240 },
+    { id: 'sakra-intertie',      label: 'Sakra grid intertie',    layer: 'L8', x: 863,  y: 1240 },
+    { id: 'grid-50hz',           label: 'Grid · 50 Hz',           layer: 'L8', x: 1020, y: 1240 },
   ];
 
   const extraEdges = [
-    // L5 → L6
+    // L5 → L6 (8 edges · predictive feeds markets)
     ['derate-model', 'demand-q3'], ['pattern-crack', 'demand-q3'],
-    // L6 intra
+    ['derate-model', 'usep'], ['derate-model', 'imbalance-settle'],
+    ['mtbf-model', 'spinning-reserve'], ['pattern-race', 'usep-day-ahead'],
+    ['oem-playbook', 'reg-ancillary'], ['pattern-imbalance', 'electricity-futures'],
+
+    // L6 intra (10 edges · markets internal cross-references)
     ['usep', 'lng-spot'], ['lng-spot', 'carbon'], ['weather', 'demand-q3'],
-    // L6 → L7
+    ['usep', 'usep-day-ahead'], ['lng-spot', 'lng-charter'], ['lng-spot', 'gas-spot'],
+    ['gas-spot', 'coal-price'], ['vesting-price', 'imbalance-settle'],
+    ['electricity-futures', 'spinning-reserve'], ['reg-ancillary', 'grid-rel-levy'],
+
+    // L6 → L7 (12 edges · markets feed contracts)
     ['usep', 'ppa-pso'], ['usep', 'hedges'], ['lng-spot', 'futures'],
     ['demand-q3', 'industrial-cust'],
-    // L7 intra
+    ['vesting-price', 'vesting-baseline'], ['usep-day-ahead', 'spot-trader-desk'],
+    ['electricity-futures', 'trader-hedge-book'], ['lng-charter', 'longterm-sakra'],
+    ['spinning-reserve', 'ancillary'], ['reg-ancillary', 'ancillary'],
+    ['grid-rel-levy', 'embedded-gen'], ['imbalance-settle', 'hedges'],
+
+    // L7 intra (10 edges · contracts internal)
     ['ppa-pso', 'hedges'], ['hedges', 'futures'], ['ppa-pso', 'ancillary'],
-    // L7 → L8
+    ['ppa-banyan-2025', 'ppa-pso'], ['ppa-tuas-2028', 'ppa-10yr'],
+    ['ppa-10yr', 'ppa-5yr'], ['longterm-sakra', 'ppa-10yr'],
+    ['trader-hedge-book', 'spot-trader-desk'], ['esco-industrial', 'industrial-cust'],
+    ['vesting-baseline', 'ppa-pso'],
+
+    // L7 → L8 (10 edges · contracts bound to sites)
     ['ppa-pso', 'banyan'], ['ancillary', 'tuas-power'], ['hedges', 'sakra-cogen'],
-    // L8 intra
+    ['ppa-banyan-2025', 'banyan'], ['ppa-tuas-2028', 'tuas-power'],
+    ['longterm-sakra', 'sakra-cogen'], ['ppa-10yr', 'senoko'],
+    ['ppa-5yr', 'tuaspring'], ['embedded-gen', 'ytl-power-seraya'],
+    ['esco-industrial', 'pulau-seraya'],
+
+    // L8 intra (8 edges · cross-site grid topology)
     ['banyan', 'tuas-power'], ['tuas-power', 'interconnect-my'], ['sakra-cogen', 'grid-50hz'],
-    // L8 → L3 (cross-site touches plant)
+    ['senoko', 'tuaspring'], ['tuas-substation', 'tuas-power'],
+    ['jurong-substation', 'banyan'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
+    ['sakra-intertie', 'interconnect-id'],
+
+    // L8 → L3 (1 edge · cross-site touches plant)
     ['banyan', 'bfp-3a'],
   ];
 
@@ -7630,8 +7702,8 @@ function renderP3KGSvg() {
     nodes: [...p2.nodes, ...extraNodes],
     edges: [...p2.edges, ...extraEdges],
     persona: 'analyst',
-    width: 840,
-    height: 1040,
+    width: 1100,
+    height: 1500,
   });
 }
 
@@ -7672,11 +7744,15 @@ function buildKGSvg({ nodes, edges, persona, width, height }) {
     </g>`;
 
   // Workflow arrows (preserve W14 narrative · dashed marching L2→L3)
+  // W17 Section A follow-up: re-aimed at actual L2 source / L3 target positions for the new 1100-wide grid.
+  // Arrow 1: sop-bfp-vibr (x=80) → bfp-3a (x=80) — straight down
+  // Arrow 2: sop-vibr-trending (x=393) → telemetry-vib (x=393) — straight down
+  // Arrow 3: sop-overspeed (x=1020) → hrsg-3 (x=707) — diagonal cross-grid
   const arrowsHtml = `
     <g class="kg-svg-workflow-arrows">
-      <line class="kg-svg-arrow-flow" x1="140" y1="180" x2="80"  y2="250" />
-      <line class="kg-svg-arrow-flow" x1="340" y1="180" x2="340" y2="250" />
-      <line class="kg-svg-arrow-flow" x1="540" y1="180" x2="580" y2="250" />
+      <line class="kg-svg-arrow-flow" x1="80"   y1="180" x2="80"  y2="260" />
+      <line class="kg-svg-arrow-flow" x1="393"  y1="180" x2="393" y2="260" />
+      <line class="kg-svg-arrow-flow" x1="1020" y1="180" x2="707" y2="260" />
     </g>`;
 
   // Nodes last (z-order: above edges/arrows)
@@ -7703,33 +7779,266 @@ function buildKGSvg({ nodes, edges, persona, width, height }) {
     </svg>`;
 }
 
+// ═══════════════════════════════════════════════
+// W17 Sections C-F — Force simulation + drag + live edge tracking
+// ═══════════════════════════════════════════════
+
+// Module-level simulation state. One sim runs at a time (whichever KG is open).
+const KG_SIM = {
+  persona: null,
+  nodes: [],   // each: { id, x, y, vx, vy, initialX, initialY, pinned, layer, label }
+  edges: [],   // each: [srcId, dstId]
+  active: false,
+  rafId: null,
+  dragHandlers: null,  // { onMouseMove, onMouseUp } document-level cleanup
+};
+
+// Physics constants (Obsidian-style settling). Tune ±2x range if visual settles poorly.
+const KG_SIM_REPULSION = 600;
+const KG_SIM_SPRING_K = 0.012;
+const KG_SIM_SPRING_LEN = 100;
+const KG_SIM_GRAVITY_K = 0.005;
+const KG_SIM_DAMPING = 0.82;
+
+function initKGSimulation(persona) {
+  const data = (persona === 'onsite')
+    ? getP2KGData()
+    : (() => {
+        // Re-extract P3 data by parsing the rendered SVG node defs would be wasteful.
+        // Instead re-execute the P3 enrichment by reading from the live DOM nodes.
+        const mount = document.querySelector('#kg-svg-mount');
+        if (!mount) return { nodes: [], edges: [] };
+        const nodes = Array.from(mount.querySelectorAll('.kg-svg-node')).map(g => {
+          const tr = g.getAttribute('transform') || '';
+          const m = tr.match(/translate\(([-\d.]+),\s*([-\d.]+)\)/);
+          return {
+            id: g.dataset.id,
+            label: g.dataset.id,
+            layer: g.dataset.layer,
+            x: m ? parseFloat(m[1]) : 0,
+            y: m ? parseFloat(m[2]) : 0,
+          };
+        });
+        const edges = Array.from(mount.querySelectorAll('.kg-svg-edge')).map(e => [e.dataset.src, e.dataset.dst]);
+        return { nodes, edges };
+      })();
+
+  stopKGSimulation();  // cancel any prior loop
+
+  KG_SIM.persona = persona;
+  KG_SIM.nodes = data.nodes.map(n => ({
+    ...n,
+    vx: 0, vy: 0,
+    initialX: n.x, initialY: n.y,
+    pinned: false,
+  }));
+  KG_SIM.edges = data.edges;
+  KG_SIM.active = true;
+  KG_SIM.rafId = requestAnimationFrame(tickKGSimulation);
+}
+
+function tickKGSimulation() {
+  if (!KG_SIM.active) return;
+
+  const nodeMap = Object.fromEntries(KG_SIM.nodes.map(n => [n.id, n]));
+
+  // 1. Repulsion between all node pairs (O(n²) · fine for n<150).
+  for (let i = 0; i < KG_SIM.nodes.length; i++) {
+    for (let j = i + 1; j < KG_SIM.nodes.length; j++) {
+      const a = KG_SIM.nodes[i];
+      const b = KG_SIM.nodes[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < 1) continue;
+      const d = Math.sqrt(d2);
+      const f = KG_SIM_REPULSION / d2;
+      const fx = (dx / d) * f;
+      const fy = (dy / d) * f;
+      if (!a.pinned) { a.vx -= fx; a.vy -= fy; }
+      if (!b.pinned) { b.vx += fx; b.vy += fy; }
+    }
+  }
+
+  // 2. Spring force on edges (Hooke's law toward rest length).
+  KG_SIM.edges.forEach(([srcId, dstId]) => {
+    const s = nodeMap[srcId];
+    const d = nodeMap[dstId];
+    if (!s || !d) return;
+    const dx = d.x - s.x;
+    const dy = d.y - s.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 1) return;
+    const f = KG_SIM_SPRING_K * (dist - KG_SIM_SPRING_LEN);
+    const fx = (dx / dist) * f;
+    const fy = (dy / dist) * f;
+    if (!s.pinned) { s.vx += fx; s.vy += fy; }
+    if (!d.pinned) { d.vx -= fx; d.vy -= fy; }
+  });
+
+  // 3. Gravity pulls each node toward its initial position (prevents drift).
+  KG_SIM.nodes.forEach(n => {
+    if (n.pinned) return;
+    n.vx += (n.initialX - n.x) * KG_SIM_GRAVITY_K;
+    n.vy += (n.initialY - n.y) * KG_SIM_GRAVITY_K;
+  });
+
+  // 4. Damping + integrate velocities → positions.
+  KG_SIM.nodes.forEach(n => {
+    if (n.pinned) return;
+    n.vx *= KG_SIM_DAMPING;
+    n.vy *= KG_SIM_DAMPING;
+    n.x += n.vx;
+    n.y += n.vy;
+  });
+
+  // 5. Sync to SVG.
+  renderKGSimulationFrame();
+
+  KG_SIM.rafId = requestAnimationFrame(tickKGSimulation);
+}
+
+function renderKGSimulationFrame() {
+  const win = document.getElementById('kg-floating-window');
+  if (!win) return;
+
+  KG_SIM.nodes.forEach(n => {
+    const g = win.querySelector(`.kg-svg-node[data-id="${n.id}"]`);
+    if (g) g.setAttribute('transform', `translate(${n.x},${n.y})`);
+  });
+
+  const nodeMap = Object.fromEntries(KG_SIM.nodes.map(n => [n.id, n]));
+  win.querySelectorAll('.kg-svg-edge').forEach(line => {
+    const s = nodeMap[line.dataset.src];
+    const d = nodeMap[line.dataset.dst];
+    if (!s || !d) return;
+    line.setAttribute('x1', s.x);
+    line.setAttribute('y1', s.y);
+    line.setAttribute('x2', d.x);
+    line.setAttribute('y2', d.y);
+  });
+}
+
+function stopKGSimulation() {
+  KG_SIM.active = false;
+  if (KG_SIM.rafId) {
+    cancelAnimationFrame(KG_SIM.rafId);
+    KG_SIM.rafId = null;
+  }
+  // Detach document-level drag listeners (no zombie handlers across persona switches).
+  if (KG_SIM.dragHandlers) {
+    document.removeEventListener('mousemove', KG_SIM.dragHandlers.onMouseMove);
+    document.removeEventListener('mouseup', KG_SIM.dragHandlers.onMouseUp);
+    KG_SIM.dragHandlers = null;
+  }
+}
+
+function resetKGSimulation() {
+  KG_SIM.nodes.forEach(n => {
+    n.x = n.initialX;
+    n.y = n.initialY;
+    n.vx = 0;
+    n.vy = 0;
+    n.pinned = false;
+  });
+  renderKGSimulationFrame();
+}
+
 function wireKGSvgInteractions(mount) {
   const svg = mount.querySelector('.kg-svg');
   if (!svg) return;
 
-  mount.querySelectorAll('.kg-svg-node').forEach(node => {
-    node.addEventListener('click', e => {
+  // W17 Section D + F — click-vs-drag disambiguation via 4px mousemove threshold.
+  // Track per-node mousedown · accumulate deltas · classify at mouseup.
+  const CLICK_THRESHOLD = 4;
+  let active = null;  // { node, id, startClientX, startClientY, moved, dragged, svgRect, viewBox }
+
+  function applyClickHighlight(id) {
+    mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
+      edge.classList.remove('kg-svg-edge-highlight');
+      edge.classList.add('kg-svg-edge-dim');
+    });
+    mount.querySelectorAll(`.kg-svg-edge[data-src="${id}"], .kg-svg-edge[data-dst="${id}"]`).forEach(edge => {
+      edge.classList.add('kg-svg-edge-highlight');
+      edge.classList.remove('kg-svg-edge-dim');
+    });
+  }
+
+  function clearHighlight() {
+    mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
+      edge.classList.remove('kg-svg-edge-highlight', 'kg-svg-edge-dim');
+    });
+  }
+
+  mount.querySelectorAll('.kg-svg-node').forEach(g => {
+    g.addEventListener('mousedown', e => {
+      e.preventDefault();
       e.stopPropagation();
-      const id = node.dataset.id;
-      // Dim all edges first
-      mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
-        edge.classList.remove('kg-svg-edge-highlight');
-        edge.classList.add('kg-svg-edge-dim');
-      });
-      // Highlight edges touching this node
-      mount.querySelectorAll(`.kg-svg-edge[data-src="${id}"], .kg-svg-edge[data-dst="${id}"]`).forEach(edge => {
-        edge.classList.add('kg-svg-edge-highlight');
-        edge.classList.remove('kg-svg-edge-dim');
-      });
+      const id = g.dataset.id;
+      const n = KG_SIM.nodes.find(x => x.id === id);
+      if (!n) return;
+      const svgEl = mount.querySelector('.kg-svg');
+      const svgRect = svgEl.getBoundingClientRect();
+      const vb = (svgEl.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(parseFloat);
+      active = {
+        node: n,
+        id,
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        moved: 0,
+        dragged: false,
+        svgRect,
+        viewBoxW: vb[2],
+        viewBoxH: vb[3],
+        gEl: g,
+      };
     });
   });
 
-  // Click empty SVG area → reset
+  function onMouseMove(e) {
+    if (!active) return;
+    const dx = e.clientX - active.startClientX;
+    const dy = e.clientY - active.startClientY;
+    active.moved = Math.sqrt(dx * dx + dy * dy);
+
+    // Only flip to drag mode once threshold exceeded — preserves W16 click-highlight for small clicks.
+    if (!active.dragged && active.moved >= CLICK_THRESHOLD) {
+      active.dragged = true;
+      active.node.pinned = true;
+      active.node.vx = 0;
+      active.node.vy = 0;
+      active.gEl.classList.add('kg-svg-node-dragging');
+    }
+
+    if (active.dragged) {
+      const scaleX = active.viewBoxW / active.svgRect.width;
+      const scaleY = active.viewBoxH / active.svgRect.height;
+      active.node.x = (e.clientX - active.svgRect.left) * scaleX;
+      active.node.y = (e.clientY - active.svgRect.top) * scaleY;
+    }
+  }
+
+  function onMouseUp() {
+    if (!active) return;
+    if (!active.dragged) {
+      // Treated as click → highlight (W16 behavior preserved).
+      applyClickHighlight(active.id);
+    } else {
+      // Drag end → unpin · let physics ease neighbors back into place.
+      active.node.pinned = false;
+      active.gEl.classList.remove('kg-svg-node-dragging');
+    }
+    active = null;
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+  KG_SIM.dragHandlers = { onMouseMove, onMouseUp };  // tracked for cleanup in stopKGSimulation
+
+  // Click empty SVG area → clear highlights (preserved from W16).
   svg.addEventListener('click', e => {
     if (e.target === svg || e.target.tagName === 'svg') {
-      mount.querySelectorAll('.kg-svg-edge').forEach(edge => {
-        edge.classList.remove('kg-svg-edge-highlight', 'kg-svg-edge-dim');
-      });
+      clearHighlight();
     }
   });
 }
@@ -7740,6 +8049,15 @@ function initFloatingWindowHandlers() {
   const titlebar = win.querySelector('.kg-fw-titlebar');
   const resizeHandle = win.querySelector('.kg-fw-resize');
   const closeBtn = win.querySelector('#kg-fw-close');
+  const resetBtn = win.querySelector('#kg-fw-reset');
+
+  // W17 Section G — reset positions
+  if (resetBtn) {
+    resetBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (typeof resetKGSimulation === 'function' && KG_SIM.active) resetKGSimulation();
+    });
+  }
 
   // Drag — title bar
   let dragStart = null;

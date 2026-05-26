@@ -3031,3 +3031,94 @@ W17 SPEC PRESERVED (2026-05-26) — KG ENRICHMENT · DRAG + 3X NODES
 
 W17 deployment confirmation block will be appended below this once Chrome MCP per-test table passes.
 
+### W17 deployment confirmation (2026-05-26) — KG ENRICHMENT + DRAG + FORCE SIM
+
+3x node count · Obsidian-style drag + force simulation · click-highlight preserved.
+
+**Section A — P2 KG enrichment:**
+- Nodes 25 → 72 across 5 layers (L1=10, L2=10, L3=30, L4=14, L5=8).
+- Edges 26 → 97 (denser L1↔L2, L2↔L3, L3 intra, L3↔L4, L4↔L5, L5 intra · plus full canonical asset chain BFP-3A → HRSG-3 → ST-3 → GEN-3 → TX-3 → SY-A).
+- Canvas widened 800×720 → 1100×840 (extra 120px height for relocated tacit cluster).
+- Onsite floating window bumped 820×620 → 1180×780.
+- Sembcorp-canonical vocab: Sulzer, SKF, Bently Nevada 3500, ABB, GE 9HA, John Crane, plus backup roster (S. Ibrahim, P. Subramaniam, J. Tan, M. Lim).
+
+**Section A follow-up — workflow arrows re-aimed:**
+- Three L2→L3 arrow coords updated for 1100-wide grid: sop-bfp-vibr→bfp-3a (x=80 vertical), sop-vibr-trending→telemetry-vib (x=393 vertical), sop-overspeed→hrsg-3 (x=1020→707 diagonal cross-grid).
+
+**Section B — P3 KG enrichment:**
+- Nodes 38 → 117 (= 72 P2 base + 45 P3-only across L6/L7/L8 · 15 each).
+- Edges 47 → 156 (= 97 P2 base + 59 P3-only extraEdges across L5↔L6 / L6 intra / L6↔L7 / L7 intra / L7↔L8 / L8 intra).
+- Canvas widened 840×1040 → 1100×1500.
+- Analyst floating window bumped → 1180×880.
+- L6 categories: USEP variants, LNG spot/charter, gas spot, coal, carbon, weather, vesting price, imbalance settlement, electricity futures, spinning reserve, regulatory ancillary, grid-reliability levy.
+- L7 categories: PPA-PSO/Banyan/Tuas + 10-yr/5-yr/Sakra long-term · hedge catalog · trader hedge book · spot trader desk · ESCO industrial · vesting baseline · embedded gen · ancillary services.
+- L8 categories: Sembcorp + competitor sites (Senoko, Tuaspring, YTL PowerSeraya, Pulau Seraya) · substations · feeders · MY-SG + IND-SG interconnectors · 50 Hz grid.
+
+**Section C — Force simulation:**
+- Pure JS (~150 LOC) · requestAnimationFrame loop · stops on KG close (cancelAnimationFrame · no zombie loops).
+- Forces: Coulomb repulsion (k=600) · Hooke springs on edges (k=0.012 · rest length 100) · gravity-toward-initial (k=0.005) · damping (0.82).
+- Module-level state `KG_SIM` tracks persona / nodes / edges / pinned state / rafId / drag listeners.
+- Constants tunable ±2x — current defaults match spec; no tuning applied this pass.
+
+**Section D — Drag handlers:**
+- mousedown on `.kg-svg-node` captures candidate · doesn't immediately pin (waits for mousemove ≥ 4px threshold per Section F).
+- mousemove updates `node.x/y` via viewBox→client coord conversion (parses SVG viewBox · scales delta).
+- mouseup branches: if moved < 4px → click highlight (W16 behavior preserved); if drag → unpin · physics resumes.
+- CSS class `.kg-svg-node-dragging` toggled for visual state.
+
+**Section E — Live edge tracking:**
+- `renderKGSimulationFrame` re-sets `x1/y1/x2/y2` on all `.kg-svg-edge` elements each tick.
+- Node `<g>` `transform` updated each tick via `translate(x,y)`.
+
+**Section F — W16 locks preserved:**
+- Click-highlight: mousemove threshold (`CLICK_THRESHOLD=4px`) disambiguates click vs drag at mouseup. Click → highlight applied; drag → no highlight.
+- No-autorotate: physics gravity returns nodes to near-equilibrium (≠ camera rotation). Pulkit's "no rotation" lock holds.
+- Click-empty-svg → clear highlights (W16 reset preserved).
+
+**Section G — Reset button:**
+- `#kg-fw-reset` button mounted in `.kg-fw-actions` next to close · uses existing `.kg-fw-action` styling (no new CSS needed) · ↺ glyph.
+- Click → `resetKGSimulation()` sets all nodes back to `initialX/initialY` · zeros velocities · unpins all · re-renders.
+- Physics tick continues — nodes settle into clean grid positions.
+
+**Section H — Cursor polish:**
+- `.kg-svg-node { cursor: grab; }` (was `pointer`).
+- `.kg-svg-node-dragging { cursor: grabbing; }` + circle radius 12 + stroke-width 3 + white drop-shadow.
+
+**Cache-bust:** `v=w16` → `v=w17` (`index.html:6601`).
+
+**Per-test observed-vs-expected (WA #13 · 15-row table):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | P2 node count (Test A1) | 72 | 68-78 | ✓ |
+| 2 | P2 edge count (Test A2) | 97 | 85-100 | ✓ |
+| 3 | P3 node count (Test B1) | 117 | 108-120 | ✓ |
+| 4 | P3 edge count (Test B2) | 156 | 140-160 | ✓ |
+| 5 | P2 layer distribution | L1=10 L2=10 L3=30 L4=14 L5=8 | per spec table | ✓ |
+| 6 | P3 commercial layer distribution | L6=15 L7=15 L8=15 | per spec table | ✓ |
+| 7 | Orphan edge endpoints (full P3) | 0 | 0 | ✓ |
+| 8 | Canonical asset chain present (BFP-3A → HRSG-3 → ST-3 → GEN-3 → TX-3 → SY-A) | 5 chain edges | 5 | ✓ |
+| 9 | `node --check app.js` | exit 0 | exit 0 | ✓ |
+| 10 | `KG_SIM` module state + 5 physics constants declared (REPULSION=600, SPRING_K=0.012, SPRING_LEN=100, GRAVITY_K=0.005, DAMPING=0.82) | declared | declared | ✓ |
+| 11 | `initKGSimulation(persona)` call site at end of `mountSvgKG` | present | hooked | ✓ |
+| 12 | `stopKGSimulation()` call site in `toggleGraphWindow` close branch | present | hooked | ✓ |
+| 13 | Reset button: `id=kg-fw-reset` + aria-label "Reset positions" mounted in `.kg-fw-actions` | present | present | ✓ |
+| 14 | Drag-state CSS rules (`.kg-svg-node-dragging` cursor grabbing + r=12 + drop-shadow) | present in index.html | present | ✓ |
+| 15 | Cache-bust bumped in `index.html` | `v=w17` | `v=w17` | ✓ |
+
+**Deferred to projector dry-run + Chrome MCP rehearsal (visual/subjective · headless can't judge):**
+- Force simulation settling time (~1-2s expected) · feel of node motion.
+- Edge readability at projector distance with 156 edges visible on P3.
+- Drag interaction smoothness on physical projector mouse.
+- Tacit cluster placement (onsite x=30 y=730) doesn't visually fight `vib-90d` label at (x=80 y=580).
+- Workflow arrow visual alignment with new L2/L3 source/target circles.
+- Full E2E rehearsal: cold reload → Faye → Lim → KG open · 72 nodes settle · drag one · release · click another → highlight · reset → all return · close · re-open at Priya · 117 nodes / 8 layers · same drag/click/reset UX.
+
+**Locks preserved (W13-W16):** Faye / Lim / Priya / Assistant / severity / workflow modal / agent roster — zero touches this wave.
+
+**Tuning notes:** physics constants kept at spec defaults — no tuning applied this pass. If visual settling at projector exhibits drift or wobble, ±2x range available on REPULSION / SPRING_K / GRAVITY_K / DAMPING per spec guidance.
+
+W17 = COMPLETE. NO MORE CODE WAVES. Demo TOMORROW (2026-05-27).
+STOPPING HERE — awaiting coach sign-off on W17.
+
+

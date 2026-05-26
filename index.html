@@ -1881,13 +1881,20 @@
     .kg-svg-edge-dim {
       opacity: 0.12 !important;
     }
-    .kg-svg-node { cursor: pointer; }
+    .kg-svg-node { cursor: grab; }
     .kg-svg-node-circle {
       transition: r 220ms, stroke-width 220ms;
     }
     .kg-svg-node:hover .kg-svg-node-circle {
       r: 11;
       stroke-width: 3;
+    }
+    /* W17 Section H — drag-state polish */
+    .kg-svg-node-dragging { cursor: grabbing; }
+    .kg-svg-node-dragging .kg-svg-node-circle {
+      r: 12;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
     }
     .kg-svg-label {
       font-size: 10px;
@@ -6346,6 +6353,7 @@
     <div class="kg-fw-titlebar">
       <span class="kg-fw-title">Knowledge Graph · 3D · 8 layers</span>
       <div class="kg-fw-actions">
+        <button class="kg-fw-action" id="kg-fw-reset" title="Reset positions" aria-label="Reset positions" type="button">↺</button>
         <button class="kg-fw-action" id="kg-fw-close" title="Close" type="button">×</button>
       </div>
     </div>
@@ -6598,6 +6606,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w16"></script>
+  <script src="app.js?v=w17"></script>
 </body>
 </html>
