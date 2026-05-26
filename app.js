@@ -4766,7 +4766,7 @@ const P1_WORKFLOWS = {
         { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
       outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Review',
-      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Review)',
+      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (Step 1 Review)',
     },
     {
       num: 3,
@@ -7403,7 +7403,6 @@ function mountSvgKG(body, win, persona) {
   }
   svgMount.style.display = 'block';
   svgMount.innerHTML = persona === 'onsite' ? renderP2KGSvg() : renderP3KGSvg();
-  wireKGSvgInteractions(svgMount);
 
   // Resize floating window so SVG legible (default 460x360 too small).
   // W17 Section A: onsite bumped 820×620 → 1180×780 to fit 1100×720 viewBox at full scale.
@@ -7415,8 +7414,12 @@ function mountSvgKG(body, win, persona) {
   win.style.height = dims.h + 'px';
   state.graphWinSize = dims;
 
-  // W17 Section C — kick off force simulation after SVG mounted + wired.
+  // W18 Section A — ORDER MATTERS. initKGSimulation calls stopKGSimulation() which removes any
+  // prior document mousemove/mouseup listeners. Wiring AFTER init prevents the freshly-installed
+  // drag listeners from being stripped (W17 bug: wire-then-init killed drag end-to-end).
   initKGSimulation(persona);
+  wireKGSvgInteractions(svgMount);
+  wireKGParallaxTilt(body);
 }
 
 // ── P2 (Lim · onsite) — 5 layers (L1-L5) ──
@@ -7501,6 +7504,15 @@ const P2_KG_NODES_DEF = [
   { id: 'align-history',      label: 'Shaft alignment history',     layer: 'L4', x: 863,  y: 580 },
   { id: 'brg-replace-log',    label: 'Bearing replacement log',     layer: 'L4', x: 1020, y: 580 },
 
+  // W18 Section D — L4.5 Tacit knowledge (y=625 · 5 diamond nodes between L4 and L5).
+  // Tacit bytes represent senior-engineer field experience that's been triaged or ingested into the KG.
+  // They sit topologically between historical RCAs/telemetry (L4) and predictive patterns (L5).
+  { id: 'tacit-1', label: 'Tacit byte [triaged]',  layer: 'L4.5', tacitState: 'triaged',  isTacit: true, x: 220, y: 625 },
+  { id: 'tacit-2', label: 'Tacit byte [triaged]',  layer: 'L4.5', tacitState: 'triaged',  isTacit: true, x: 380, y: 625 },
+  { id: 'tacit-3', label: 'Tacit byte [triaged]',  layer: 'L4.5', tacitState: 'triaged',  isTacit: true, x: 540, y: 625 },
+  { id: 'tacit-4', label: 'Tacit byte [ingested]', layer: 'L4.5', tacitState: 'ingested', isTacit: true, x: 700, y: 625 },
+  { id: 'tacit-5', label: 'Tacit byte [ingested]', layer: 'L4.5', tacitState: 'ingested', isTacit: true, x: 860, y: 625 },
+
   // L5 Predictive Intelligence (y=670 · 8 nodes · x spacing ~134px)
   { id: 'pattern-race',       label: 'Pattern · race spalling',     layer: 'L5', x: 80,   y: 670 },
   { id: 'pattern-crack',      label: 'Pattern · casing crack',      layer: 'L5', x: 214,  y: 670 },
@@ -7575,6 +7587,13 @@ const P2_KG_EDGES_DEF = [
   ['pattern-imbalance', 'fm-imbalance'], ['pattern-misalign', 'fm-misalignment'],
   ['oem-playbook', 'pattern-race'], ['oem-playbook', 'pattern-misalign'],
   ['mtbf-model', 'pattern-race'],
+
+  // W18 Section D — L4 RCAs/telemetry → L4.5 tacit bytes → L5 patterns (8 edges · narrative:
+  // tacit knowledge captured from past incidents now feeds predictive pattern recognition).
+  ['rca-jrg-2025', 'tacit-1'], ['rca-banyan-2024', 'tacit-2'],
+  ['vib-90d', 'tacit-3'], ['temp-30d', 'tacit-4'],
+  ['tacit-1', 'pattern-race'], ['tacit-2', 'pattern-crack'],
+  ['tacit-3', 'pattern-race'], ['tacit-5', 'pattern-crack'],
 ];
 
 function getP2KGData() {
@@ -7720,43 +7739,26 @@ function buildKGSvg({ nodes, edges, persona, width, height }) {
     return `<line class="kg-svg-edge" data-src="${srcId}" data-dst="${dstId}" x1="${s.x}" y1="${s.y}" x2="${d.x}" y2="${d.y}" />`;
   }).join('');
 
-  // Tacit byte cluster (preserve W14 narrative)
-  // W17 Section A: onsite cluster relocated to bottom margin (x=30, y=730) so it doesn't
-  // collide with the enriched L5 row at y=670. P3/analyst position unchanged.
-  const tacitX = (persona === 'onsite') ? 30 : 800;
-  const tacitYStart = (persona === 'onsite') ? 730 : 600;
-  const tacitBytes = [
-    { state: 'triaged' }, { state: 'triaged' }, { state: 'triaged' },
-    { state: 'ingested' }, { state: 'ingested' },
-  ];
-  const tacitHtml = `
-    <g class="kg-svg-tacit">
-      <text class="kg-svg-tacit-title" x="${tacitX - 6}" y="${tacitYStart - 12}">TACIT</text>
-      ${tacitBytes.map((b, i) => {
-        const y = tacitYStart + i * 22;
-        const color = b.state === 'triaged' ? '#10B981' : '#94A3B8';
-        return `
-          <g class="kg-svg-tacit-byte" data-state="${b.state}" transform="translate(${tacitX}, ${y})">
-            <rect x="-6" y="-6" width="12" height="12" fill="${color}" stroke="white" stroke-width="1.5" transform="rotate(45)" />
-          </g>
-          <text class="kg-svg-tacit-label" x="${tacitX + 14}" y="${y + 3}">Tacit byte [${b.state}]</text>`;
-      }).join('')}
-    </g>`;
+  // W18 Section D — static tacit cluster removed. Tacit bytes now first-class nodes embedded as
+  // L4.5 in the main P2_KG_NODES_DEF list (rendered as diamonds via the isTacit branch below),
+  // participate in the force sim, and connect to L4 RCAs/telemetry + L5 patterns via real edges.
+  const tacitHtml = '';
 
-  // Workflow arrows (preserve W14 narrative · dashed marching L2→L3)
-  // W17 Section A follow-up: re-aimed at actual L2 source / L3 target positions for the new 1100-wide grid.
-  // Arrow 1: sop-bfp-vibr (x=80) → bfp-3a (x=80) — straight down
-  // Arrow 2: sop-vibr-trending (x=393) → telemetry-vib (x=393) — straight down
-  // Arrow 3: sop-overspeed (x=1020) → hrsg-3 (x=707) — diagonal cross-grid
-  const arrowsHtml = `
-    <g class="kg-svg-workflow-arrows">
-      <line class="kg-svg-arrow-flow" x1="80"   y1="180" x2="80"  y2="260" />
-      <line class="kg-svg-arrow-flow" x1="393"  y1="180" x2="393" y2="260" />
-      <line class="kg-svg-arrow-flow" x1="1020" y1="180" x2="707" y2="260" />
-    </g>`;
+  // W18 follow-up — dashed marching workflow arrows removed per Pulkit's call (visual noise on
+  // top of the enriched 77-node graph · static edges already convey L2→L3 connection).
+  const arrowsHtml = '';
 
-  // Nodes last (z-order: above edges/arrows)
+  // Nodes last (z-order: above edges/arrows). W18 Section D — tacit nodes render as rotated
+  // rect (diamond) but keep the .kg-svg-node selector so drag + click-highlight apply uniformly.
   const nodesHtml = nodes.map(n => {
+    if (n.isTacit) {
+      const color = n.tacitState === 'triaged' ? '#10B981' : '#94A3B8';
+      return `
+      <g class="kg-svg-node kg-svg-tacit-node" data-id="${n.id}" data-layer="${n.layer}" data-tacit-state="${n.tacitState}" transform="translate(${n.x},${n.y})">
+        <rect class="kg-svg-node-shape" x="-9" y="-9" width="18" height="18" fill="${color}" stroke="white" stroke-width="2" transform="rotate(45)" />
+        <text class="kg-svg-label" y="26" text-anchor="middle">${n.label}</text>
+      </g>`;
+    }
     const color = KG_LAYER_COLORS[n.layer] || '#94A3B8';
     return `
       <g class="kg-svg-node" data-id="${n.id}" data-layer="${n.layer}" transform="translate(${n.x},${n.y})">
@@ -7791,6 +7793,7 @@ const KG_SIM = {
   active: false,
   rafId: null,
   dragHandlers: null,  // { onMouseMove, onMouseUp } document-level cleanup
+  dragActive: false,   // W18 Section C — true while a node is being dragged (freezes tilt)
 };
 
 // Physics constants (Obsidian-style settling). Tune ±2x range if visual settles poorly.
@@ -8008,6 +8011,7 @@ function wireKGSvgInteractions(mount) {
       active.node.vx = 0;
       active.node.vy = 0;
       active.gEl.classList.add('kg-svg-node-dragging');
+      KG_SIM.dragActive = true;  // W18 Section C — freezes parallax tilt during drag
     }
 
     if (active.dragged) {
@@ -8028,6 +8032,7 @@ function wireKGSvgInteractions(mount) {
       active.node.pinned = false;
       active.gEl.classList.remove('kg-svg-node-dragging');
     }
+    KG_SIM.dragActive = false;  // W18 Section C — re-enables parallax tilt
     active = null;
   }
 
@@ -8040,6 +8045,46 @@ function wireKGSvgInteractions(mount) {
     if (e.target === svg || e.target.tagName === 'svg') {
       clearHighlight();
     }
+  });
+}
+
+// W18 Section C — mouse-parallax tilt on .kg-svg. Tilt freezes during node drag
+// (KG_SIM.dragActive flag set by wireKGSvgInteractions). rAF-coalesced so mousemove spam doesn't
+// thrash the style attribute. Tilt resets on mouseleave.
+function wireKGParallaxTilt(body) {
+  const svg = body.querySelector('.kg-svg');
+  if (!svg) return;
+
+  const maxTiltDeg = 8;
+  let rafPending = false;
+  let lastClientX = 0;
+  let lastClientY = 0;
+
+  function updateTilt() {
+    rafPending = false;
+    if (KG_SIM.dragActive) return;  // freeze tilt while dragging a node
+    const rect = body.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const nx = (lastClientX - cx) / (rect.width / 2);
+    const ny = (lastClientY - cy) / (rect.height / 2);
+    const rotateY = Math.max(-1, Math.min(1, nx)) * maxTiltDeg;
+    const rotateX = -Math.max(-1, Math.min(1, ny)) * maxTiltDeg;
+    svg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  }
+
+  body.addEventListener('mousemove', e => {
+    lastClientX = e.clientX;
+    lastClientY = e.clientY;
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(updateTilt);
+    }
+  });
+
+  body.addEventListener('mouseleave', () => {
+    svg.style.transform = 'rotateX(0deg) rotateY(0deg)';
   });
 }
 

@@ -1837,6 +1837,9 @@
       overflow: hidden;
       border-radius: 0 0 10px 10px;
       min-height: 0;
+      /* W18 Section C — perspective on the body so child .kg-svg tilts in 3D space */
+      perspective: 1200px;
+      perspective-origin: center center;
     }
 
     .kg-fw-resize {
@@ -1866,20 +1869,27 @@
       display: block;
       background: #0A0F1C;
       overflow: visible;
+      /* W18 Section C — mouse-parallax tilt (rotateX/Y updated via JS) */
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      transition: transform 120ms ease-out;
+      will-change: transform;
     }
+    /* W18 Section B — faint edges so the graph reads as light scaffolding, not dominant ink */
     .kg-svg-edge {
       stroke: #94A3B8;
-      stroke-width: 1.5;
-      opacity: 0.7;
-      transition: stroke 200ms, stroke-width 200ms, opacity 200ms;
+      stroke-width: 1.2;
+      opacity: 0.3;
+      transition: stroke 200ms, stroke-width 200ms, opacity 200ms, filter 200ms;
     }
     .kg-svg-edge-highlight {
       stroke: #10B981 !important;
-      stroke-width: 2.8 !important;
+      stroke-width: 2.5 !important;
       opacity: 1 !important;
+      filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.6));
     }
     .kg-svg-edge-dim {
-      opacity: 0.12 !important;
+      opacity: 0.05 !important;
     }
     .kg-svg-node { cursor: grab; }
     .kg-svg-node-circle {
@@ -6606,6 +6616,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w17"></script>
+  <script src="app.js?v=w18a"></script>
 </body>
 </html>
