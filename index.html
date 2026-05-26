@@ -1839,7 +1839,7 @@
       z-index: 2;
     }
 
-    /* W11 — KG legend overlay (top-middle of floating window, vertical list) */
+    /* W14 R3 — KG legend overlay: 2-column horizontal flex (Layers · Tacit knowledge) */
     .kg-legend-overlay {
       position: absolute;
       top: 8px;
@@ -1850,8 +1850,8 @@
       border-radius: 8px;
       padding: 10px 14px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      flex-direction: row;
+      gap: 22px;
       color: #fff;
       font-family: ui-monospace, monospace;
       font-size: 10.5px;
@@ -1860,6 +1860,19 @@
       z-index: 10;
       max-height: 360px;
       overflow: hidden;
+    }
+    .kg-leg-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .kg-leg-col-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 3px;
     }
     .kg-leg-row {
       display: flex;
@@ -1873,30 +1886,16 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .kg-leg-ring {
-      width: 12px;
-      height: 12px;
-      border: 2px solid;
-      border-radius: 50%;
-      background: transparent;
-      flex-shrink: 0;
-    }
     .kg-leg-diamond {
       width: 12px;
       height: 12px;
       flex-shrink: 0;
     }
-    .kg-leg-divider {
-      height: 1px;
-      background: rgba(255,255,255,0.15);
-      margin: 4px 0;
-    }
 
-    /* W12 Section A.3 — P2 (Lim · onsite) hides L5/L6/L7 + commercial legend rows */
-    #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L5"],
+    /* W14 R3 — P2 (Lim · onsite) hides L6/L7/L8 (new scheme: Markets/Contracts/Cross-site) */
     #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L6"],
     #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L7"],
-    #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-cluster="commercial"] {
+    #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L8"] {
       display: none;
     }
 
@@ -2445,6 +2444,27 @@
       line-height: 1.5;
     }
     .telemetry-modal-footer strong { color: var(--text-secondary); font-weight: 700; }
+    /* W14 R1 — Attach CTA row in telemetry modal */
+    .telemetry-modal-actions {
+      padding: 12px 0 2px;
+      margin-top: 10px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: flex-end;
+    }
+    .telemetry-modal-attach {
+      padding: 10px 24px;
+      background: var(--green-vivid);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 200ms;
+    }
+    .telemetry-modal-attach:hover { background: var(--green-deep); }
     .as-engineer-card {
       display: block; width: 100%;
       padding: 10px 12px;
@@ -2671,6 +2691,212 @@
       text-align: center;
     }
     .ic-progress-num { font-weight: 700; }
+
+    /* ── W14 R2 — Flat inspection checklist tiles (5 items · sequential reveal · tick/cross/cam/mic) ── */
+    .inspection-checklist-flat { padding: 0; }
+    .lim-checklist-heading {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      padding: 14px 16px 8px;
+      letter-spacing: 0.01em;
+    }
+    .ic-flat-list { padding: 0 8px 8px; }
+    .ic-flat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft, #F1F5F9);
+      border-radius: 10px;
+      margin: 6px 8px;
+      animation: reveal-slide 0.35s ease-out;
+    }
+    .ic-flat-item[data-status="done"][data-result="tick"]  { border-left: 3px solid var(--green-vivid); }
+    .ic-flat-item[data-status="done"][data-result="cross"] { border-left: 3px solid var(--amber-vivid); }
+    .ic-flat-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green-deep);
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      font-family: ui-monospace, monospace;
+    }
+    .ic-flat-body { flex: 1; min-width: 0; }
+    .ic-flat-text {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+    .ic-flat-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .ic-flat-btn {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft, #F1F5F9);
+      background: var(--bg-card);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 180ms, color 180ms, border-color 180ms;
+      font-family: inherit;
+    }
+    .ic-flat-tick { color: var(--green-vivid); }
+    .ic-flat-tick:hover { background: var(--green-soft); border-color: var(--green-vivid); }
+    .ic-flat-cross { color: var(--amber-vivid); }
+    .ic-flat-cross:hover { background: var(--amber-soft); border-color: var(--amber-vivid); }
+    .ic-flat-result {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      flex-wrap: wrap;
+    }
+    .ic-flat-result-icon { font-weight: 700; }
+    .ic-flat-result-tick  .ic-flat-result-icon { color: var(--green-deep); }
+    .ic-flat-result-cross .ic-flat-result-icon { color: var(--amber-vivid); }
+    .ic-flat-camera-btn, .ic-flat-mic-btn {
+      padding: 4px 10px;
+      background: var(--bg-stage);
+      border: 1px dashed var(--border-subtle, #E2E8F0);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-family: inherit;
+      transition: background 180ms;
+    }
+    .ic-flat-camera-btn:hover { background: var(--green-soft); }
+    .ic-flat-mic-btn:hover    { background: var(--amber-soft); }
+    .ic-flat-mic-btn:disabled { cursor: progress; opacity: 0.85; }
+    .ic-flat-photo-attached, .ic-flat-voice-attached {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── W14 R2 — Floating Assistant FAB + popup ── */
+    .lim-assistant-fab {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      z-index: 60;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: laf-pulse 1.8s ease-in-out infinite;
+    }
+    .laf-icon { font-size: 16px; }
+    @keyframes laf-pulse {
+      0%, 100% { box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35); }
+      50%      { box-shadow: 0 6px 28px rgba(99, 102, 241, 0.60); }
+    }
+    .lim-assistant-popup { position: fixed; inset: 0; z-index: 70; }
+    .lap-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(15, 27, 61, 0.50);
+    }
+    .lap-card {
+      position: absolute;
+      bottom: 80px;
+      right: 24px;
+      width: 340px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(15, 27, 61, 0.18);
+      overflow: hidden;
+      animation: lap-card-slide 0.25s ease-out;
+    }
+    @keyframes lap-card-slide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lap-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-soft, #F1F5F9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lap-title { font-weight: 800; font-size: 13px; color: var(--text-primary); letter-spacing: 0.01em; }
+    .lap-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 20px; color: var(--text-muted);
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .lap-body { padding: 8px; }
+    .lap-option {
+      display: block;
+      width: 100%;
+      padding: 10px 12px;
+      margin: 4px 0;
+      background: white;
+      border: 1px solid var(--border-soft, #F1F5F9);
+      border-radius: 8px;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 180ms, border-color 180ms;
+    }
+    .lap-option:hover {
+      background: var(--bg-stage);
+      border-color: var(--text-muted);
+    }
+    .lap-option-primary {
+      border-left: 3px solid var(--green-vivid);
+      background: var(--green-soft);
+    }
+    .lap-option-primary:hover { background: #BBF7D0; }
+    .lap-opt-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .lap-opt-sub {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-style: italic;
+    }
+    .lim-assistant-toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      padding: 10px 18px;
+      background: rgba(15, 27, 61, 0.92);
+      color: white;
+      border-radius: 18px;
+      font-size: 12px;
+      font-family: inherit;
+      animation: toast-fade 2.5s forwards;
+      pointer-events: none;
+    }
+    @keyframes toast-fade {
+      0%, 90% { opacity: 1; }
+      100%    { opacity: 0; }
+    }
 
     /* Binary CTAs */
     .binary-ctas {
@@ -3977,11 +4203,18 @@
       border-radius: 18px;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
+      font-family: inherit;       /* W14 R1 — button reset */
       font-size: 12px;
       font-weight: 700;
       color: var(--text-muted);
-      transition: background 200ms, border-color 200ms, color 200ms;
+      cursor: pointer;            /* W14 R1 — clickable */
+      transition: background 200ms, border-color 200ms, color 200ms, filter 200ms;
       flex-shrink: 0;
+    }
+    .wf-stepper-pill:hover { filter: brightness(1.05); }
+    .wf-stepper-pill:focus-visible {
+      outline: 2px solid var(--green-vivid);
+      outline-offset: 2px;
     }
     .wf-stepper-num {
       display: inline-flex;
@@ -5911,38 +6144,35 @@
   <!-- FLOATING KG WINDOW (W3.4) — body sibling, fixed position -->
   <div id="kg-floating-window" class="kg-fw" data-open="false" style="left: 56%; top: 90px; width: 460px; height: 360px;">
     <div class="kg-fw-titlebar">
-      <span class="kg-fw-title">Knowledge Graph · 3D · 4 layers</span>
+      <span class="kg-fw-title">Knowledge Graph · 3D · 8 layers</span>
       <div class="kg-fw-actions">
         <button class="kg-fw-action" id="kg-fw-close" title="Close" type="button">×</button>
       </div>
     </div>
     <div class="kg-fw-body">
-      <!-- W11 — KG legend overlay (top-middle of floating window) -->
+      <!-- W14 R3 — KG legend overlay: 2-col side-by-side (Layers | Tacit knowledge) -->
       <div class="kg-legend-overlay">
-        <div class="kg-leg-row" data-layer="L1"><span class="kg-leg-dot" style="background:#10B981"></span>L1 · People + Process</div>
-        <div class="kg-leg-row" data-layer="L2"><span class="kg-leg-dot" style="background:#3B82F6"></span>L2 · Physical Plant</div>
-        <div class="kg-leg-row" data-layer="L3"><span class="kg-leg-dot" style="background:#F59E0B"></span>L3 · Historical State</div>
-        <div class="kg-leg-row" data-layer="L4"><span class="kg-leg-dot" style="background:#EF4444"></span>L4 · Predictive Intelligence</div>
-        <div class="kg-leg-row" data-layer="L5"><span class="kg-leg-dot" style="background:#A855F7"></span>L5 · Markets</div>
-        <div class="kg-leg-row" data-layer="L6"><span class="kg-leg-dot" style="background:#06B6D4"></span>L6 · Contracts</div>
-        <div class="kg-leg-row" data-layer="L7"><span class="kg-leg-dot" style="background:#EC4899"></span>L7 · Cross-site Network</div>
-        <div class="kg-leg-divider"></div>
-        <div class="kg-leg-row" data-cluster="staging">
-          <svg class="kg-leg-diamond" viewBox="0 0 12 12"><path d="M6 1 L11 6 L6 11 L1 6 Z" fill="#10B981" stroke="#fff" stroke-width="1"/></svg>
-          Tacit byte (promoted)
+        <div class="kg-leg-col">
+          <div class="kg-leg-col-title">Layers</div>
+          <div class="kg-leg-row" data-layer="L1"><span class="kg-leg-dot" style="background:#10B981"></span>L1 · Org Structure</div>
+          <div class="kg-leg-row" data-layer="L2"><span class="kg-leg-dot" style="background:#3B82F6"></span>L2 · SOPs</div>
+          <div class="kg-leg-row" data-layer="L3"><span class="kg-leg-dot" style="background:#F59E0B"></span>L3 · Plant & Equipment</div>
+          <div class="kg-leg-row" data-layer="L4"><span class="kg-leg-dot" style="background:#DC2626"></span>L4 · Historical State</div>
+          <div class="kg-leg-row" data-layer="L5"><span class="kg-leg-dot" style="background:#8B5CF6"></span>L5 · Predictive Intelligence</div>
+          <div class="kg-leg-row" data-layer="L6"><span class="kg-leg-dot" style="background:#06B6D4"></span>L6 · Markets</div>
+          <div class="kg-leg-row" data-layer="L7"><span class="kg-leg-dot" style="background:#EC4899"></span>L7 · Contracts</div>
+          <div class="kg-leg-row" data-layer="L8"><span class="kg-leg-dot" style="background:#F97316"></span>L8 · Cross-site Network</div>
         </div>
-        <div class="kg-leg-row" data-cluster="staging">
-          <svg class="kg-leg-diamond" viewBox="0 0 12 12"><path d="M6 1 L11 6 L6 11 L1 6 Z" fill="#F59E0B" stroke="#fff" stroke-width="1" opacity="0.6"/></svg>
-          Tacit byte (unpromoted)
-        </div>
-        <div class="kg-leg-row" data-cluster="staging">
-          <span class="kg-leg-ring" style="border-color:#3B82F6"></span>Staging agent
-        </div>
-        <div class="kg-leg-row" data-cluster="auditor">
-          <span class="kg-leg-ring" style="border-color:#3B82F6"></span>KG auditor / updater agent
-        </div>
-        <div class="kg-leg-row" data-cluster="commercial">
-          <span class="kg-leg-ring" style="border-color:#A855F7"></span>Commercial intelligence
+        <div class="kg-leg-col">
+          <div class="kg-leg-col-title">Tacit knowledge</div>
+          <div class="kg-leg-row" data-tacit="triaged">
+            <svg class="kg-leg-diamond" viewBox="0 0 12 12"><path d="M6 1 L11 6 L6 11 L1 6 Z" fill="#10B981" stroke="#fff" stroke-width="1"/></svg>
+            Tacit byte [triaged]
+          </div>
+          <div class="kg-leg-row" data-tacit="ingested">
+            <svg class="kg-leg-diamond" viewBox="0 0 12 12"><path d="M6 1 L11 6 L6 11 L1 6 Z" fill="#8B5CF6" stroke="#fff" stroke-width="1" opacity="0.65"/></svg>
+            Tacit byte [ingested]
+          </div>
         </div>
       </div>
       <div id="kg-3d-mount" class="kg-3d-mount"></div>
@@ -5967,7 +6197,7 @@
         <div class="kg-layer" data-layer="L2">
           <div class="kg-layer-hdr">
             <span class="kg-layer-tag">L2</span>
-            <span class="kg-layer-name">Physical Plant</span>
+            <span class="kg-layer-name">Plant & Equipment</span>
             <span class="kg-layer-count">17</span>
           </div>
           <div class="kg-layer-nodes">
@@ -6136,6 +6366,10 @@
       <div class="telemetry-modal-footer">
         Source: <strong>OSIsoft PI System</strong> · sensor <strong>VT-BFP-3A-NDE-X/Y</strong> · 14-day window ending 2026-05-21 02:47 SGT
       </div>
+      <!-- W14 R1 — Attach CTA: confirms telemetry review + closes modal + marks Step 1 ✓ -->
+      <div class="telemetry-modal-actions">
+        <button class="telemetry-modal-attach" type="button">Attach</button>
+      </div>
     </div>
   </div>
 
@@ -6164,6 +6398,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w13r2"></script>
+  <script src="app.js?v=w14r3"></script>
 </body>
 </html>

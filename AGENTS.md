@@ -6,7 +6,7 @@
 > 1. **Split-pane layout** — LEFT 2/3 = tablet view; RIGHT 1/3 = under-the-hood architecture viz with 3 zones (Agent View 64% / 3D KG 24% / Learning Flywheel 12%).
 > 2. **4-persona top strip** on the tablet pane — Ops Control Tower → Onsite Eng → Offsite Expert → Asset Perf Analyst. CSS-illustration silhouette scenes (no real photos). Active = full color; previous persona greys on handoff.
 > 3. **Same tablet "device" re-renders curated content per active persona** as workflow hands off (not separate screens — same frame, new content).
-> 4. **3D Knowledge Graph** (4 MECE layers: People & Process / Physical Plant / Historical State / Predictive Intelligence) via pre-bundled `three.js` + `3d-force-graph`. Hardcoded ~30-40 nodes for the Jurong-CCGT-1 asset chain. Agent-spotlight animation as agents traverse layers.
+> 4. **3D Knowledge Graph** (4 MECE layers: People & Process / Plant & Equipment / Historical State / Predictive Intelligence) via pre-bundled `three.js` + `3d-force-graph`. Hardcoded ~30-40 nodes for the Jurong-CCGT-1 asset chain. Agent-spotlight animation as agents traverse layers.
 > 5. **Agent View** — 4 buckets (Orchestration / Reasoning Agents · Transient / BU Critique · Vertical-aligned / Cross-Functional Validators). 9 agents total. Idle state = colored top-edge + icon + name + role; active state = expanded card with task tree + step counter (Claude-Code-style).
 > 6. **Critic validation gate** — every agent output passes through a critique agent that walks the KG path backwards. Validated paths glow green and surface to tablet, rejected paths glow red and trigger re-dispatch. Final beat = Learning Flywheel: correction writes back to KG as a new node.
 

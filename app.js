@@ -57,7 +57,7 @@ const state = {
   },
   // ── W4 — Lim curated Screen D state ──
   lim: {
-    checked: {},                       // map of inspection-item-id → true
+    checked: {},                       // map of inspection-item-id → true (W14 R2 — legacy · still populated for downstream paintLimChecklistComplete)
     revealStarted: false,
     summaryRevealed: false,
     callStarted: false,
@@ -65,7 +65,7 @@ const state = {
     transcriptAttached: false,
     diagnosisRevised: false,
     revisionTimestamp: null,
-    // W4.1 — stage-gated checklist theater flags
+    // W4.1 — stage-gated checklist theater flags (dead post-W14 R2 — kept per WA #5)
     safetyTheaterFired: false,
     instrumentTheaterFired: false,
     rciTheaterFired: false,
@@ -73,6 +73,10 @@ const state = {
     verdictSpawned: false,
     rejectClicked: false,
     confirmRevisedClicked: false,
+    // ── W14 R2 — flat checklist + Assistant FAB state ──
+    itemResults: {},                   // map of item-id → { type: 'tick'|'cross', photo?, voiceNote? }
+    checklistRevealedTo: 1,            // 1..LIM_INSPECTION_CHECKLIST.length · sequential reveal cursor
+    assistantButtonShown: false,       // FAB visibility flag · sticky after first appearance
   },
   // ── W4 — Ismail curated Screen D state ──
   ismail: {
@@ -887,7 +891,7 @@ function revealStep1WithAddButton() {
       </div>
       <div class="as-step-body">
         <span class="as-step-msg">Telemetry snapshot pre-fetched by Hyperspace OS · pending operator confirmation</span>
-        <button class="as-step-add-btn" type="button">Add</button>
+        <button class="as-step-add-btn" type="button">Review</button>
       </div>
     </div>`;
   slot2.innerHTML = `
@@ -907,10 +911,29 @@ function wireAddTelemetryButton() {
   const btn = document.querySelector('.as-step-add-btn');
   if (!btn || btn.dataset.wired === '1') return;
   btn.dataset.wired = '1';
-  btn.addEventListener('click', onAddTelemetryClick);
+  btn.addEventListener('click', onReviewTelemetryClick);
 }
 
-function onAddTelemetryClick() {
+// W14 R1 — Review button opens telemetry modal (was: immediately marked step done)
+function onReviewTelemetryClick() {
+  const modal = document.getElementById('telemetry-modal');
+  if (!modal) return;
+  modal.dataset.open = 'true';
+  modal.setAttribute('aria-hidden', 'false');
+  wireTelemetryModal();           // delegated close handler (no-op if already wired)
+  wireAttachTelemetryButton();    // new Attach CTA wiring (idempotent)
+}
+
+// W14 R1 — Attach click closes modal + fires existing step-done lifecycle
+function wireAttachTelemetryButton() {
+  const btn = document.querySelector('.telemetry-modal-attach');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', onAttachTelemetryClick);
+}
+
+function onAttachTelemetryClick() {
+  closeTelemetryModal();
   const step1 = document.querySelector('.as-step[data-step="1"]');
   if (!step1) return;
   step1.dataset.status = 'verifying';
@@ -933,6 +956,11 @@ function onAddTelemetryClick() {
     wireTelemetryModal();
     unlockActionStep2();
   }, 1000);
+}
+
+// Dead code per WA #5 — pre-W14 R1 direct-step-done path (function name preserved for any stale refs)
+function onAddTelemetryClick() {
+  return onReviewTelemetryClick();
 }
 
 // ── Legacy (W3.9) — paintActionStepsInitial + startActionStep1 kept as dead code per WA #5 ──
@@ -1687,35 +1715,43 @@ function stubView(root, label) {
 // + inspection checklist + binary CTAs + call flow + diagnosis morph + escalate
 // ─────────────────────────────────────────────
 
+// W14 R2 — Flat 5-item inspection list (replaces grouped 10-item structure).
+// Sequential reveal · tick/cross interactions · camera (post-tick) · mic (post-cross).
 const LIM_INSPECTION_CHECKLIST = [
-  {
-    group: 'Safety',
-    items: [
-      { id: 'safety-1', text: 'Check the area for gas leaks before approaching the equipment.' },
-      { id: 'safety-2', text: 'Verify there is no active fire, smoke, or overheating around the machine.' },
-      { id: 'safety-3', text: 'Confirm vibration levels are stable enough for safe inspection.' },
-      { id: 'safety-4', text: 'Check casing temperature is within safe handling range.' },
-      { id: 'safety-5', text: 'Confirm lockout/tagout is in place before close inspection.' },
-    ],
-  },
-  {
-    group: 'Instrument',
-    items: [
-      { id: 'instr-1', text: 'Cross-check Bently Nevada 3500 readings against handheld vibration meter.' },
-      { id: 'instr-2', text: 'Inspect vibration transducer cabling + mounts for any loose connections.' },
-      { id: 'instr-3', text: 'Verify vibration readings using a handheld vibration meter if available.' },
-    ],
-  },
-  {
-    group: 'Root cause isolation',
-    items: [
-      { id: 'rci-1', text: 'Inspect sleeve bearings for clearance issues, oil film condition, wipe damage, and instability.' },
-      { id: 'rci-2', text: 'Inspect rolling element bearings for spalling, lubrication condition, cage defects, and preload issues.' },
-    ],
-  },
+  { id: 'visual-bearing-nde',
+    text: 'Visual inspection · NDE bearing housing · external · note temperature anomaly + leak signs',
+    needsCamera: true,
+    needsMicOnSkip: true },
+  { id: 'vibration-rms-handheld',
+    text: 'Handheld vibration RMS reading · NDE bearing housing · 3-axis · Bently Nevada CSI',
+    needsCamera: true,
+    needsMicOnSkip: true },
+  { id: 'dial-indicator-runout',
+    text: 'Dial-indicator shaft runout test · 4 quadrants · NDE + DE · 0.001mm resolution',
+    needsCamera: true,
+    needsMicOnSkip: true },
+  { id: 'casing-visual',
+    text: 'Visual inspection · pump casing · volute + discharge weld + 4-o\'clock position · check for hairline cracks',
+    needsCamera: true,
+    needsMicOnSkip: true },
+  { id: 'coupling-alignment',
+    text: 'Coupling alignment · laser shaft alignment · DE coupling face · 4 dial-indicator points',
+    needsCamera: true,
+    needsMicOnSkip: true },
 ];
 
-const LIM_CHECKLIST_THRESHOLD = 10;
+const LIM_CHECKLIST_THRESHOLD = 5;
+// W14 R2 — Assistant FAB reveals after this many items resolved (tick or cross).
+const LIM_ASSISTANT_REVEAL_AFTER_ITEM = 2;
+
+// W14 R2 — Canned voice-note transcripts (mic capture on cross) — per-item context.
+const LIM_VOICENOTE_TRANSCRIPTS = {
+  'visual-bearing-nde':     'External housing clear · no leak signs · proceeding to next step',
+  'vibration-rms-handheld': 'Need handheld unit · supervisor approval pending',
+  'dial-indicator-runout':  'Runout within spec · 0.02mm · no anomaly observed',
+  'casing-visual':          'See hairline crack 60mm · 4-o\'clock · near discharge weld — flagging for senior review',
+  'coupling-alignment':     'Alignment within spec · 0.05mm parallel · 0.03mm angular',
+};
 
 // W4.1 — group theater (HSE for Safety, Instrument Diagnostic, Sensor Anomaly Inspector + Turbine Diag for root-cause)
 const GROUP_THEATER_AGENT = {
@@ -1852,8 +1888,8 @@ function renderOnsiteIncidentDetail(root) {
   if (state.lim.summaryRevealed) {
     paintLimSummaryComplete(state.lim.diagnosisRevised);
     paintLimChecklist();
-    // W7 — Diagnosis Verdict re-entry path
-    const checkedCount = Object.keys(state.lim.checked).length;
+    // W14 R2 — Re-entry: Fault Review section NO LONGER auto-spawned at threshold.
+    // Assistant FAB is the new trigger for the call flow (see Section D / E).
     if (state.lim.diagnosisRevised) {
       // Past the call — show post-call state + Revise diagnosis tile (or footer if already routed)
       spawnInCallStrip();
@@ -1864,8 +1900,10 @@ function renderOnsiteIncidentDetail(root) {
       paintPostCallStagesFromState();
     } else if (state.lim.callStarted) {
       spawnInCallStrip();
-    } else if (checkedCount >= LIM_CHECKLIST_THRESHOLD) {
-      paintDiagnosisVerdict();
+    } else if (state.lim.assistantButtonShown) {
+      // W14 R2 — FAB persistence across persona switch: re-spawn if previously revealed
+      // and call flow not yet started (otherwise call strip occupies CTAs slot).
+      spawnAssistantFloatingButton();
     }
   } else {
     startLimScreenDReveal();
@@ -1889,9 +1927,14 @@ function paintLimSummaryComplete(revised) {
   const slot = document.getElementById('lim-summary-slot');
   if (!slot) return;
   const hyp = INCIDENT.hypothesis;
-  const altsHtml = INCIDENT.alternates.map(a =>
-    `<div class="sr-alt-row"><span>${a.name}</span></div>`
-  ).join('');
+  // W14 R2 — Rationale dropdown replaces Alt-hypotheses dropdown · re-uses W13 R2 INITIAL_DIAGNOSIS_RATIONALE + wireRationaleToggle (Faye-consistent).
+  const rationaleHtml = INITIAL_DIAGNOSIS_RATIONALE.map(r => `
+    <div class="sr-rationale-row" data-strength="${r.strength}">
+      <span class="sr-rat-bullet">·</span>
+      <span class="sr-rat-text">${r.text}</span>
+      <span class="sr-rat-badge sr-rat-badge-${r.strength}">${r.badgeLabel}</span>
+    </div>
+  `).join('');
 
   let tileHtml;
   if (revised) {
@@ -1905,13 +1948,13 @@ function paintLimSummaryComplete(revised) {
           <span class="sr-hyp-status-pill">pending onsite verification</span>
         </div>
       </div>
-      <div class="sr-alternates">
-        <button class="sr-alt-toggle" data-expanded="false" type="button">
-          <span class="sr-alt-toggle-icon">▸</span>
-          <span class="sr-alt-toggle-lbl">Alternative hypotheses considered</span>
+      <div class="sr-rationale-block">
+        <button class="sr-rationale-toggle" data-expanded="false" type="button">
+          <span class="sr-rationale-toggle-icon">▸</span>
+          <span class="sr-rationale-toggle-lbl">Rationale</span>
         </button>
-        <div class="sr-alt-list" style="display:none">
-          ${altsHtml}
+        <div class="sr-rationale-list" style="display:none">
+          ${rationaleHtml}
         </div>
       </div>`;
   }
@@ -1923,7 +1966,7 @@ function paintLimSummaryComplete(revised) {
         ${tileHtml}
       </div>
     </div>`;
-  wireAltHypothesesToggle();
+  wireRationaleToggle();
   wireTranscriptModalLinks();
 }
 
@@ -1976,47 +2019,257 @@ function buildLimGroupHTML(grp, locked) {
     </div>`;
 }
 
+// W14 R2 — Flat inspection list painter (replaces grouped impl · WA #5 — old impl above kept as dead code).
 function paintLimChecklist() {
   const slot = document.getElementById('lim-checklist-slot');
   if (!slot) return;
-  const allDone = LIM_INSPECTION_CHECKLIST.every(g => g.items.every(it => state.lim.checked[it.id]));
-  const groupsHtml = LIM_INSPECTION_CHECKLIST.map((grp, idx) => {
-    let locked;
-    if (allDone) {
-      locked = false;
-    } else if (idx === 0) {
-      locked = false;
-    } else {
-      const prevGrp = LIM_INSPECTION_CHECKLIST[idx - 1];
-      const prevDone = prevGrp.items.every(it => state.lim.checked[it.id]);
-      locked = !prevDone;
-    }
-    return buildLimGroupHTML(grp, locked);
-  }).join('');
-  const total = LIM_INSPECTION_CHECKLIST.reduce((n, g) => n + g.items.length, 0);
-  const checked = Object.keys(state.lim.checked).length;
-  slot.innerHTML = `
-    <div class="inspection-checklist">
-      <div class="ic-heading">Inspection workflow (INC-2026-0537 · per the SOP)</div>
-      <div class="ic-sub">Complete safety + instrument + root-cause checks sequentially.</div>
-      ${groupsHtml}
-      <div class="ic-progress"><span class="ic-progress-num">${checked}/${total} checks complete</span></div>
-    </div>`;
-  wireInspectionChecklist();
 
-  // W4.1 — fire HSE Agent theater on first paint (no items checked yet)
-  if (!allDone && checked === 0 && !state.lim.safetyTheaterFired) {
-    state.lim.safetyTheaterFired = true;
-    triggerGroupTheater('Safety', { skipUnlock: true });
+  // Default reveal cursor on first paint
+  if (!state.lim.checklistRevealedTo || state.lim.checklistRevealedTo < 1) {
+    state.lim.checklistRevealedTo = 1;
+  }
+  if (!state.lim.itemResults) state.lim.itemResults = {};
+
+  const itemsHtml = LIM_INSPECTION_CHECKLIST.map((item, idx) => {
+    const num = idx + 1;
+    const revealed = num <= state.lim.checklistRevealedTo;
+    if (!revealed) return '';
+
+    const result = state.lim.itemResults[item.id];
+    const resolved = !!result;
+    const resultType = result && result.type;
+
+    return `
+      <div class="ic-flat-item" data-item-id="${item.id}" data-status="${resolved ? 'done' : 'open'}" data-result="${resultType || ''}">
+        <div class="ic-flat-num">${num}</div>
+        <div class="ic-flat-body">
+          <div class="ic-flat-text">${item.text}</div>
+          ${resolved ? renderItemResolvedState(item, result) : ''}
+        </div>
+        ${resolved ? '' : `
+          <div class="ic-flat-actions">
+            <button class="ic-flat-btn ic-flat-tick" data-action="tick" data-item="${item.id}" type="button" aria-label="Mark complete">✓</button>
+            <button class="ic-flat-btn ic-flat-cross" data-action="cross" data-item="${item.id}" type="button" aria-label="Skip + capture reason">✗</button>
+          </div>`}
+      </div>`;
+  }).join('');
+
+  const doneCount = Object.keys(state.lim.itemResults).length;
+  const total = LIM_INSPECTION_CHECKLIST.length;
+  slot.innerHTML = `
+    <div class="inspection-checklist inspection-checklist-flat">
+      <div class="lim-checklist-heading">Inspection workflow · ${total} items</div>
+      <div class="ic-flat-list">${itemsHtml}</div>
+      <div class="ic-progress"><span class="ic-progress-num">${doneCount}/${total} steps resolved</span></div>
+    </div>`;
+  wireFlatChecklistActions();
+}
+
+function renderItemResolvedState(item, result) {
+  if (result.type === 'tick') {
+    return `
+      <div class="ic-flat-result ic-flat-result-tick">
+        <span class="ic-flat-result-icon">✓ Done</span>
+        ${result.photo
+          ? `<span class="ic-flat-photo-attached">📷 Photo attached · ${result.photo}</span>`
+          : `<button class="ic-flat-camera-btn" type="button" data-item="${item.id}" aria-label="Take photo">📷 Attach photo</button>`}
+      </div>`;
+  }
+  // cross
+  return `
+    <div class="ic-flat-result ic-flat-result-cross">
+      <span class="ic-flat-result-icon">✗ Skipped</span>
+      ${result.voiceNote
+        ? `<span class="ic-flat-voice-attached">🎤 Reason captured: "${result.voiceNote}"</span>`
+        : `<button class="ic-flat-mic-btn" type="button" data-item="${item.id}" aria-label="Record reason">🎤 Record reason</button>`}
+    </div>`;
+}
+
+function wireFlatChecklistActions() {
+  document.querySelectorAll('.ic-flat-btn').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      const itemId = btn.dataset.item;
+      if (action === 'tick') onItemTick(itemId);
+      else if (action === 'cross') onItemCross(itemId);
+    });
+  });
+  document.querySelectorAll('.ic-flat-camera-btn').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => onItemCameraClick(btn.dataset.item));
+  });
+  document.querySelectorAll('.ic-flat-mic-btn').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => onItemMicClick(btn.dataset.item));
+  });
+}
+
+function onItemTick(itemId) {
+  if (!state.lim.itemResults) state.lim.itemResults = {};
+  if (state.lim.itemResults[itemId]) return;
+  state.lim.itemResults[itemId] = { type: 'tick', photo: null };
+  state.lim.checked[itemId] = true;   // legacy mirror for downstream callers
+  logFlatChecklistItem(itemId, 'tick');
+  paintLimChecklist();
+  checkAndAdvanceChecklist(itemId);
+}
+
+function onItemCross(itemId) {
+  if (!state.lim.itemResults) state.lim.itemResults = {};
+  if (state.lim.itemResults[itemId]) return;
+  state.lim.itemResults[itemId] = { type: 'cross', voiceNote: null };
+  state.lim.checked[itemId] = true;   // legacy mirror
+  logFlatChecklistItem(itemId, 'cross');
+  paintLimChecklist();
+  checkAndAdvanceChecklist(itemId);
+}
+
+function onItemCameraClick(itemId) {
+  const res = state.lim.itemResults && state.lim.itemResults[itemId];
+  if (!res || res.type !== 'tick') return;
+  res.photo = `photo-${Date.now()}.jpg`;
+  paintLimChecklist();
+}
+
+function onItemMicClick(itemId) {
+  const res = state.lim.itemResults && state.lim.itemResults[itemId];
+  if (!res || res.type !== 'cross') return;
+  const btn = document.querySelector(`.ic-flat-mic-btn[data-item="${itemId}"]`);
+  if (btn) { btn.disabled = true; btn.textContent = '🎤 Recording…'; }
+  setTimeout(() => {
+    const transcript = LIM_VOICENOTE_TRANSCRIPTS[itemId] || 'Skipped — supervisor sign-off required';
+    res.voiceNote = transcript;
+    paintLimChecklist();
+  }, 2000);
+}
+
+function checkAndAdvanceChecklist(/* justResolvedItemId */) {
+  // Reveal next item if any remain
+  if (state.lim.checklistRevealedTo < LIM_INSPECTION_CHECKLIST.length) {
+    state.lim.checklistRevealedTo += 1;
+    setTimeout(() => paintLimChecklist(), 400);
+  }
+  // Assistant FAB reveals after item 2 done · sticky
+  const doneCount = Object.keys(state.lim.itemResults || {}).length;
+  if (doneCount >= LIM_ASSISTANT_REVEAL_AFTER_ITEM && !state.lim.assistantButtonShown) {
+    state.lim.assistantButtonShown = true;
+    spawnAssistantFloatingButton();
   }
 }
 
+function logFlatChecklistItem(itemId, action) {
+  if (!window.LOG) return;
+  window.LOG.appendLine({
+    ts: currentSGTLog(),
+    source: 'workflow',
+    text: `Inspection step · ${itemId} · ${action === 'tick' ? 'completed' : 'skipped (reason captured)'} by Lim Wei Jie`,
+    dataSource: 'Hyperspace OS',
+    nodeChain: ['sop-bfp-vibration-investigation'],
+  });
+}
+
 function paintLimChecklistComplete() {
-  // All items rendered as checked (post-escalation re-entry)
-  LIM_INSPECTION_CHECKLIST.forEach(g => g.items.forEach(it => { state.lim.checked[it.id] = true; }));
+  // W14 R2 — Post-action re-entry · mark all 5 items resolved as 'tick' w/ photo attached.
+  LIM_INSPECTION_CHECKLIST.forEach(item => {
+    state.lim.itemResults = state.lim.itemResults || {};
+    if (!state.lim.itemResults[item.id]) {
+      state.lim.itemResults[item.id] = { type: 'tick', photo: `photo-${item.id}.jpg` };
+    }
+    state.lim.checked[item.id] = true;   // legacy mirror
+  });
+  state.lim.checklistRevealedTo = LIM_INSPECTION_CHECKLIST.length;
   paintLimChecklist();
-  // W8 C.5 — re-entry path also shows truncated groups.
-  truncateInspectionGroupsToCompleted();
+}
+
+// ─────────────────────────────────────────────
+// W14 R2 — Assistant FAB + popup (Lim Screen D · bottom-right)
+// FAB reveals after item 2 done. Popup w/ 4 options. Primary option ("Review with on-call Senior Engineer")
+// calls existing onVerdictReject() → chains into W12 SOP suggest dialogue → call flow.
+// ─────────────────────────────────────────────
+const ASSISTANT_OPTIONS = [
+  { id: 'ask-rene',      label: 'Ask Rene',                              sub: 'Peer engineer · Block 1 mechanical maintenance' },
+  { id: 'ask-lina',      label: 'Ask Lina',                              sub: 'Sulzer vendor field rep · BFP specialist' },
+  { id: 'check-maximo',  label: 'Check Maximo work-order history',       sub: 'Search prior BFP-3A WOs · last 90 days' },
+  { id: 'review-senior', label: 'Review with on-call Senior Engineer',   sub: 'Escalation playbook · SOP-BFP-VIBR-001', isPrimary: true },
+];
+
+function spawnAssistantFloatingButton() {
+  if (document.querySelector('.lim-assistant-fab')) return;
+  const host = document.getElementById('incident-detail-view') || document.body;
+  const fab = document.createElement('button');
+  fab.className = 'lim-assistant-fab';
+  fab.type = 'button';
+  fab.innerHTML = `<span class="laf-icon">✦</span><span class="laf-lbl">Assistant</span>`;
+  fab.addEventListener('click', openAssistantPopup);
+  host.appendChild(fab);
+}
+
+function openAssistantPopup() {
+  if (document.querySelector('.lim-assistant-popup')) return;
+  const popup = document.createElement('div');
+  popup.className = 'lim-assistant-popup';
+  popup.innerHTML = `
+    <div class="lap-backdrop"></div>
+    <div class="lap-card" role="dialog" aria-modal="true" aria-label="Assistant options">
+      <div class="lap-header">
+        <div class="lap-title">Assistant</div>
+        <button class="lap-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="lap-body">
+        ${ASSISTANT_OPTIONS.map(o => `
+          <button class="lap-option ${o.isPrimary ? 'lap-option-primary' : ''}" type="button" data-option="${o.id}">
+            <div class="lap-opt-label">${o.label}</div>
+            <div class="lap-opt-sub">${o.sub}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  wireAssistantPopup();
+}
+
+function wireAssistantPopup() {
+  const closeBtn = document.querySelector('.lim-assistant-popup .lap-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeAssistantPopup);
+  const backdrop = document.querySelector('.lim-assistant-popup .lap-backdrop');
+  if (backdrop) backdrop.addEventListener('click', closeAssistantPopup);
+  document.querySelectorAll('.lim-assistant-popup .lap-option').forEach(btn => {
+    btn.addEventListener('click', () => onAssistantOptionClick(btn.dataset.option));
+  });
+}
+
+function closeAssistantPopup() {
+  const popup = document.querySelector('.lim-assistant-popup');
+  if (popup) popup.remove();
+}
+
+function onAssistantOptionClick(optionId) {
+  closeAssistantPopup();
+  if (optionId === 'review-senior') {
+    // FAB removes — call flow takes over the CTAs slot
+    const fab = document.querySelector('.lim-assistant-fab');
+    if (fab) fab.remove();
+    onVerdictReject();
+    return;
+  }
+  // 3 non-primary options · stub toast (out of scope for demo)
+  const opt = ASSISTANT_OPTIONS.find(o => o.id === optionId);
+  const label = opt ? opt.label : optionId;
+  showAssistantToast(`${label} · option not in this demo path`);
+}
+
+function showAssistantToast(msg) {
+  const existing = document.querySelector('.lim-assistant-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'lim-assistant-toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
 }
 
 // W8 C.5 — replace each inspection group's inner content with header-only completed row.
@@ -2157,17 +2410,9 @@ function updateChecklistProgress() {
     triggerGroupTheater('Root cause isolation');
   }
 
-  if (checked >= LIM_CHECKLIST_THRESHOLD) {
-    // W7 — spawn Diagnosis Verdict section at 10/10 (replaces W4.1 binary CTAs)
-    const slot = document.getElementById('lim-ctas-slot');
-    if (slot && !slot.querySelector('.diagnosis-verdict')
-             && !slot.querySelector('.sop-routing-theater')
-             && !slot.querySelector('.in-call-strip')
-             && !slot.querySelector('.post-call-stage')
-             && !state.lim.rejectClicked) {
-      paintDiagnosisVerdict();
-    }
-  }
+  // W14 R2 — Fault Review auto-spawn at threshold REMOVED.
+  // Assistant FAB is the new trigger (Section D/E) — paintDiagnosisVerdict kept as dead code per WA #5.
+  // (Previously: if checked >= LIM_CHECKLIST_THRESHOLD → paintDiagnosisVerdict() unconditionally.)
 }
 
 // W7 — Diagnosis Verdict section (replaces W4.1 binary-ctas)
@@ -4511,7 +4756,7 @@ const P1_WORKFLOWS = {
       num: 1,
       label: 'Agentic triage',
       tagline: 'Sensor anomaly · severity scoring · KG path-trace',
-      durationMs: 6000,
+      durationMs: 24000,   // W14 R1 — 4x slower (was 6000)
       buckets: [
         { name: 'Reasoning',        agents: ['Sensor Anomaly Inspector', 'Turbine Diagnostic Agent'],       persistent: ['inspection', 'triage'] },
         { name: 'Critic',           agents: ['Critic · Power Gen', 'Criticality Standards Critic'],         persistent: ['critic-power-gen', null] },
@@ -4523,20 +4768,20 @@ const P1_WORKFLOWS = {
       num: 2,
       label: 'Action planner',
       tagline: 'SOP retrieval · adherence check · telemetry pre-fetch',
-      durationMs: 7000,
+      durationMs: 28000,   // W14 R1 — 4x slower (was 7000)
       buckets: [
         { name: 'Reasoning',        agents: ['SOP Retrieval Agent', 'Sensor Anomaly Inspector'],            persistent: [null, 'inspection'] },
         { name: 'Critic',           agents: ['SOP Adherence Critic'],                                       persistent: [null] },
         { name: 'Vertical-aligned', agents: ['Telemetry Snapshot Compiler', 'SOP Compliance Agent'],        persistent: [null, 'sop-action'] },
       ],
-      outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Add',
-      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Add)',
+      outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Review',
+      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Review)',
     },
     {
       num: 3,
       label: 'Scheduling',
       tagline: 'Roster · expertise match · dispatch payload',
-      durationMs: 5000,
+      durationMs: 20000,   // W14 R1 — 4x slower (was 5000)
       buckets: [
         { name: 'Reasoning',        agents: ['Roster Lookup Agent', 'Expertise Match Agent'],               persistent: [null, null] },
         { name: 'Critic',           agents: ['Certs Validator'],                                            persistent: [null] },
@@ -4584,16 +4829,27 @@ function openP1WorkflowsModal() {
   };
   document.addEventListener('keydown', state.w10.modalEscHandler);
 
+  // W14 R1 — wire clickable stepper pills (replay-on-click · no auto-advance)
+  document.querySelectorAll('.wf-stepper-pill').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      const num = parseInt(btn.dataset.step, 10);
+      if (num) playWorkflowStep(num);
+    });
+  });
+
   startWorkflowSequencer();
 }
 
 function buildWorkflowsModalCanvas() {
+  // W14 R1 — pills are <button> for click-to-play (was <div>)
   const pillsHtml = P1_WORKFLOWS.steps.map((s, i) => {
     const arrow = i < P1_WORKFLOWS.steps.length - 1 ? '<span class="wf-stepper-conn"></span>' : '';
-    return `<div class="wf-stepper-pill" data-step="${s.num}" data-state="${s.num === 1 ? 'active' : 'pending'}">
+    return `<button class="wf-stepper-pill" type="button" data-step="${s.num}" data-state="${s.num === 1 ? 'active' : 'pending'}">
       <span class="wf-stepper-num">${s.num}</span>
       <span class="wf-stepper-label">${s.label}</span>
-    </div>${arrow}`;
+    </button>${arrow}`;
   }).join('');
 
   const firstStep = P1_WORKFLOWS.steps[0];
@@ -4604,7 +4860,7 @@ function buildWorkflowsModalCanvas() {
         ${buildWorkflowStepCanvas(firstStep)}
       </div>
       <div class="wf-advance-hint" id="wf-advance-hint">
-        Auto-advance to step 2 in ${Math.round(firstStep.durationMs / 1000)}s ▸
+        Click any step to play its workflow ▸
       </div>
     </div>
   `;
@@ -4648,22 +4904,39 @@ function startWorkflowSequencer() {
 }
 
 function playWorkflowStep(stepNum) {
+  // W14 R1 — defensive: clear any in-flight reveal timers from previous play
+  if (state.w10.modalTimers && state.w10.modalTimers.length) {
+    state.w10.modalTimers.forEach(t => clearTimeout(t));
+    state.w10.modalTimers = [];
+  }
+
   state.w10.workflowStep = stepNum;
   const stepDef = P1_WORKFLOWS.steps[stepNum - 1];
   if (!stepDef) return;
 
-  // Update stepper pill states
+  state.w10.workflowsPlayed = state.w10.workflowsPlayed || {};
+
+  // W14 R1 — semantics: active = currently playing · done = previously played · pending = never played
   document.querySelectorAll('.wf-stepper-pill').forEach(pill => {
     const n = parseInt(pill.dataset.step, 10);
-    if (n < stepNum)      pill.dataset.state = 'done';
-    else if (n === stepNum) pill.dataset.state = 'active';
-    else                  pill.dataset.state = 'pending';
+    if (n === stepNum) {
+      pill.dataset.state = 'active';
+    } else if (state.w10.workflowsPlayed[n]) {
+      pill.dataset.state = 'done';
+    } else {
+      pill.dataset.state = 'pending';
+    }
   });
 
-  // Swap canvas for non-first steps
-  if (stepNum > 1) {
-    const canvas = document.getElementById('wf-active-canvas');
-    if (canvas) canvas.innerHTML = buildWorkflowStepCanvas(stepDef);
+  // W14 R1 — always swap canvas (replay-on-click re-builds step content)
+  const canvas = document.getElementById('wf-active-canvas');
+  if (canvas) canvas.innerHTML = buildWorkflowStepCanvas(stepDef);
+
+  // Reset hint while step plays
+  const hint = document.getElementById('wf-advance-hint');
+  if (hint) {
+    hint.textContent = `Playing workflow ${stepNum}… ▸`;
+    hint.dataset.state = '';
   }
 
   // Flatten agents w/ their persistent mappings (preserve bucket+agent order)
@@ -4675,7 +4948,8 @@ function playWorkflowStep(stepNum) {
   });
 
   const reveals = Math.max(1, flatAgents.length);
-  const stagger = Math.max(400, Math.floor((stepDef.durationMs - 1500) / reveals));
+  // W14 R1 — floor bumped 400 → 1200 (3x) to keep proportional cadence at 4x durationMs
+  const stagger = Math.max(1200, Math.floor((stepDef.durationMs - 6000) / reveals));
   const dots = document.querySelectorAll('#wf-active-canvas .wf-agent-dot');
 
   dots.forEach((el, i) => {
@@ -4690,35 +4964,31 @@ function playWorkflowStep(stepNum) {
     state.w10.modalTimers.push(t);
   });
 
-  // Output caption reveal near end of step
-  const outputDelay = Math.max(1000, stepDef.durationMs - 800);
+  // W14 R1 — output caption reveal near end of step (scaled w/ 4x duration)
+  const outputDelay = Math.max(1000, stepDef.durationMs - 3000);
   const tOutput = setTimeout(() => {
     const out = document.querySelector('#wf-active-canvas .wf-step-output');
     if (out) out.classList.add('wf-step-output-revealed');
   }, outputDelay);
   state.w10.modalTimers.push(tOutput);
 
-  // Advance hint copy update
-  const hint = document.getElementById('wf-advance-hint');
-  if (hint) {
-    if (stepNum < P1_WORKFLOWS.steps.length) {
-      hint.textContent = `Auto-advance to step ${stepNum + 1} in ${Math.round(stepDef.durationMs / 1000)}s ▸`;
-      hint.dataset.state = '';
-    } else {
-      hint.textContent = `Running final workflow ▸`;
-      hint.dataset.state = '';
-    }
-  }
+  // W14 R1 — step-end: mark played + update hint · NO auto-advance to next step
+  const tEnd = setTimeout(() => {
+    state.w10.workflowsPlayed[stepNum] = true;
+    // Update stepper to reflect now-done active pill (only if user hasn't clicked another)
+    const pill = document.querySelector(`.wf-stepper-pill[data-step="${stepNum}"]`);
+    if (pill && pill.dataset.state === 'active') pill.dataset.state = 'done';
 
-  // Auto-advance OR completion
-  const tNext = setTimeout(() => {
-    if (stepNum < P1_WORKFLOWS.steps.length) {
-      playWorkflowStep(stepNum + 1);
-    } else {
+    const hint2 = document.getElementById('wf-advance-hint');
+    const allPlayed = P1_WORKFLOWS.steps.every(s => state.w10.workflowsPlayed[s.num]);
+    if (allPlayed) {
       onWorkflowsComplete();
+    } else if (hint2) {
+      hint2.textContent = `Workflow ${stepNum} complete · click another step ▸`;
+      hint2.dataset.state = 'done-step';
     }
   }, stepDef.durationMs);
-  state.w10.modalTimers.push(tNext);
+  state.w10.modalTimers.push(tEnd);
 }
 
 function onWorkflowsComplete() {
@@ -5467,7 +5737,7 @@ const KG_NODES = [
   { id: 'esc-pso',         label: 'Escalation · PSO window',  layer: 'L1', x:  40, y: 90, z:  60 },
   { id: 'sop-bfp-vibration-investigation', label: 'SOP · BFP vibration investigation', layer: 'L1', x: 0, y: 90, z: -60 },
 
-  // L2 Physical Plant (blue) — y = 30
+  // L2 Plant & Equipment (blue) — y = 30
   { id: 'gt-3',                label: 'GT-3',                  layer: 'L2', x: -60, y: 30, z:   0 },
   { id: 'hrsg-3',              label: 'HRSG-3',                layer: 'L2', x:   0, y: 30, z:   0 },
   { id: 'bfp-3a',              label: 'BFP-3A · Sulzer',       layer: 'L2', x:  30, y: 30, z:  20 },
@@ -5507,15 +5777,16 @@ const KG_NODES = [
   { id: 'rec-oem-playbook',          label: 'Recommender · OEM playbook',          layer: 'L4', x: -30, y: -90, z: -30 },
 ];
 
-// W12 Section B.1 — new 7-layer palette · 7 distinct hues
+// W14 R3 — 8-layer palette · 8 distinct hues. People+Process split → L1 Org / L2 SOPs.
 const KG_LAYER_COLORS = {
-  L1: '#10B981',  // emerald — People & Process
-  L2: '#3B82F6',  // blue    — Physical Plant
-  L3: '#F59E0B',  // amber   — Historical State
-  L4: '#EF4444',  // red     — Predictive Intelligence
-  L5: '#A855F7',  // purple  — Markets
-  L6: '#06B6D4',  // cyan    — Contracts
-  L7: '#EC4899',  // pink    — Cross-site Network
+  L1: '#10B981',  // emerald     — Org Structure (people)
+  L2: '#3B82F6',  // royal blue  — SOPs
+  L3: '#F59E0B',  // amber       — Plant & Equipment
+  L4: '#DC2626',  // red         — Historical State
+  L5: '#8B5CF6',  // purple      — Predictive Intelligence
+  L6: '#06B6D4',  // cyan        — Markets
+  L7: '#EC4899',  // pink        — Contracts
+  L8: '#F97316',  // orange      — Cross-site Network
 };
 
 const KG_EDGES = [
@@ -5584,14 +5855,17 @@ const KG_EDGES = [
 KG_NODES.forEach(n => { n.canonical = true; });
 KG_EDGES.forEach(e => { e.canonical = true; });
 
+// W14 R3 — 8-layer Y-band restripe. Top-down monotonic spacing 60 units per band.
+// L1 Org Structure (people) top · L8 Cross-site Network bottom.
 const LAYER_Y = {
-  L1: 90,
-  L2: 30,
-  L3: -30,
-  L4: -90,
-  L5: 150,    // W11 — Markets
-  L6: 210,    // W11 — Contracts
-  L7: 270,    // W11 — Cross-site Network
+  L1: 180,    // Org Structure (people)
+  L2: 120,    // SOPs
+  L3: 60,     // Plant & Equipment (assets · failure modes · manuals · telemetry)
+  L4: 0,      // Historical State (work orders · RCA · history)
+  L5: -60,    // Predictive Intelligence (patterns · models · tacit)
+  L6: -120,   // Markets
+  L7: -180,   // Contracts
+  L8: -240,   // Cross-site Network
 };
 
 const KG_THEATER_NODES = [
@@ -5605,7 +5879,7 @@ const KG_THEATER_NODES = [
   { id: 't-bu-renewables',     label: 'BU · Renewables',    layer: 'L1', canonical: false },
   { id: 't-bu-networks',       label: 'BU · Networks',      layer: 'L1', canonical: false },
 
-  // L2 Physical Plant (sister blocks + sub-assemblies)
+  // L2 Plant & Equipment (sister blocks + sub-assemblies)
   { id: 't-gt-1',           label: 'GT-1',           layer: 'L2', canonical: false },
   { id: 't-gt-2',           label: 'GT-2',           layer: 'L2', canonical: false },
   { id: 't-hrsg-1',         label: 'HRSG-1',         layer: 'L2', canonical: false },
@@ -5872,6 +6146,105 @@ KG_EDGES.push(...KG_COMMERCIAL_EDGES);
 
 const KG_COMMERCIAL_IDS = KG_COMMERCIAL_NODES.map(n => n.id);
 
+// ── W14 R3 — Section C — additional L3 semantic nodes per Pulkit semantic split ──
+// Plant & Equipment gains failure-mode + telemetry stratum (existing manuals stay in L3).
+const KG_W14R3_L3_NODES = [
+  { id: 'failure-mode-race-spalling', label: 'Failure mode · NDE bearing race spalling', layer: 'L3', x:  85, y: 0, z:  30, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'failure-mode-casing-crack',  label: 'Failure mode · casing hairline crack',     layer: 'L3', x:  92, y: 0, z:  12, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'failure-mode-misalignment',  label: 'Failure mode · shaft misalignment',        layer: 'L3', x:  72, y: 0, z: -12, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'failure-mode-imbalance',     label: 'Failure mode · impeller imbalance',        layer: 'L3', x:  52, y: 0, z: -30, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'failure-mode-bent-shaft',    label: 'Failure mode · bent shaft (1×RPM dominant)', layer: 'L3', x: 40, y: 0, z:  -8, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'telemetry-vib-rms-nde',      label: 'Telemetry · vibration RMS · NDE housing',  layer: 'L3', x: -75, y: 0, z:  40, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'telemetry-vib-phase-1xrpm',  label: 'Telemetry · vibration phase · 1×RPM',      layer: 'L3', x: -85, y: 0, z:  25, canonical: false, cluster: 'w14r3-l3' },
+  { id: 'telemetry-bearing-temp-live',label: 'Telemetry · NDE bearing temp · live',      layer: 'L3', x: -68, y: 0, z: -22, canonical: false, cluster: 'w14r3-l3' },
+];
+KG_NODES.push(...KG_W14R3_L3_NODES);
+
+// W14 R3 — Section C — central layer remap. Single pass after all node pushes.
+// Old: L1 People+Process · L2 Physical · L3 Historical · L4 Predictive · L5 Markets · L6 Contracts · L7 Cross-site.
+// New: L1 Org · L2 SOPs · L3 Physical · L4 Historical · L5 Predictive · L6 Markets · L7 Contracts · L8 Cross-site.
+// SOP-flavored nodes split out of old L1 → new L2 via SOP_IDS list.
+const W14R3_LAYER_REMAP = { L1: 'L1', L2: 'L3', L3: 'L4', L4: 'L5', L5: 'L6', L6: 'L7', L7: 'L8' };
+const W14R3_SOP_IDS = new Set([
+  'sop-bfp-vibration-investigation',
+  'raci-derate',
+  'esc-pso',
+  'bfp-casing-inspection-protocol',
+]);
+const W14R3_NEW_NODE_IDS = new Set(KG_W14R3_L3_NODES.map(n => n.id));
+KG_NODES.forEach(n => {
+  if (W14R3_NEW_NODE_IDS.has(n.id)) return; // already in new scheme
+  n.layer = W14R3_SOP_IDS.has(n.id) ? 'L2' : (W14R3_LAYER_REMAP[n.layer] || n.layer);
+  if (!n.isStaging) n.y = LAYER_Y[n.layer];
+});
+
+// Label refinements per Pulkit spec (Section C.3 — clearer Sembcorp-canonical naming).
+const W14R3_LABEL_OVERRIDES = {
+  'bearing-bfp-3a-nde':   'BFP-3A · NDE bearing (SKF)',
+  'casing-bfp-3a':        'BFP-3A · pump casing (Sulzer)',
+  'sulzer-bfp-manual':    'Manual · Sulzer BFP-3A maintenance',
+  'oem-ge-9ha-manual':    'Manual · GE 9HA gas turbine',
+  'iso-10816-7-spec':     'Standard · ISO 10816-7 alarm zones',
+  'vib-rms-90d':          'History · BFP-3A 90d vibration RMS',
+  'bearing-temp-30d':     'History · NDE bearing 30d temp',
+};
+KG_NODES.forEach(n => {
+  if (W14R3_LABEL_OVERRIDES[n.id]) n.label = W14R3_LABEL_OVERRIDES[n.id];
+});
+
+// W14 R3 — Section E — tacit-byte label simplification per Pulkit explicit:
+// "tacit bite, just call it tacit bite and say ingested or triaged. Nothing else needs to be there."
+// Promoted = triaged (post Process-Engineering-Review). Unpromoted = ingested (raw staging).
+KG_NODES.forEach(n => {
+  if (n.isStaging && !n.isStagingAgent) {
+    n.state = n.isPromoted ? 'triaged' : 'ingested';
+    n.label = `Tacit byte [${n.state}]`;
+  }
+});
+
+// ── W14 R3 — Section D — connectivity edges ──
+// (1) Bridge new L3 failure-mode + telemetry nodes to L3 assets + L4 historical + L5 predictive.
+// (2) Fix 6 isolated commercial nodes from W12 densification (no edges → no visible connection).
+const KG_W14R3_EDGES = [
+  // Failure modes ← BFP-3A asset chain (L3 intra)
+  { source: 'bfp-3a',                       target: 'failure-mode-race-spalling', canonical: false, cluster: 'w14r3-l3' },
+  { source: 'bearing-bfp-3a-nde',           target: 'failure-mode-race-spalling', canonical: false, cluster: 'w14r3-l3' },
+  { source: 'casing-bfp-3a',                target: 'failure-mode-casing-crack',  canonical: false, cluster: 'w14r3-l3' },
+  { source: 'shaft-bfp-3a',                 target: 'failure-mode-misalignment',  canonical: false, cluster: 'w14r3-l3' },
+  { source: 'shaft-bfp-3a',                 target: 'failure-mode-bent-shaft',    canonical: false, cluster: 'w14r3-l3' },
+  { source: 'coupling-bfp-3a',              target: 'failure-mode-misalignment',  canonical: false, cluster: 'w14r3-l3' },
+  { source: 'bfp-3a',                       target: 'failure-mode-imbalance',     canonical: false, cluster: 'w14r3-l3' },
+
+  // Telemetry signals ← BFP-3A asset + vibration transducers
+  { source: 'vt-bfp-3a-nde-x',              target: 'telemetry-vib-rms-nde',       canonical: false, cluster: 'w14r3-l3' },
+  { source: 'vt-bfp-3a-nde-y',              target: 'telemetry-vib-rms-nde',       canonical: false, cluster: 'w14r3-l3' },
+  { source: 'vt-bfp-3a-nde-x',              target: 'telemetry-vib-phase-1xrpm',   canonical: false, cluster: 'w14r3-l3' },
+  { source: 'bearing-bfp-3a-nde',           target: 'telemetry-bearing-temp-live', canonical: false, cluster: 'w14r3-l3' },
+
+  // Failure modes → L4 historical RCA evidence
+  { source: 'failure-mode-race-spalling',   target: 'rca-bfp-jrg-2025',           canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-race-spalling',   target: 'rca-bfp-skr-2024',           canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-casing-crack',    target: 'casing-rca-jrg-2023',        canonical: false, cluster: 'w14r3-l3' },
+
+  // Failure modes → L5 predictive patterns (bridge L3→L5)
+  { source: 'failure-mode-race-spalling',   target: 'bearing-spalling-pattern',   canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-casing-crack',    target: 'pump-casing-crack-pattern',  canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-bent-shaft',      target: 'ismail-field-experience-2023', canonical: false, cluster: 'w14r3-l3' },
+
+  // Telemetry → L4 history (sensor stream feeds 90d aggregates)
+  { source: 'telemetry-vib-rms-nde',        target: 'vib-rms-90d',                canonical: false, cluster: 'w14r3-l3' },
+  { source: 'telemetry-bearing-temp-live',  target: 'bearing-temp-30d',           canonical: false, cluster: 'w14r3-l3' },
+
+  // Fix 6 isolated commercial nodes
+  { source: 'carbon-credit-corsia',         target: 'merchant-market-sg',         canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'weather-temp-forecast-sg',     target: 'demand-forecast-q3-2026',    canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'industrial-customer-ccaa',     target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'vesting-contract-ema',         target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'ancillary-services-contract',  target: 'grid-frequency-50hz',        canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'tuas-power-spinning-reserve',  target: 'cross-site-tuas-availability', canonical: false, cluster: 'w14r3-commercial-fix' },
+];
+KG_EDGES.push(...KG_W14R3_EDGES);
+
 // ── W3.5: helpers for billboarded canvas-based sprites ──
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -5996,11 +6369,16 @@ function buildLayerTitle(layerId, name, color, yPos) {
   return sprite;
 }
 
+// W14 R3 — 8-layer names (extends W11 commercial layers, splits L1 People+Process).
 const KG_LAYER_NAMES = {
-  L1: 'People & Process',
-  L2: 'Physical Plant',
-  L3: 'Historical State',
-  L4: 'Predictive Intelligence',
+  L1: 'Org Structure',
+  L2: 'SOPs',
+  L3: 'Plant & Equipment',
+  L4: 'Historical State',
+  L5: 'Predictive Intelligence',
+  L6: 'Markets',
+  L7: 'Contracts',
+  L8: 'Cross-site Network',
 };
 
 function hexWithAlpha(hex, alpha) {
@@ -6134,15 +6512,17 @@ function initKG3D() {
         return group;
       })
       .nodeThreeObjectExtend(false)
+      // W14 R3 — slate-400 base · brighter than W12 white@0.32 (Pulkit: "NONE of the nodes
+      // are connected" — root cause was faint edges, not missing data).
       .linkColor(link => {
         if (chainContainsLink(link)) return '#FFFFFF';
         if (link.isPromotionEdge)    return 'rgba(0,166,81,0.85)';
-        return link.canonical ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.10)';
+        return link.canonical ? 'rgba(148,163,184,0.75)' : 'rgba(148,163,184,0.50)';
       })
       .linkWidth(link => {
         if (chainContainsLink(link)) return 3.0;
         if (link.isPromotionEdge)    return 2.5;
-        return link.canonical ? 1.2 : 0.5;
+        return link.canonical ? 1.4 : 0.9;
       })
       .linkDirectionalParticles(link => link.isPromotionEdge ? 3 : 0)
       .linkDirectionalParticleSpeed(0.008)
@@ -6154,7 +6534,10 @@ function initKG3D() {
       .enableNodeDrag(true)
       .width(mount.clientWidth || 460)
       .height(mount.clientHeight || 320)
+      // W14 R3 — unwind W3.7 lock. Click node → stop autorotate + center camera.
+      // Click empty background → resume autorotate (only if no active chain pinned).
       .onNodeClick(node => {
+        stopAutoRotate();
         const dist = 100;
         const hyp = Math.hypot(node.x || 0, node.y || 0, node.z || 0) || 1;
         const ratio = 1 + dist / hyp;
@@ -6163,6 +6546,9 @@ function initKG3D() {
           node,
           800
         );
+      })
+      .onBackgroundClick(() => {
+        if (!anyChainActive()) startAutoRotate();
       });
 
     // Disable default y force (we pin Y via fy on node data)
@@ -6944,11 +7330,13 @@ function toggleGraphWindow() {
   }
 }
 
-// W12 Section A.1-A.2 — Persona-scoped KG node/edge subset.
-// P2 (Lim · onsite): hide L5/L6/L7 + commercial cluster. All other personas: full graph.
+// W14 R3 — Persona-scoped KG node/edge subset.
+// P2 (Lim · onsite): hide L6 Markets / L7 Contracts / L8 Cross-site (commercial layers).
+// L5 Predictive Intelligence now VISIBLE to Lim (patterns matter for diagnosis).
+// All other personas: full 8-layer graph.
 function getKGNodesForPersona(persona) {
   if (persona === 'onsite') {
-    return KG_NODES.filter(n => n.layer !== 'L5' && n.layer !== 'L6' && n.layer !== 'L7');
+    return KG_NODES.filter(n => n.layer !== 'L6' && n.layer !== 'L7' && n.layer !== 'L8');
   }
   return KG_NODES;
 }

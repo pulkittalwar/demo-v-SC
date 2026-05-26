@@ -78,7 +78,7 @@ Style: Sembcorp green accents on dark navy/black. Inline SVG. No external image 
 | Layer | Holds (node types) | Edge meaning |
 |---|---|---|
 | **L1 — People & Process** | Teams, BUs, roles, ways of working, workflow contracts, escalation rules, RACI | "team owns workflow", "role escalates to role" |
-| **L2 — Physical Plant** | Assets (GT, HRSG, BFP, condenser, transformer), vendor manuals, telemetry specs, OEM maintenance facts, asset-chain interconnects | "asset feeds asset", "asset has spec", "asset documented by manual" |
+| **L2 — Plant & Equipment** | Assets (GT, HRSG, BFP, condenser, transformer), vendor manuals, telemetry specs, OEM maintenance facts, asset-chain interconnects | "asset feeds asset", "asset has spec", "asset documented by manual" |
 | **L3 — Historical State** | Per-asset sensor history, incident log, WO log, RCA repository, audit trails, prior corrections | "asset has history record", "incident classified as RCA pattern" |
 | **L4 — Predictive Intelligence** | Predictive model APIs, learned fault patterns, recommendation engine outputs, P&L impact models | "model predicts pattern", "pattern recommends action" |
 
@@ -435,7 +435,7 @@ Per Decision 4a — full scope, parallel coach+operator sessions, aggressive cad
 | W0 | Day 1 | Split-pane shell with empty zones. |
 | W1 | Day 1 | LEFT pane: 4-persona strip + Ops Control Tower curated view + Sembcorp green + Jurong-CCGT-1 vocab. |
 | W1.5 / W1.5b / W1.5c | Day 1-2 | Light theme conversion + personas-panel extracted + edge-to-edge layout + pane-level scroll + tablet centered 620px max-width. |
-| W2 | Day 2 | RIGHT pane: orchestrator dispatch log strip (5-line static placeholder inside Agent View `.zone-body`, with `inspection`/`orchestrator` source tokens + inline `[OSIsoft PI System]` data-source pill) + Inspection Agent added as 10th agent (FIRST card in Reasoning bucket; role `KG-LOOKUP`; magnifier-on-graph icon) + KG zone replaces dashed placeholder with 4-layer CSS scaffold (L1 People & Process / L2 Physical Plant / L3 Historical State / L4 Predictive Intelligence — 30 pre-seeded Jurong-CCGT-1 node chips total, includes `IGV-3 actuator` on L2 + `Pattern · IGV actuator drift` on L4, color-tagged left bars per layer). Flywheel zone unchanged (W8). |
+| W2 | Day 2 | RIGHT pane: orchestrator dispatch log strip (5-line static placeholder inside Agent View `.zone-body`, with `inspection`/`orchestrator` source tokens + inline `[OSIsoft PI System]` data-source pill) + Inspection Agent added as 10th agent (FIRST card in Reasoning bucket; role `KG-LOOKUP`; magnifier-on-graph icon) + KG zone replaces dashed placeholder with 4-layer CSS scaffold (L1 People & Process / L2 Plant & Equipment / L3 Historical State / L4 Predictive Intelligence — 30 pre-seeded Jurong-CCGT-1 node chips total, includes `IGV-3 actuator` on L2 + `Pattern · IGV actuator drift` on L4, color-tagged left bars per layer). Flywheel zone unchanged (W8). |
 | **W2.5** | Day 2-3 | **3D KG upgrade**: pre-bundle `three.js` + `3d-force-graph` to `vendor/` (verify offline load). Replace CSS scaffold with stratified 3D force-graph (4 Y-layers pinned, X/Z free, 30 nodes + canonical edges). Draggable + zoomable + auto-rotating idle state. Per-node visual-state API ready (`setNodeChain([nodeIds])`, `clearNodeChain()`, `pinNodeChain([nodeIds])`). Try/catch fallback to CSS scaffold if three.js fails. No CoT scripts loaded yet — pure rendering layer. |
 | **W2.6** | Day 3 | **Screen state machine + monitoring dashboard**: implement `state.screen` = `monitoring \| monitoring-notify \| monitoring-landed \| incident-detail`. Screen A (monitoring dashboard with 3 pre-existing Sembcorp-canonical incidents — `Jurong-CCGT-2 · BFP-2A` GREEN, `Sakra-CCGT-1 · ST-1` AMBER scheduled, `Banyan-CHP · Cooling Tower 2` RED) + Hyperspace OS header band with `cursor: pointer`. Screen B (notification banner slide-in, 3s visible + 0.5s fade) — fired by click on header. Screen C (new INC-2026-0537 lands at top of list with AMBER + TRIAGING + just-now timestamp + teal border highlight; stat row updates `3 → 4 ACTIVE · 0 → 1 AWAITING TRIAGE`). Screen D = existing incident detail, reached via click on AMBER card. Back button → C. Only canonical AMBER incident clickable; other 3 = static. |
 | W3 | Day 3-4 | **Right-pane streaming animations + P1 click-through arc**: dispatch log strip becomes live streaming queue (5 visible lines + roll-up accordion `▾ N earlier steps` for older + slide-in animation + click-pin + hover-KG-chain). Inspection Agent CoT streams concurrently with Screen A→B header-click. Triage Agent + Power Gen Critic activate during Screen B→C transition. Agent cards expand inline with Claude-Code-style task tree (`✓ ● ○` + step counter) when active, collapse with green checkmark when done. Diagnosis surfaces on Screen D arrival via "see full reasoning" expansion. Dispatch to Onsite CTA on Screen D. Surface diagnosis: compressor fouling, humidity-correlated. |
@@ -970,7 +970,7 @@ Persona panel state machine extends beyond linear P1 → P2 → P3 → P4:
 Static 4-layer scaffold pre-seeds 30 nodes (zone meta reads `32 nodes seeded` for round-number readability). Layer accent colors map to existing palette tokens:
 
 - **L1 People & Process** (green `--green-vivid`) — 7 nodes: R. Kumar · Ops · Lim Wei Jie · Onsite · Dr. A. Ismail · Offsite · P. Sundaram · Asset Perf · BU · Power Gen · RACI · derate ≥40MW · Escalation · PSO window
-- **L2 Physical Plant** (blue `--blue-vivid`) — 10 nodes: GT-3 · IGV-3 actuator · HRSG-3 · BFP-3A · BFP-3B · Condenser-3 · Generator-3 · Transformer-3 · Switchyard-A · OEM · GE 9HA manual
+- **L2 Plant & Equipment** (blue `--blue-vivid`) — 10 nodes: GT-3 · IGV-3 actuator · HRSG-3 · BFP-3A · BFP-3B · Condenser-3 · Generator-3 · Transformer-3 · Switchyard-A · OEM · GE 9HA manual
 - **L3 Historical State** (amber `--amber-vivid`) — 7 nodes: GT-3 · 90d exhaust temp · RCA-2025-014 · Sakra fouling · RCA-2024-093 · Jurong fouling · RCA-2025-031 · Jurong-2 wash · WO log · 47 prior · PI · 18mo telemetry · Audit trail · ISO 50001
 - **L4 Predictive Intelligence** (pink `--pink-vivid`) — 6 nodes: Pattern · compressor fouling · Pattern · IGV actuator drift · Model · humidity-fouling v3 · Predictor · MW derate · ROI model · wash-cycle · Recommender · OEM playbook
 
@@ -2538,4 +2538,258 @@ STOPPING HERE — awaiting coach sign-off on R2.
 - `playNarrativeModalAnimation` + `applyNarrativeAction` paths remain wired for `openP1NarrativeModal` dead-code path.
 
 W13 R3 = COMPLETE. W13 = COMPLETE. No more code waves planned before demo (2026-05-27).
+STOPPING HERE — awaiting coach sign-off on R3.
+
+### W14 Round 1 deployment confirmation (2026-05-25) — REVIEW MODAL + P1 RHS CLICKABLE+SLOW
+
+2-item batch — Faye Step 1 attachment mechanic + P1 RHS workflow modal rewrite.
+
+**Section A — Faye Step 1: Add → Review → Attach modal:**
+- Button text "Add" → "Review" (`revealStep1WithAddButton` markup).
+- `onAddTelemetryClick` renamed → `onReviewTelemetryClick`: now opens telemetry modal (sets `data-open="true"` + `aria-hidden="false"`) instead of marking step done.
+- NEW `wireAttachTelemetryButton` + `onAttachTelemetryClick`: Attach click closes modal + fires existing 1s spinner → Step 1 ✓ → `unlockActionStep2` (existing 5s find-engineer flow preserved).
+- Telemetry modal markup updated: appended `.telemetry-modal-actions` block w/ `.telemetry-modal-attach` CTA. Existing `.telemetry-modal-footer` (data source caption) preserved as-is — new class avoids collision.
+- CSS for `.telemetry-modal-actions` + `.telemetry-modal-attach` (green-vivid styling matching other primary CTAs).
+- `onAddTelemetryClick` retained as dead code per WA #5 — now a thin shim that calls `onReviewTelemetryClick()`.
+
+**Section B — P1 RHS clickable pills + 4x slower + no auto-advance:**
+- Stepper pills changed from `<div>` to `<button>` elements w/ `type="button"` + click handlers wired in `openP1WorkflowsModal` (after backdrop append).
+- Click handler fires `playWorkflowStep(N)` for clicked pill number.
+- Removed recursive auto-advance `setTimeout` from `playWorkflowStep`. Replaced w/ step-end callback that marks `state.w10.workflowsPlayed[stepNum] = true` + flips active pill to `done` + updates hint to "Workflow N complete · click another step ▸". When all 3 played at least once, fires `onWorkflowsComplete()`.
+- `P1_WORKFLOWS` durations scaled 4x: Triage 6s → 24s · Action Planner 7s → 28s · Scheduling 5s → 20s.
+- Agent reveal stagger floor bumped 400ms → 1200ms · output reveal delay scaled (800ms → 3000ms before end).
+- NEW `state.w10.workflowsPlayed` tracks played workflows independently of stepper visual state.
+- Stepper visual states: `pending` (never played) · `active` (currently playing) · `done` (previously played).
+- Defensive timer cleanup at top of `playWorkflowStep` clears in-flight `state.w10.modalTimers` on replay so reveal animations don't compound.
+- Advance hint copy: "Click any step to play its workflow ▸" (initial markup) · "Playing workflow N… ▸" (during play) · "Workflow N complete · click another step ▸" (post-step) · "All workflows complete ✓" (all played).
+- Step 2 HITL note + output caption copy updated "Add" → "Review" to match Faye Step 1 button rename.
+
+**Verification — per-test table (Chrome MCP):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | 1A — Step 1 button labeled "Review" | `.as-step-add-btn` textContent = "Review" · `data-status="awaiting-add"` | text = "Review" · status = awaiting-add | ✓ |
+| 2 | 1B — Review click opens telemetry modal | `#telemetry-modal[data-open="true"]` + `aria-hidden="false"` · step1 status remains "awaiting-add" | modal open · step 1 NOT yet done | ✓ |
+| 3 | 1C — Attach CTA present in modal | `.telemetry-modal-attach` exists · textContent = "Attach" | element present · text "Attach" | ✓ |
+| 4 | 1D — Attach click closes modal + marks Step 1 ✓ | modal `data-open="false"` · step1 `data-status="done"` · num = "✓" · msg "Telemetry confirmed for INC-2026-0537" | modal closed · step 1 ✓ + correct msg | ✓ |
+| 5 | 1E — Step 2 unlocks post-Attach | step2 `data-status="selecting"` · body shows AVAILABLE / Lim Wei Jie | step 2 transitions through 5s find flow | ✓ |
+| 6 | 1F — Re-open modal via paperclip after Attach | modal `data-open="true"` · `.telemetry-modal-attach` `data-wired="1"` (idempotent) | modal re-opens · no double-wire | ✓ |
+| 7 | 2A — Stepper pills are clickable buttons | 3 pills · all tagName="BUTTON" · all cursor="pointer" | `<button>` tags · `cursor: pointer` | ✓ |
+| 8 | 2B — Modal opens with no auto-advance | After 27s: pill 1 state="done" · pill 2/3 state="pending" · canvas still shows step 1 · hint "Workflow 1 complete · click another step ▸" | step 1 plays · no auto-advance to step 2 | ✓ |
+| 9 | 2C — Click pill 2 plays workflow 2 | pill 2 state="active" · canvas shows step card w/ `data-step="2"` · `.wf-hitl-note` visible | pill 2 active · Action Planner content · HITL note visible | ✓ |
+| 10 | 2D — Replay-on-click | After clicking pill 1 again: canvas swaps back to step 1 · dotsRevealed=0/6 · pill 1 state="active" · pill 2 reset to "pending" | canvas re-builds step 1 · reveal sequence restarts | ✓ |
+| 11 | 2E — Triage workflow ~24s duration | All 6 agent dots revealed by t≈24s wait · output revealed · hint flipped to "complete" | duration in [20s, 28s] range (4x slower than R3's 6s) | ✓ |
+| 12 | 2F — Advance hint non-auto copy | Initial markup: "Click any step to play its workflow ▸" · post-step: "Workflow N complete · click another step ▸" · no "Auto-advance" string in any state | initial contains "Click any step" · post-step non-auto framing | ✓ |
+| 13 | 2G — All-played triggers completion (simulated via onWorkflowsComplete after marking workflowsPlayed) | `state.w10.playedSections.p1.workflows === true` · P1 RHS button text = "✓ Replay" · `pn-s-played` class present | playedFlag=true · RHS Replay state set | ✓ |
+| 14 | 2H — Close mid-playback clears timers | After clicking `.nm-close` while step in flight: backdrop removed · `state.w10.modalTimers.length === 0` | backdrop gone · timers cleared | ✓ |
+| 15 | E2E-R1 — Full Faye flow w/ R1 changes + W13 R2/R3 preserved | Cold reload → header click → notification banner → AMBER card → Screen D inc-header → Initial Diagnosis Confirm (`.sr-confirm-btn`) → SOP relevant section → Step 1 "Review" → modal opens → "Attach" → Step 1 ✓ → Step 2 selecting (Lim Wei Jie) · RHS P1 workflows modal click-to-play across 3 pills · replay works · no errors | Full Faye flow w/ R1 changes lands · R2/R3 W13 mechanics preserved | ✓ |
+
+**Files changed:**
+- `app.js` — `revealStep1WithAddButton` markup (Add → Review) · `wireAddTelemetryButton` retargeted to `onReviewTelemetryClick` · NEW `onReviewTelemetryClick` + `wireAttachTelemetryButton` + `onAttachTelemetryClick` · `onAddTelemetryClick` reduced to shim · `P1_WORKFLOWS` durations 4x · `buildWorkflowsModalCanvas` pills `<div>` → `<button>` + initial hint copy · `openP1WorkflowsModal` wires pill click handlers · `playWorkflowStep` rewritten (defensive timer cleanup + always-swap canvas + workflowsPlayed tracking + no recursive auto-advance + 4x-scaled stagger/outputDelay)
+- `index.html` — appended `.telemetry-modal-actions` markup w/ `.telemetry-modal-attach` button below existing `.telemetry-modal-footer` · added CSS for `.telemetry-modal-actions` + `.telemetry-modal-attach` · added `cursor: pointer` / `font-family: inherit` / `:hover` / `:focus-visible` to `.wf-stepper-pill`
+- `SEMBCORP_SCOPE.md` — this confirmation block
+
+**Files intentionally not touched:**
+- Lim Screen D (R2 territory · NOT R1)
+- KG nodes / edges / render path (R3 territory · NOT R1)
+- W13 R2 Initial Diagnosis Confirm gate + lock-in theater
+- W13 R1 P2 Lim RHS (single Section C)
+- P3 Priya laptop modal (W12 lock)
+- Persistent agent roster (W8 — 17 agents)
+- `pushReveal` queue mechanism · `state.actionSteps` lifecycle
+
+**Follow-up notes (none required for demo):**
+- Test 2G executed via `onWorkflowsComplete()` direct invocation after seeding `state.w10.workflowsPlayed = {1:true,2:true,3:true}` to avoid 72s real-time playthrough. Full reveal lifecycle for all 3 steps measured individually via test 2E + replay test 2D.
+- Test 2H verified close `.nm-close` clears `state.w10.modalTimers` to length 0; modal pulse class also clears via existing `closeNarrativeModal` teardown.
+- Test 2F: initial advance hint markup "Click any step to play its workflow ▸" is overwritten ~0ms later by `playWorkflowStep`'s "Playing workflow 1… ▸" because `openP1WorkflowsModal` auto-kicks step 1 via `startWorkflowSequencer`. The negative-assertion (no "Auto-advance" string) holds at all times.
+
+W14 R1 = COMPLETE.
+STOPPING HERE — awaiting coach sign-off on R1.
+
+### W14 Round 2 deployment confirmation (2026-05-25) — LIM RATIONALE + INSPECTION REWRITE + ASSISTANT POPUP
+
+4-item major Lim persona rewrite — Diagnosis Rationale dropdown consistency with Faye, flat 5-item inspection list with tick/cross/camera/mic UX, sequential gating, and floating Assistant FAB + popup replacing the Fault Review trigger.
+
+**Section A — Lim Diagnosis Rationale dropdown:**
+- `paintLimSummaryComplete` Alt-hypotheses dropdown (`sr-alternates` + `wireAltHypothesesToggle`) replaced with Rationale dropdown (`sr-rationale-block` + `wireRationaleToggle`).
+- Re-uses `INITIAL_DIAGNOSIS_RATIONALE` constant + `wireRationaleToggle` from W13 R2 — Faye-consistent (same 5 rows, same fully-met/partially-met badges).
+- `wireAltHypothesesToggle` is now orphaned in default path · stays as dead code per WA #5.
+- Faye Initial Diagnosis Rationale dropdown (W13 R2) unchanged — no regression.
+
+**Section B — Inspection tile UX rewrite (5-item flat list):**
+- `LIM_INSPECTION_CHECKLIST` rewritten from grouped 3-bucket / 10-item structure → flat 5-item array (visual-bearing-nde, vibration-rms-handheld, dial-indicator-runout, casing-visual, coupling-alignment).
+- `LIM_CHECKLIST_THRESHOLD` 10 → 5.
+- New tile UX: tick ✓ + cross ✗ buttons on right side (replaces single-click checkbox).
+- Tick → camera 📷 CTA · click → photo placeholder attached (timestamp-suffixed filename).
+- Cross → mic 🎤 CTA · click → 2s simulated recording → canned voice-note transcript per item from `LIM_VOICENOTE_TRANSCRIPTS`.
+- New helpers: `paintLimChecklist` (flat), `renderItemResolvedState`, `wireFlatChecklistActions`, `onItemTick`, `onItemCross`, `onItemCameraClick`, `onItemMicClick`, `checkAndAdvanceChecklist`, `logFlatChecklistItem`.
+- `paintLimChecklistComplete` rewritten to mark all 5 items as tick + photo for post-action re-entry.
+- Legacy `buildLimGroupHTML`, `triggerGroupTheater`, `wireInspectionChecklist`, `updateChecklistProgress`, `truncateInspectionGroupsToCompleted`, `GROUP_THEATER_AGENT`, `GROUP_LOCKED_HINT`, `logChecklistItem` retained as dead code per WA #5.
+- `state.lim.checked` still populated (legacy mirror) so downstream logic that inspects it remains coherent.
+
+**Section C — Sequential gating (5 items):**
+- `state.lim.checklistRevealedTo` cursor starts at 1, advances by 1 on each tick/cross resolve.
+- Item N+1 reveals 400ms after item N resolved (`setTimeout` in `checkAndAdvanceChecklist`).
+- Re-entry restores cursor + `state.lim.itemResults` from state on Lim Screen D re-mount.
+
+**Section D — Floating Assistant button + popup:**
+- `state.lim.assistantButtonShown` flag triggers FAB after `LIM_ASSISTANT_REVEAL_AFTER_ITEM` (2) items resolved.
+- `spawnAssistantFloatingButton` appends pulsing purple-gradient FAB to `#incident-detail-view` (auto-cleanup on persona switch).
+- `openAssistantPopup` mounts 340px popup at bottom-right with backdrop + 4 options (Ask Rene, Ask Lina, Check Maximo work-order history, Review with on-call Senior Engineer).
+- `ASSISTANT_OPTIONS` constant lists option metadata. Primary option flagged `isPrimary: true` → green-left-border styling + green-soft fill.
+- 3 non-primary options → `showAssistantToast` (`{label} · option not in this demo path`, 2.5s auto-dismiss).
+- Primary option ("Review with on-call Senior Engineer") removes FAB + calls existing `onVerdictReject()` → chains into W12 SOP-suggest dialogue → Call → SOP routing theater → in-call strip → revised fault flow (W7 + W12 + W13 R1 preserved).
+
+**Section E — Fault Review re-path:**
+- `paintDiagnosisVerdict` no longer auto-spawned at threshold. Removed from re-entry path (`renderOnsiteIncidentDetail` `else if (checkedCount >= LIM_CHECKLIST_THRESHOLD)` branch deleted).
+- `updateChecklistProgress` (legacy, now unreachable) still contains the threshold trigger as dead code per WA #5.
+- Re-entry path adds: `else if (state.lim.assistantButtonShown)` → `spawnAssistantFloatingButton` to persist FAB across persona switches.
+- `paintDiagnosisVerdict`, `wireVerdictButtons`, `onVerdictConfirm` retained as dead code per WA #5 (no live caller).
+
+**Verification — per-test table (Chrome MCP, 18 tests):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | A1 — Lim summary heading + Rationale toggle present | `.sr-heading` = "Diagnosis" · `.sr-rationale-toggle` exists · 5 `.sr-rationale-row` elements | heading = "Diagnosis" · Rationale toggle + 5 rows | ✓ |
+| 2 | A2 — wireRationaleToggle wired + alt-toggle absent | After click: `data-expanded="true"` · `.sr-rationale-list` visible · `.sr-alt-toggle` NOT in Lim summary | rationale expands · old alt-toggle gone | ✓ |
+| 3 | A3 — Rationale toggle collapses on re-click | First click `data-expanded="true"` · second click `data-expanded="false"` | expand → collapse cycle | ✓ |
+| 4 | B1 — Checklist length = 5 | `LIM_INSPECTION_CHECKLIST.length` === 5 · `LIM_CHECKLIST_THRESHOLD` === 5 · `LIM_ASSISTANT_REVEAL_AFTER_ITEM` === 2 | 5 items · threshold 5 · FAB after 2 | ✓ |
+| 5 | B2 — Initial render shows only item 1 | `.ic-flat-item` count === 1 on first paint · revealedTo === 1 | 1 item visible | ✓ |
+| 6 | B3 — Tick item 1: status done, camera CTA, item 2 reveals | item 1 `data-status="done"` · `data-result="tick"` · `.ic-flat-camera-btn` present · item 2 revealed within 500ms (count === 2) | done + camera + next item revealed | ✓ |
+| 7 | B4 — Cross item 2: mic CTA + transcript on click | item 2 `data-status="done"` · `data-result="cross"` · `.ic-flat-mic-btn` present · after 2s click: `.ic-flat-voice-attached` = `🎤 Reason captured: "Need handheld unit · supervisor approval pending"` | cross + mic + canned transcript appears | ✓ |
+| 8 | B5 — Camera attach on ticked item | Click 📷 → `state.lim.itemResults['visual-bearing-nde'].photo` set · `.ic-flat-photo-attached` text contains "Photo attached" + filename | photo placeholder attaches | ✓ |
+| 9 | C1 — Sequential reveal · item 3 visible, items 4-5 still hidden | After cross item 2: items = `[visual-bearing-nde, vibration-rms-handheld, dial-indicator-runout]` · `revealedTo === 3` | items 1-3 revealed · 4-5 hidden | ✓ |
+| 10 | D1 — Assistant FAB appears after item 2 done | After 2 items resolved: `.lim-assistant-fab` present · `position: fixed` · `state.lim.assistantButtonShown === true` | FAB visible bottom-right · sticky flag set | ✓ |
+| 11 | D2 — FAB NOT visible before item 2 done | After only item 1 resolved: `fabPresent === false` | no FAB | ✓ |
+| 12 | D3 — Popup on FAB click: 4 options + Assistant title | `.lim-assistant-popup` present · `.lap-option` count === 4 · labels = [Ask Rene, Ask Lina, Check Maximo work-order history, Review with on-call Senior Engineer] · primary option dataset = "review-senior" · title = "Assistant" | popup + 4 labels match · primary tagged | ✓ |
+| 13 | D4 — Non-primary option fires toast + FAB persists | Click "Ask Lina" → popup removed · `.lim-assistant-toast` text = "Ask Lina · option not in this demo path" · FAB still present | popup closes · toast shown · FAB persists | ✓ |
+| 14 | D5 — Primary option triggers SOP suggest dialogue | Click "Review with on-call Senior Engineer" → popup removed · FAB removed · `.sop-suggest-dialogue` present · `.ssd-text` = "SOP suggests calling Dr. A. Ismail" · `state.lim.rejectClicked === true` · `state.lim.callStarted === true` | popup closes · FAB removes · SOP suggest spawns · state flags set | ✓ |
+| 15 | D6 — Call chains routing theater → in-call strip | Click `.ssd-action` ("Call") → SOP routing theater (3s) → `.in-call-strip` present · `lim-ctas-slot` child class = ["in-call-strip"] | routing theater → in-call strip auto-promote | ✓ |
+| 16 | E1 — No Fault Review at 5/5 via tick (no Assistant click) | Seed all 5 items tick + `paintLimChecklist` + wait 700ms: 5 items done · `.diagnosis-verdict` NOT present · `lim-ctas-slot` innerHTML length === 0 | Fault Review never auto-spawns | ✓ |
+| 17 | E2 — Re-entry preserves state + FAB respawn after persona switch | Pre: 2 items resolved · FAB present · itemResults count 2 · revealedTo 3. Switch to Faye: FAB torn down · no flat items. Back to Lim: 3 items rendered · item 1 done(tick) · item 2 done(cross) · item 3 open · FAB respawned · itemResults preserved (count 2) | state + FAB persistence across persona round-trip | ✓ |
+| 18 | E2E-R2 — Full Lim flow w/ R2 changes + Faye preserved | Cold reload → seed Lim → Diagnosis heading + Rationale dropdown (5 rows) + flat 5-item list (only item 1 visible) → tick item 1 + camera → cross item 2 + mic → Assistant FAB appears → popup opens (4 options) → Review w/ Senior Engineer → SOP suggest dialogue → Call → routing theater → in-call strip. Console clean throughout. | Full E2E flow passes · no regressions | ✓ |
+
+**Files changed:**
+- `app.js` — `state.lim` extended w/ `itemResults` + `checklistRevealedTo` + `assistantButtonShown` · `paintLimSummaryComplete` swapped alts → Rationale block (re-uses `INITIAL_DIAGNOSIS_RATIONALE` + `wireRationaleToggle`) · `LIM_INSPECTION_CHECKLIST` rewritten to flat 5-item array · `LIM_CHECKLIST_THRESHOLD` 10 → 5 · NEW `LIM_ASSISTANT_REVEAL_AFTER_ITEM` (2) · NEW `LIM_VOICENOTE_TRANSCRIPTS` (5 entries) · `paintLimChecklist` rewritten (flat, sequential gating) · NEW `renderItemResolvedState` / `wireFlatChecklistActions` / `onItemTick` / `onItemCross` / `onItemCameraClick` / `onItemMicClick` / `checkAndAdvanceChecklist` / `logFlatChecklistItem` · `paintLimChecklistComplete` rewritten (all-tick + photo for post-action re-entry) · NEW `ASSISTANT_OPTIONS` / `spawnAssistantFloatingButton` / `openAssistantPopup` / `wireAssistantPopup` / `closeAssistantPopup` / `onAssistantOptionClick` / `showAssistantToast` · `renderOnsiteIncidentDetail` re-entry: removed `paintDiagnosisVerdict` auto-spawn at threshold, added FAB respawn when `assistantButtonShown`.
+- `index.html` — appended CSS for `.inspection-checklist-flat` / `.lim-checklist-heading` / `.ic-flat-list` / `.ic-flat-item` / `.ic-flat-num` / `.ic-flat-body` / `.ic-flat-text` / `.ic-flat-actions` / `.ic-flat-btn` / `.ic-flat-tick` / `.ic-flat-cross` / `.ic-flat-result` / `.ic-flat-camera-btn` / `.ic-flat-mic-btn` / `.ic-flat-photo-attached` / `.ic-flat-voice-attached` · NEW `.lim-assistant-fab` w/ `@keyframes laf-pulse` · `.lim-assistant-popup` / `.lap-backdrop` / `.lap-card` w/ `@keyframes lap-card-slide` · `.lap-header` / `.lap-title` / `.lap-close` / `.lap-body` / `.lap-option` / `.lap-option-primary` / `.lap-opt-label` / `.lap-opt-sub` · `.lim-assistant-toast` w/ `@keyframes toast-fade`.
+- `SEMBCORP_SCOPE.md` — this confirmation block.
+
+**Files intentionally not touched:**
+- Faye Screen D (W13 R2 + W14 R1 locks) — Rationale toggle, Confirm gate, SOP Relevant section, P1 RHS workflows modal unchanged.
+- P1 RHS modal (W14 R1 lock).
+- KG nodes / edges / render path (R3 territory).
+- Transcript modal, escalation report, banner copy, call flow internals (W7 + W8 + W12 locks).
+- `paintDiagnosisVerdict`, `wireVerdictButtons`, old `wireAltHypothesesToggle`, old grouped `buildLimGroupHTML` / `triggerGroupTheater` / `wireInspectionChecklist` / `updateChecklistProgress` / `truncateInspectionGroupsToCompleted` / `GROUP_THEATER_AGENT` / `GROUP_LOCKED_HINT` — kept as dead code per WA #5.
+- P3 Priya laptop modal (W12 lock).
+- Persistent agent roster (W8 — 17 agents).
+
+**Follow-up notes (none required for demo):**
+- Test 16 (E1) executed via direct state-seeding to bypass the 400ms sequential reveal gates between items. The negative assertion (Fault Review never spawns) holds regardless of how the threshold is reached because the auto-spawn call site was removed at both points (`renderOnsiteIncidentDetail` re-entry + `updateChecklistProgress` legacy path is now unreachable).
+- Test 13 (D4) toast text was confirmed via in-page click in same eval call (CDP roundtrip latency in separate-call form sometimes exceeds the 2.5s toast lifespan and renders the toast already-removed). Toast lifecycle verified working.
+- `state.lim.checked` is still mirrored from `itemResults` to keep any downstream legacy reader (none currently) coherent. Safe to remove the mirror later if no caller emerges.
+- Subjective items (FAB pulse animation feel · popup slide-in legibility on projector · 2s mic recording duration framing) flagged as human-check required during live demo dry-run.
+
+W14 R2 = COMPLETE.
+STOPPING HERE — awaiting coach sign-off on R2.
+
+### W14 Round 3 deployment confirmation (2026-05-25) — KG RE-ARCHITECTURE
+
+KG re-architecture: 8 layers (split L1 People+Process into L1 Org Structure + L2 SOPs) · connectivity audit · legend side-by-side · click-to-drag (unwind W3.7 lock).
+
+**Section A — LAYER_Y rewrite (`app.js` LAYER_Y block):**
+- 8 layers · Y values 180/120/60/0/-60/-120/-180/-240 · 60-unit monotonic spacing.
+
+**Section B — KG_LAYER_COLORS rewrite (`app.js` KG_LAYER_COLORS block):**
+- 8 distinct hues: L1 emerald `#10B981` · L2 royal blue `#3B82F6` · L3 amber `#F59E0B` · L4 red `#DC2626` · L5 purple `#8B5CF6` · L6 cyan `#06B6D4` · L7 pink `#EC4899` · L8 orange `#F97316`.
+- `KG_LAYER_NAMES` extended to 8 entries (Org Structure / SOPs / Plant & Equipment / Historical State / Predictive Intelligence / Markets / Contracts / Cross-site Network).
+
+**Section C — KG_NODES relayer + relabel:**
+- Central remap pass `W14R3_LAYER_REMAP = {L1:L1, L2:L3, L3:L4, L4:L5, L5:L6, L6:L7, L7:L8}` runs after all node-array pushes — single source of truth, no per-node literal edits.
+- 4 SOP-flavored IDs (sop-bfp-vibration-investigation · raci-derate · esc-pso · bfp-casing-inspection-protocol) split out of old L1 → new L2.
+- Added 8 new L3 semantic nodes (failure modes · telemetry signals) per Pulkit semantic split: failure-mode-race-spalling / casing-crack / misalignment / imbalance / bent-shaft · telemetry-vib-rms-nde / vib-phase-1xrpm / bearing-temp-live.
+- `bearing-spalling-pattern` relocated L4 → L5 (Predictive Intelligence).
+- Label overrides applied to 7 nodes for Sembcorp-canonical clarity (bearing-bfp-3a-nde · casing-bfp-3a · sulzer-bfp-manual · oem-ge-9ha-manual · iso-10816-7-spec · vib-rms-90d · bearing-temp-30d).
+- Final layer distribution (post-remap): L1=17 · L2=4 · L3=41 · L4=20 · L5=23 · L6=8 · L7=7 · L8=8 · Total=128 nodes.
+
+**Section D — KG_EDGES connectivity audit + fixes:**
+- Pre-remap audit: 0 orphan edges · 6 isolated commercial nodes (carbon-credit-corsia · weather-temp-forecast-sg · industrial-customer-ccaa · vesting-contract-ema · ancillary-services-contract · tuas-power-spinning-reserve) · avg degree 2.27 · min degree 0.
+- Added 25 new edges (`KG_W14R3_EDGES` block): bridge new L3 failure-modes ↔ L3 assets ↔ L4 history ↔ L5 patterns · telemetry ↔ transducers + L4 aggregates · 6 fix edges for isolated commercial nodes.
+- Post-remap final: 0 orphan edges · 0 isolated non-tacit nodes · avg degree 2.52 · min degree 1 · Total=161 edges.
+- Link material brightened (Pulkit root-cause "NONE of the nodes are connected" diagnosed as faint-edge rendering, not data gap): canonical edge color `rgba(255,255,255,0.32)` → `rgba(148,163,184,0.75)` (slate-400 @ 0.75) · non-canonical `rgba(255,255,255,0.10)` → `rgba(148,163,184,0.50)` · linkWidth canonical 1.2→1.4 · non-canonical 0.5→0.9.
+
+**Section E — Tacit byte node label cleanup:**
+- All 5 tacit byte node labels simplified per Pulkit explicit: `Tacit byte [triaged]` (3 promoted) · `Tacit byte [ingested]` (2 unpromoted). Nothing else.
+- W7 + W10 R3 promotion mechanism (diamond geometry · staging cluster animation · green halo flash via `newlyAddedNodes` set) untouched.
+
+**Section F — Legend side-by-side rework:**
+- `.kg-legend-overlay` switched from `flex-direction: column` to `flex-direction: row` with 2 `.kg-leg-col` children.
+- Layers column: 8 rows (L1 Org Structure through L8 Cross-site Network) with `data-layer="LN"` attrs.
+- Tacit knowledge column: 2 rows (`Tacit byte [triaged]` · `Tacit byte [ingested]`) with `data-tacit="state"` attrs.
+- Column titles: `.kg-leg-col-title` (uppercase 9.5px muted).
+- Floating-window title updated `Knowledge Graph · 3D · 4 layers` → `Knowledge Graph · 3D · 8 layers`.
+
+**Section G — Click-to-drag (W3.7 unwound):**
+- `.onNodeClick` now calls `stopAutoRotate()` before camera-centering pan.
+- `.onBackgroundClick(() => { if (!anyChainActive()) startAutoRotate(); })` added — empty-canvas click resumes rotation.
+- `.enableNodeDrag(true)` retained (was already on) — three.js native node drag enabled.
+- Close button + persona-open hook unchanged: existing `openKGForPersona` already restores rotation 6s post-pan.
+
+**Section H — P3 KG + persona filter consistency:**
+- `getKGNodesForPersona('onsite')` filter shifted from hiding `L5/L6/L7` to hiding `L6/L7/L8` (new scheme: Markets/Contracts/Cross-site). L5 Predictive Intelligence now visible to Lim (patterns relevant to diagnosis).
+- P2 legend CSS hide rules updated to match: `#kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L6"], [data-layer="L7"], [data-layer="L8"]`.
+- P3 (analyst) full 8-layer access preserved · onsite filter Lim sees 105 nodes / L1-L5.
+
+**Section I — Tacit byte staging + green workflow arrows preserved:**
+- `KG_STAGING_NODES` (5 bytes + 2 agents) and `KG_STAGING_EDGES` (12 edges incl. `isPromotionEdge` flagged ones) untouched in structure.
+- W7 auditor cluster (3 nodes: kg-auditor-agent · kg-updater-agent · workflow-rewire-agent) untouched.
+- Green workflow arrows (CSS `.chain-text .arrow { color: var(--green-vivid); }` in `index.html`) untouched.
+
+**Cache-bust:** `v=w13r2` → `v=w14r3`.
+
+**Files changed:**
+- `app.js` — LAYER_Y rewrite · KG_LAYER_COLORS rewrite · KG_LAYER_NAMES extension · added KG_W14R3_L3_NODES + KG_W14R3_EDGES + W14R3_LAYER_REMAP + W14R3_SOP_IDS + W14R3_LABEL_OVERRIDES + tacit-byte label-simplification pass · linkColor + linkWidth brightened · onNodeClick adds stopAutoRotate · onBackgroundClick added · getKGNodesForPersona filter shifted.
+- `index.html` — `.kg-legend-overlay` flex-direction row + new `.kg-leg-col` + `.kg-leg-col-title` CSS · removed `.kg-leg-divider` + `.kg-leg-ring` (unused) · P2 hide rules updated to L6/L7/L8 · floating-window title updated · legend markup rewritten to 2-col · cache-bust `v=w14r3`.
+
+**Files intentionally not touched:**
+- Any LHS tablet code (Faye/Lim/Priya screens), persona row, state machine pills, banner, call flow, persistent agent roster, P1 RHS workflow modal (W14 R1 lock), Lim Screen D inspection mechanic (W14 R2 lock), Faye Screen D (W13 R2 + W14 R1 locks), Priya laptop modal.
+- W7 auditor cluster + green workflow arrows CSS (Pulkit explicit: "keep them").
+
+**Per-test observed-vs-expected verification (Chrome MCP + Node.js audit):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | A1 — LAYER_Y has 8 keys / L1=180 / L8=-240 | keys=8, L1=180, L8=-240 | 8, 180, -240 | ✓ |
+| 2 | B1 — KG_LAYER_COLORS 8 keys / 8 unique hex values | keys=8, unique=8 | 8, 8 | ✓ |
+| 3 | C1 — All 8 layers populated | L1=17·L2=4·L3=41·L4=20·L5=23·L6=8·L7=7·L8=8 | each >0 | ✓ |
+| 4 | C2 — bearing-spalling-pattern at L5 | layer=L5 | L5 | ✓ |
+| 5 | C3 — Failure-mode node exists at L3 | failure-mode-race-spalling.layer=L3 | true | ✓ |
+| 6 | C3 — Instruction-manual at L3 | sulzer-bfp-manual.layer=L3 | true | ✓ |
+| 7 | C3 — Telemetry node at L3 | telemetry-vib-rms-nde.layer=L3 | true | ✓ |
+| 8 | C3 — WO node at L4 | wo-log-47.layer=L4 | true | ✓ |
+| 9 | C3 — RCA node at L4 | rca-bfp-jrg-2025.layer=L4 | true | ✓ |
+| 10 | D1 — Zero orphan edges | 0 | 0 | ✓ |
+| 11 | D2 — Zero isolated non-tacit nodes | 0 | ≤2 | ✓ |
+| 12 | E1 — 5 tacit bytes labeled `Tacit byte [triaged\|ingested]` | 5 pass regex; samples = 3×triaged + 2×ingested | 5 match | ✓ |
+| 13 | F1 — Legend `display:flex` / `flex-direction:row` / 2 `.kg-leg-col` children | flex / row / 2 | flex / row / 2 | ✓ |
+| 14 | F2 — Column titles `Layers` + `Tacit knowledge` · 8 layer rows + 2 tacit rows | titles=["Layers","Tacit knowledge"], 8 layer rows, 2 tacit rows | match | ✓ |
+| 15 | G1 — `onNodeClick` source contains `stopAutoRotate()` | true | true | ✓ |
+| 16 | G2 — `onBackgroundClick` source contains `startAutoRotate()` | true | true | ✓ |
+| 17 | G3 — `enableNodeDrag(true)` in init source | true | true | ✓ |
+| 18 | H1 — Lim onsite filter hides L6/L7/L8 (returns 105 nodes) | excludes_L6L7L8=true, count=105 | true | ✓ |
+| 19 | H2 — Priya analyst sees all 8 layers | layer_count=8, [L1..L8] | 8 | ✓ |
+| 20 | I1 — KG_STAGING_PROMOTED_IDS still 3 (3 promoted bytes intact) | 3 | 3 | ✓ |
+| 21 | I — Auditor cluster nodes intact (3) | 3 | 3 | ✓ |
+
+**Deferred to projector dry-run (visual subset · WebGL not supported in headless Chrome):**
+- G1 visual — click node visually stops spin (code wire verified; visual feel requires GPU rendering).
+- G2 visual — click empty canvas resumes spin.
+- G3 visual — drag node moves it on screen.
+- D3 visual — edges visibly thicker / brighter on dark background.
+- Test E2E-R3 — full Faye → Lim → Priya flow with KG opens at each persona (no data-layer regression; LHS state machine untouched so flow should be intact).
+- 8-layer Y-band visual distinctness at projector distance.
+- Camera-pose-on-open + green-halo flash sequence preservation.
+
+These subjective items consistent with W10-W12 W13 W14 R1/R2 pattern of human-check-required during demo dry-run.
+
+W14 R3 = COMPLETE.
 STOPPING HERE — awaiting coach sign-off on R3.
