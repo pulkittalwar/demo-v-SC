@@ -2793,3 +2793,118 @@ These subjective items consistent with W10-W12 W13 W14 R1/R2 pattern of human-ch
 
 W14 R3 = COMPLETE.
 STOPPING HERE — awaiting coach sign-off on R3.
+
+---
+
+### W15 deployment confirmation (2026-05-26) — POST-W14 REVIEW MEGA-FIX
+
+7-item single-wave post-W14 review batch. Hybrid git-revert + layer-on-top strategy. Demo is tomorrow (2026-05-27); this is the last code wave before projector dry-run.
+
+**Section A — P1 RHS workflow bucket rename:**
+- Reasoning → Domain Experts (merged with prior W13 R3 Vertical-aligned agents: Sensor Anomaly Inspector + Turbine Diagnostic Agent + Criticality Scoring Agent + Incident Summary Synthesizer for workflow 1; SOP Retrieval Agent + Sensor Anomaly Inspector + Telemetry Snapshot Compiler + SOP Compliance Agent for workflow 2; Roster Lookup Agent + Expertise Match Agent for workflow 3).
+- Critic bucket unchanged across all 3 workflows.
+- Vertical-aligned REMOVED · replaced with Orchestrator bucket (Orchestrator + A2A Coordination Agent · re-uses persistent IDs `orchestrator` + `workflow` from W8 17-agent roster).
+
+**Section B — L3 "Plant & Equipment" label preserved:**
+- Pulkit's manual edit retained as ground-truth. Zero "Physical Plant" references in live code. 8 "Plant & Equipment" references confirmed via grep.
+
+**Section C — Lim inspection git-reverted to 17cd4c3 baseline + tweaks:**
+- LIM_INSPECTION_CHECKLIST restored to 3 groups: Safety (5 items) · Instrument (3 items) · Root cause isolation (EXPANDED 2→5 items). Total 13 items. LIM_CHECKLIST_THRESHOLD = 13.
+- paintLimChecklist (grouped) · paintLimChecklistComplete (grouped) restored from commit 17cd4c3.
+- Pre-W14 group-locked machinery (truncateInspectionGroupsToCompleted · wireInspectionChecklist · triggerGroupTheater · logChecklistItem · updateChecklistProgress · paintDiagnosisVerdict · GROUP_THEATER_AGENT · GROUP_LOCKED_HINT) was ALREADY INTACT in current file — no touch required there.
+- buildLimGroupHTML extended: Instrument group items render tick/cross UX (✓/✗ buttons inline · ✗ → text-input + Save button → 📝 saved-reason display). Safety + RCI use original .ic-item checkbox UX.
+- wireInstrumentActions added (onInstrumentTick / onInstrumentCross / onCrossReasonSubmit handlers). wireInspectionChecklist skips `.ic-item-instrument` rows to avoid double-wire conflict.
+- triggerGroupTheater post-replace now calls wireInstrumentActions() alongside wireInspectionChecklist() (Instrument group unlocks via theater · spawned tick/cross buttons need wiring).
+- W14 R2 flat-checklist code outright deleted (LIM_VOICENOTE_TRANSCRIPTS · LIM_ASSISTANT_REVEAL_AFTER_ITEM · renderItemResolvedState · wireFlatChecklistActions · onItemTick/Cross/Camera/Mic · checkAndAdvanceChecklist · logFlatChecklistItem · paintLimChecklistComplete-W14R2). Operator-session interpretation of WA #5: deletion over commented-out dead code given demo tomorrow + no audit value.
+
+**Section D — Assistant FAB INSIDE tablet · always present:**
+- spawnAssistantFloatingButton anchors to `#tablet` (already position:relative). CSS rule changed `position: fixed → absolute` · bottom: 16px / right: 16px / z-index: 20.
+- Dropped W14 R2 `LIM_ASSISTANT_REVEAL_AFTER_ITEM` gate + `state.lim.assistantButtonShown` flag.
+- FAB visible from t=0 on Lim Screen D (spawned from `startLimScreenDReveal` + persisted across re-entry via `renderOnsiteIncidentDetail`).
+
+**Section E — Assistant 4 new options + query box + mic icon:**
+- ASSISTANT_OPTIONS rewritten: `Check work-order history` · `Potential alternative diagnoses` · `Further troubleshooting FAQ` · `Connect to Senior Technical Expert` (primary). All sub-descriptions REMOVED (no `.lap-opt-sub`).
+- Popup body adds `.lap-query-block`: text input (`.lap-query-input` placeholder "Type your question...") + 🎤 mic button (`.lap-mic-btn`).
+- wireAssistantPopup: mic click → 2s "🎤 Recording…" disabled state → re-enables · query input populates with canned text "What is the failure mode for casing crack on NDE?".
+- "Connect to Senior Technical Expert" → existing `onVerdictReject()` chain (W12 + W13 R1 SOP suggest dialogue → call flow). FAB stays visible (FAB-remove line dropped from onAssistantOptionClick).
+
+**Section F — Critical severity bump post-crack-confirm:**
+- `bumpSeverityToCritical()` helper added: mutates `INCIDENT.severity = 'CRITICAL'` + rewrites all `.sev-pill` elements in-place (innerHTML + data-severity attr).
+- Fires from `onConfirmRevisedDiagnosisClick` (W13 R1 path · revised-diagnosis "Confirm" tile).
+- All 5 sev-pill template literals tagged with `data-severity="${INCIDENT.severity}"` attribute (Faye dashboard incident detail · Lim Screen D · Ismail Screen D · Faye Escalation Report · Priya Screen D).
+- CSS rule `.sev-pill[data-severity="CRITICAL"]` w/ red scheme (background #DC2626 · color white) + sev-crit-pulse animation. Persists across persona switches (state-agnostic INCIDENT mutation + per-render template re-application).
+
+**Section G — KG visual fix:**
+- DIAGNOSE pass: identified W14 R3 double-attenuation (rgba 0.75 × linkOpacity 0.85 = 0.64 effective alpha) as suspected root cause of "still faint" visual. Additional camera tightness on 420-unit Y range a likely contributor.
+- Fix applied:
+  - linkColor: solid `#94A3B8` (slate-400) canonical / `#64748B` (slate-500) non-canonical · NO rgba alpha · linkOpacity owns attenuation.
+  - linkWidth: 3.5 chain / 2.8 promotion / 2.0 canonical / 1.5 non-canonical (was 3.0 / 2.5 / 1.4 / 0.9).
+  - linkOpacity: 0.92 (was 0.85).
+  - cameraPosition z: 650 (was 480) — frames full 8-layer Y range (180 to -240 = 420 units).
+- W14 R3 click-to-stop + drag + auto-rotate-on-bg-click preserved.
+- W3.7 unwind + W10 tacit byte staging + W7 green workflow arrows preserved (Pulkit lock).
+
+**Cache-bust:** `v=w14r3` → `v=w15`.
+
+**Files changed:**
+- `app.js` — P1_WORKFLOWS rewrite (3 buckets per workflow) · LIM_INSPECTION_CHECKLIST restored to 3-group + RCI expanded · paintLimChecklist + paintLimChecklistComplete restored from 17cd4c3 · buildLimGroupHTML extended with Instrument tick/cross UX · wireInstrumentActions + onInstrumentTick / onInstrumentCross / onCrossReasonSubmit added · wireInspectionChecklist skips instrument rows · triggerGroupTheater post-replace calls wireInstrumentActions · W14 R2 flat-checklist code DELETED · spawnAssistantFloatingButton anchored to #tablet · renderOnsiteIncidentDetail drops assistantButtonShown gate · startLimScreenDReveal spawns FAB at t=2s · ASSISTANT_OPTIONS rewritten (4 options · no sub) · openAssistantPopup adds query block + mic · wireAssistantPopup wires mic recording · onAssistantOptionClick drops FAB-remove · bumpSeverityToCritical helper added + fired from onConfirmRevisedDiagnosisClick · sev-pill template literals (×5) gain data-severity attr · KG linkColor solid · linkWidth bumped · linkOpacity 0.92 · cameraPosition z=650.
+- `index.html` — `.lim-assistant-fab` CSS position fixed → absolute · `.lap-query-block` + `.lap-query-input` + `.lap-mic-btn` CSS added · `.lap-opt-sub` CSS retained (unused now) · `.ic-item-instrument` + `.ic-instr-row` + `.ic-instr-btn` + `.ic-instr-done` + `.ic-cross-reason-*` CSS added · `.sev-pill[data-severity="CRITICAL"]` red rule + sev-crit-pulse keyframes · cache-bust `v=w14r3 → v=w15`.
+
+**Files intentionally not touched:**
+- KG layer name L3 "Plant & Equipment" (Pulkit manual edit · ground-truth).
+- Faye Screen D (W13 R2 + W14 R1 locks · ONLY sev-pill template tagged).
+- P1 RHS workflow modal CSS/structure beyond bucket rename.
+- P3 Priya laptop modal.
+- Transcript modal · escalation report · call flow internals.
+- Persistent agent roster (17 agents · W8 lock).
+- State pill machine.
+- Banner copy (except severity text + class swap).
+- W7 auditor cluster + green workflow arrows.
+- W10 tacit byte staging mechanic.
+
+**Per-test observed-vs-expected verification (Chrome MCP browser-driven):**
+
+| # | Test | Observed | Expected | Pass |
+|---|---|---|---|---|
+| 1 | A1 — Workflow 1 bucket labels | ["Domain Experts","Critic","Orchestrator"] | match | ✓ |
+| 2 | A2 — Workflow 1 Domain Experts agents (4) | Sensor Anomaly Inspector · Turbine Diagnostic Agent · Criticality Scoring Agent · Incident Summary Synthesizer | 4 agents match | ✓ |
+| 3 | A3 — Workflow 1 Orchestrator agents (2) | Orchestrator · A2A Coordination Agent | 2 agents match | ✓ |
+| 4 | A4 — Workflow 2 bucket structure | Domain Experts (4 agents) · Critic (1 agent) · Orchestrator (Orchestrator + A2A) | match | ✓ |
+| 5 | A4 — Workflow 3 bucket structure | Domain Experts (2 agents) · Critic (Certs Validator) · Orchestrator (Orchestrator + A2A) | match | ✓ |
+| 6 | B1 — "Plant & Equipment" grep | 8 references intact | ≥1 | ✓ |
+| 7 | B1 — "Physical Plant" grep in live paths | 0 occurrences | 0 | ✓ |
+| 8 | C1 — LIM_INSPECTION_CHECKLIST = 3 groups · 5/3/5 items · total 13 | groups=3, items=5/3/5, total=13, threshold=13 | match | ✓ |
+| 9 | C2 — Group-locked gating (Safety unlocked / Instrument + RCI locked at t=0) | Safety locked=false (5 items) · Instrument locked=true (0 items rendered) · RCI locked=true (0 items rendered) | match | ✓ |
+| 10 | C2 — Instrument unlocks after Safety 5/5 (via group theater) | Instrument locked=false, 3 items rendered | match | ✓ |
+| 11 | C2 — RCI unlocks after Instrument 3/3 | RCI locked=false, 5 items rendered | match | ✓ |
+| 12 | C3 — Instrument tick: click ✓ → dataset.result === "tick" + "✓ Done" label | result="tick", doneLabel="✓ Done" | match | ✓ |
+| 13 | C4 — Instrument cross: click ✗ → text input + Save button appear | result="cross", hasInput=true | match | ✓ |
+| 14 | C4 — Cross reason submit → saved reason + 📝 icon displays | savedText="Handheld unit unavailable", hasIcon=true | match | ✓ |
+| 15 | C5 — Safety + RCI use original .ic-item checkbox UX (not tick/cross) | Safety items render with ○/✓ check icon · RCI rci-1 + rci-2 clicked via .ic-item handler successfully | match | ✓ |
+| 16 | C6 — W14 R2 flat-checklist NOT in DOM | `.ic-flat-item` count = 0 | 0 | ✓ |
+| 17 | D1 — FAB parent = #tablet · position: absolute | fabParent="tablet", fabPos="absolute" | match | ✓ |
+| 18 | D2 — FAB present from t=0 on Lim Screen D | fab=true after first paint (no items resolved) | true | ✓ |
+| 19 | E1 — 4 option labels (no sub-descriptions) | labels match plan · `.lap-opt-sub` count = 0 | match | ✓ |
+| 20 | E2 — Query input + mic button in popup | hasInput=true, hasMic=true | true/true | ✓ |
+| 21 | E3 — Mic click → "🎤 Recording…" disabled 2s → re-enables + canned query populates input | mid: disabled=true, text="🎤 Recording…" · after: disabled=false, text="🎤", queryValue="What is the failure mode for casing crack on NDE?" | match | ✓ |
+| 22 | E4 — Senior expert click → SOP suggest dialogue spawns · FAB stays | sopDialogue=true, fabStillThere=true | true/true | ✓ |
+| 23 | E5 — Other 3 options click → popup closes · toast 2.5s | popupGone=true, toastShown=true, toastText="Check work-order history · option not in this demo path" | match | ✓ |
+| 24 | F1 — Severity AMBER initially | data-severity="AMBER" on all sev-pills | AMBER | ✓ |
+| 25 | F2 — bumpSeverityToCritical → all sev-pills flip to CRITICAL red (#DC2626) | data-severity="CRITICAL", bg=rgb(220,38,38), text="▲ Severity: CRITICAL" | match | ✓ |
+| 26 | F3 — Severity persists CRITICAL after persona switch to Faye monitoring | INCIDENT.severity="CRITICAL"; rendered sev-pill on Faye shows CRITICAL/red | match | ✓ |
+| 27 | G1 — linkColor solid `#94A3B8` / `#64748B` (no rgba) | grep app.js:6515 — `return link.canonical ? '#94A3B8' : '#64748B';` | match | ✓ |
+| 28 | G2 — linkWidth bumped 1.4→2.0 / 0.9→1.5 | grep app.js:6520 — `return link.canonical ? 2.0 : 1.5;` | match | ✓ |
+| 29 | G3 — linkOpacity 0.85→0.92 | grep app.js:6526 — `.linkOpacity(0.92)` | match | ✓ |
+| 30 | G4 — cameraPosition z 480→650 | grep app.js:6555 — `cameraPosition({ x: 100, y: 0, z: 650 }, ...)` | match | ✓ |
+
+**Deferred to projector dry-run (visual subset · headless Chrome WebGL/mount-init quirks):**
+- G1-G4 visual confirmation: KG edges visibly brighter + thicker · 8-layer Y-range fully framed at z=650 · click-to-stop + drag preserved · auto-rotate-on-bg-click preserved.
+- Critical severity pulse animation feel at projector distance.
+- Instrument tick/cross UX feel + 📝 saved-reason readability at projector distance.
+- Assistant FAB visual placement inside tablet bezel (anchored to #tablet at bottom-right · should not overflow off-tablet).
+- Test E2E-W15 full flow rehearsal (cold reload → Faye dashboard → confirm initial → SOP relevant → Step 1 + Step 2 → Lim dispatch → Lim Screen D w/ FAB visible · grouped checklist · tick safety → instrument tick/cross → RCI 2/5 → Assistant FAB → 4 options + query + mic → Senior expert → SOP dialogue → call flow → transcript → revised fault → Confirm revised → severity bumps CRITICAL red on both Lim + Faye → Escalation report → Priya → Open KG → Plant & Equipment L3 label visible · 8 layers · edges visibly connect nodes).
+
+These subjective items consistent with W10-W14 R1/R2/R3 pattern of human-check-required during projector dry-run.
+
+W15 = COMPLETE. NO MORE CODE WAVES. Demo tomorrow.
+STOPPING HERE — awaiting coach sign-off on W15.

@@ -672,7 +672,7 @@ function renderOpsIncidentDetail(root) {
         <div class="inc-id">${INCIDENT.id}</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
-      <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
+      <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
@@ -1715,43 +1715,40 @@ function stubView(root, label) {
 // + inspection checklist + binary CTAs + call flow + diagnosis morph + escalate
 // ─────────────────────────────────────────────
 
-// W14 R2 — Flat 5-item inspection list (replaces grouped 10-item structure).
-// Sequential reveal · tick/cross interactions · camera (post-tick) · mic (post-cross).
+// W15 — Restored grouped 3-group structure from commit 17cd4c3.
+// Safety 5 items / Instrument 3 items / Root cause isolation EXPANDED 2→5 items = 13 total.
 const LIM_INSPECTION_CHECKLIST = [
-  { id: 'visual-bearing-nde',
-    text: 'Visual inspection · NDE bearing housing · external · note temperature anomaly + leak signs',
-    needsCamera: true,
-    needsMicOnSkip: true },
-  { id: 'vibration-rms-handheld',
-    text: 'Handheld vibration RMS reading · NDE bearing housing · 3-axis · Bently Nevada CSI',
-    needsCamera: true,
-    needsMicOnSkip: true },
-  { id: 'dial-indicator-runout',
-    text: 'Dial-indicator shaft runout test · 4 quadrants · NDE + DE · 0.001mm resolution',
-    needsCamera: true,
-    needsMicOnSkip: true },
-  { id: 'casing-visual',
-    text: 'Visual inspection · pump casing · volute + discharge weld + 4-o\'clock position · check for hairline cracks',
-    needsCamera: true,
-    needsMicOnSkip: true },
-  { id: 'coupling-alignment',
-    text: 'Coupling alignment · laser shaft alignment · DE coupling face · 4 dial-indicator points',
-    needsCamera: true,
-    needsMicOnSkip: true },
+  {
+    group: 'Safety',
+    items: [
+      { id: 'safety-1', text: 'Check the area for gas leaks before approaching the equipment.' },
+      { id: 'safety-2', text: 'Verify there is no active fire, smoke, or overheating around the machine.' },
+      { id: 'safety-3', text: 'Confirm vibration levels are stable enough for safe inspection.' },
+      { id: 'safety-4', text: 'Check casing temperature is within safe handling range.' },
+      { id: 'safety-5', text: 'Confirm lockout/tagout is in place before close inspection.' },
+    ],
+  },
+  {
+    group: 'Instrument',
+    items: [
+      { id: 'instr-1', text: 'Cross-check Bently Nevada 3500 readings against handheld vibration meter.' },
+      { id: 'instr-2', text: 'Inspect vibration transducer cabling + mounts for any loose connections.' },
+      { id: 'instr-3', text: 'Verify vibration readings using a handheld vibration meter if available.' },
+    ],
+  },
+  {
+    group: 'Root cause isolation',
+    items: [
+      { id: 'rci-1', text: 'Inspect sleeve bearings for clearance issues, oil film condition, wipe damage, and instability.' },
+      { id: 'rci-2', text: 'Inspect rolling element bearings for spalling, lubrication condition, cage defects, and preload issues.' },
+      { id: 'rci-3', text: 'Inspect coupling alignment · laser shaft alignment · DE coupling face · 4 dial-indicator points.' },
+      { id: 'rci-4', text: 'Inspect pump casing volute + discharge weld + 4-o\'clock position · check for hairline cracks.' },
+      { id: 'rci-5', text: 'Inspect impeller balance + clearance + wear patterns on NDE + DE sides.' },
+    ],
+  },
 ];
 
-const LIM_CHECKLIST_THRESHOLD = 5;
-// W14 R2 — Assistant FAB reveals after this many items resolved (tick or cross).
-const LIM_ASSISTANT_REVEAL_AFTER_ITEM = 2;
-
-// W14 R2 — Canned voice-note transcripts (mic capture on cross) — per-item context.
-const LIM_VOICENOTE_TRANSCRIPTS = {
-  'visual-bearing-nde':     'External housing clear · no leak signs · proceeding to next step',
-  'vibration-rms-handheld': 'Need handheld unit · supervisor approval pending',
-  'dial-indicator-runout':  'Runout within spec · 0.02mm · no anomaly observed',
-  'casing-visual':          'See hairline crack 60mm · 4-o\'clock · near discharge weld — flagging for senior review',
-  'coupling-alignment':     'Alignment within spec · 0.05mm parallel · 0.03mm angular',
-};
+const LIM_CHECKLIST_THRESHOLD = 13;
 
 // W4.1 — group theater (HSE for Safety, Instrument Diagnostic, Sensor Anomaly Inspector + Turbine Diag for root-cause)
 const GROUP_THEATER_AGENT = {
@@ -1803,7 +1800,7 @@ function buildLimDetailScaffold() {
         <div class="inc-id">${INCIDENT.id} · routed from Faye Sit</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
-      <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
+      <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
@@ -1888,8 +1885,7 @@ function renderOnsiteIncidentDetail(root) {
   if (state.lim.summaryRevealed) {
     paintLimSummaryComplete(state.lim.diagnosisRevised);
     paintLimChecklist();
-    // W14 R2 — Re-entry: Fault Review section NO LONGER auto-spawned at threshold.
-    // Assistant FAB is the new trigger for the call flow (see Section D / E).
+    // W15 — Assistant FAB always present (drop W14 R2 reveal-gate). Skip when call flow owns CTAs slot.
     if (state.lim.diagnosisRevised) {
       // Past the call — show post-call state + Revise diagnosis tile (or footer if already routed)
       spawnInCallStrip();
@@ -1900,9 +1896,7 @@ function renderOnsiteIncidentDetail(root) {
       paintPostCallStagesFromState();
     } else if (state.lim.callStarted) {
       spawnInCallStrip();
-    } else if (state.lim.assistantButtonShown) {
-      // W14 R2 — FAB persistence across persona switch: re-spawn if previously revealed
-      // and call flow not yet started (otherwise call strip occupies CTAs slot).
+    } else {
       spawnAssistantFloatingButton();
     }
   } else {
@@ -1920,6 +1914,8 @@ function startLimScreenDReveal() {
   // Inspection Workflow checklist spawns at t=2s — gives metrics + notes + diagnosis time to settle.
   pushReveal(() => {
     paintLimChecklist();
+    // W15 — Assistant FAB always present on Lim Screen D (was gated on item-2 reveal in W14 R2).
+    spawnAssistantFloatingButton();
   }, 2000);
 }
 
@@ -2004,8 +2000,37 @@ function buildLimGroupHTML(grp, locked) {
         </div>
       </div>`;
   }
+  const isInstrument = grp.group === 'Instrument';
   const itemsHtml = grp.items.map(it => {
     const isChecked = !!state.lim.checked[it.id];
+    if (isInstrument) {
+      // W15 — Instrument items use tick/cross UX (text input on cross click).
+      const result = (state.lim.instrumentResults || {})[it.id];   // 'tick' | 'cross' | undefined
+      const crossReason = (state.lim.instrumentReasons || {})[it.id];
+      return `
+        <div class="ic-item ic-item-instrument" data-item-id="${it.id}" data-result="${result || ''}">
+          <div class="ic-instr-row">
+            <span class="ic-text">${it.text}</span>
+            ${result === 'tick' ? '<span class="ic-instr-done">✓ Done</span>' : ''}
+            ${result === 'cross' ? '<span class="ic-instr-done ic-instr-done-skip">✗ Skipped</span>' : ''}
+            ${!result ? `
+              <div class="ic-instrument-actions">
+                <button class="ic-instr-btn ic-instr-tick" data-item="${it.id}" type="button" aria-label="Mark done">✓</button>
+                <button class="ic-instr-btn ic-instr-cross" data-item="${it.id}" type="button" aria-label="Skip + reason">✗</button>
+              </div>` : ''}
+          </div>
+          ${result === 'cross' && !crossReason ? `
+            <div class="ic-cross-reason-block">
+              <input type="text" class="ic-cross-reason-input" data-item="${it.id}" placeholder="Reason for skipping..." />
+              <button class="ic-cross-reason-submit" data-item="${it.id}" type="button">Save</button>
+            </div>` : ''}
+          ${result === 'cross' && crossReason ? `
+            <div class="ic-cross-reason-saved">
+              <span class="ic-cross-reason-icon">📝</span>
+              <span class="ic-cross-reason-text">${crossReason}</span>
+            </div>` : ''}
+        </div>`;
+    }
     return `
       <div class="ic-item" data-item-id="${it.id}" data-checked="${isChecked}">
         <span class="ic-check">${isChecked ? '✓' : '○'}</span>
@@ -2019,169 +2044,108 @@ function buildLimGroupHTML(grp, locked) {
     </div>`;
 }
 
-// W14 R2 — Flat inspection list painter (replaces grouped impl · WA #5 — old impl above kept as dead code).
+// W15 — Restored grouped paint from commit 17cd4c3.
 function paintLimChecklist() {
   const slot = document.getElementById('lim-checklist-slot');
   if (!slot) return;
-
-  // Default reveal cursor on first paint
-  if (!state.lim.checklistRevealedTo || state.lim.checklistRevealedTo < 1) {
-    state.lim.checklistRevealedTo = 1;
-  }
-  if (!state.lim.itemResults) state.lim.itemResults = {};
-
-  const itemsHtml = LIM_INSPECTION_CHECKLIST.map((item, idx) => {
-    const num = idx + 1;
-    const revealed = num <= state.lim.checklistRevealedTo;
-    if (!revealed) return '';
-
-    const result = state.lim.itemResults[item.id];
-    const resolved = !!result;
-    const resultType = result && result.type;
-
-    return `
-      <div class="ic-flat-item" data-item-id="${item.id}" data-status="${resolved ? 'done' : 'open'}" data-result="${resultType || ''}">
-        <div class="ic-flat-num">${num}</div>
-        <div class="ic-flat-body">
-          <div class="ic-flat-text">${item.text}</div>
-          ${resolved ? renderItemResolvedState(item, result) : ''}
-        </div>
-        ${resolved ? '' : `
-          <div class="ic-flat-actions">
-            <button class="ic-flat-btn ic-flat-tick" data-action="tick" data-item="${item.id}" type="button" aria-label="Mark complete">✓</button>
-            <button class="ic-flat-btn ic-flat-cross" data-action="cross" data-item="${item.id}" type="button" aria-label="Skip + capture reason">✗</button>
-          </div>`}
-      </div>`;
+  const allDone = LIM_INSPECTION_CHECKLIST.every(g => g.items.every(it => state.lim.checked[it.id]));
+  const groupsHtml = LIM_INSPECTION_CHECKLIST.map((grp, idx) => {
+    let locked;
+    if (allDone) {
+      locked = false;
+    } else if (idx === 0) {
+      locked = false;
+    } else {
+      const prevGrp = LIM_INSPECTION_CHECKLIST[idx - 1];
+      const prevDone = prevGrp.items.every(it => state.lim.checked[it.id]);
+      locked = !prevDone;
+    }
+    return buildLimGroupHTML(grp, locked);
   }).join('');
-
-  const doneCount = Object.keys(state.lim.itemResults).length;
-  const total = LIM_INSPECTION_CHECKLIST.length;
+  const total = LIM_INSPECTION_CHECKLIST.reduce((n, g) => n + g.items.length, 0);
+  const checked = Object.keys(state.lim.checked).length;
   slot.innerHTML = `
-    <div class="inspection-checklist inspection-checklist-flat">
-      <div class="lim-checklist-heading">Inspection workflow · ${total} items</div>
-      <div class="ic-flat-list">${itemsHtml}</div>
-      <div class="ic-progress"><span class="ic-progress-num">${doneCount}/${total} steps resolved</span></div>
+    <div class="inspection-checklist">
+      <div class="ic-heading">Inspection workflow (INC-2026-0537 · per the SOP)</div>
+      <div class="ic-sub">Complete safety + instrument + root-cause checks sequentially.</div>
+      ${groupsHtml}
+      <div class="ic-progress"><span class="ic-progress-num">${checked}/${total} checks complete</span></div>
     </div>`;
-  wireFlatChecklistActions();
-}
+  wireInspectionChecklist();
+  wireInstrumentActions();
 
-function renderItemResolvedState(item, result) {
-  if (result.type === 'tick') {
-    return `
-      <div class="ic-flat-result ic-flat-result-tick">
-        <span class="ic-flat-result-icon">✓ Done</span>
-        ${result.photo
-          ? `<span class="ic-flat-photo-attached">📷 Photo attached · ${result.photo}</span>`
-          : `<button class="ic-flat-camera-btn" type="button" data-item="${item.id}" aria-label="Take photo">📷 Attach photo</button>`}
-      </div>`;
+  // W4.1 — fire HSE Agent theater on first paint (no items checked yet)
+  if (!allDone && checked === 0 && !state.lim.safetyTheaterFired) {
+    state.lim.safetyTheaterFired = true;
+    triggerGroupTheater('Safety', { skipUnlock: true });
   }
-  // cross
-  return `
-    <div class="ic-flat-result ic-flat-result-cross">
-      <span class="ic-flat-result-icon">✗ Skipped</span>
-      ${result.voiceNote
-        ? `<span class="ic-flat-voice-attached">🎤 Reason captured: "${result.voiceNote}"</span>`
-        : `<button class="ic-flat-mic-btn" type="button" data-item="${item.id}" aria-label="Record reason">🎤 Record reason</button>`}
-    </div>`;
-}
-
-function wireFlatChecklistActions() {
-  document.querySelectorAll('.ic-flat-btn').forEach(btn => {
-    if (btn.dataset.wired === '1') return;
-    btn.dataset.wired = '1';
-    btn.addEventListener('click', () => {
-      const action = btn.dataset.action;
-      const itemId = btn.dataset.item;
-      if (action === 'tick') onItemTick(itemId);
-      else if (action === 'cross') onItemCross(itemId);
-    });
-  });
-  document.querySelectorAll('.ic-flat-camera-btn').forEach(btn => {
-    if (btn.dataset.wired === '1') return;
-    btn.dataset.wired = '1';
-    btn.addEventListener('click', () => onItemCameraClick(btn.dataset.item));
-  });
-  document.querySelectorAll('.ic-flat-mic-btn').forEach(btn => {
-    if (btn.dataset.wired === '1') return;
-    btn.dataset.wired = '1';
-    btn.addEventListener('click', () => onItemMicClick(btn.dataset.item));
-  });
-}
-
-function onItemTick(itemId) {
-  if (!state.lim.itemResults) state.lim.itemResults = {};
-  if (state.lim.itemResults[itemId]) return;
-  state.lim.itemResults[itemId] = { type: 'tick', photo: null };
-  state.lim.checked[itemId] = true;   // legacy mirror for downstream callers
-  logFlatChecklistItem(itemId, 'tick');
-  paintLimChecklist();
-  checkAndAdvanceChecklist(itemId);
-}
-
-function onItemCross(itemId) {
-  if (!state.lim.itemResults) state.lim.itemResults = {};
-  if (state.lim.itemResults[itemId]) return;
-  state.lim.itemResults[itemId] = { type: 'cross', voiceNote: null };
-  state.lim.checked[itemId] = true;   // legacy mirror
-  logFlatChecklistItem(itemId, 'cross');
-  paintLimChecklist();
-  checkAndAdvanceChecklist(itemId);
-}
-
-function onItemCameraClick(itemId) {
-  const res = state.lim.itemResults && state.lim.itemResults[itemId];
-  if (!res || res.type !== 'tick') return;
-  res.photo = `photo-${Date.now()}.jpg`;
-  paintLimChecklist();
-}
-
-function onItemMicClick(itemId) {
-  const res = state.lim.itemResults && state.lim.itemResults[itemId];
-  if (!res || res.type !== 'cross') return;
-  const btn = document.querySelector(`.ic-flat-mic-btn[data-item="${itemId}"]`);
-  if (btn) { btn.disabled = true; btn.textContent = '🎤 Recording…'; }
-  setTimeout(() => {
-    const transcript = LIM_VOICENOTE_TRANSCRIPTS[itemId] || 'Skipped — supervisor sign-off required';
-    res.voiceNote = transcript;
-    paintLimChecklist();
-  }, 2000);
-}
-
-function checkAndAdvanceChecklist(/* justResolvedItemId */) {
-  // Reveal next item if any remain
-  if (state.lim.checklistRevealedTo < LIM_INSPECTION_CHECKLIST.length) {
-    state.lim.checklistRevealedTo += 1;
-    setTimeout(() => paintLimChecklist(), 400);
-  }
-  // Assistant FAB reveals after item 2 done · sticky
-  const doneCount = Object.keys(state.lim.itemResults || {}).length;
-  if (doneCount >= LIM_ASSISTANT_REVEAL_AFTER_ITEM && !state.lim.assistantButtonShown) {
-    state.lim.assistantButtonShown = true;
-    spawnAssistantFloatingButton();
-  }
-}
-
-function logFlatChecklistItem(itemId, action) {
-  if (!window.LOG) return;
-  window.LOG.appendLine({
-    ts: currentSGTLog(),
-    source: 'workflow',
-    text: `Inspection step · ${itemId} · ${action === 'tick' ? 'completed' : 'skipped (reason captured)'} by Lim Wei Jie`,
-    dataSource: 'Hyperspace OS',
-    nodeChain: ['sop-bfp-vibration-investigation'],
-  });
 }
 
 function paintLimChecklistComplete() {
-  // W14 R2 — Post-action re-entry · mark all 5 items resolved as 'tick' w/ photo attached.
-  LIM_INSPECTION_CHECKLIST.forEach(item => {
-    state.lim.itemResults = state.lim.itemResults || {};
-    if (!state.lim.itemResults[item.id]) {
-      state.lim.itemResults[item.id] = { type: 'tick', photo: `photo-${item.id}.jpg` };
-    }
-    state.lim.checked[item.id] = true;   // legacy mirror
+  // All items rendered as checked (post-escalation re-entry)
+  LIM_INSPECTION_CHECKLIST.forEach(g => g.items.forEach(it => { state.lim.checked[it.id] = true; }));
+  // W15 — also mirror Instrument tick results so post-action re-entry shows ✓ Done
+  state.lim.instrumentResults = state.lim.instrumentResults || {};
+  LIM_INSPECTION_CHECKLIST.find(g => g.group === 'Instrument').items.forEach(it => {
+    if (!state.lim.instrumentResults[it.id]) state.lim.instrumentResults[it.id] = 'tick';
   });
-  state.lim.checklistRevealedTo = LIM_INSPECTION_CHECKLIST.length;
+  paintLimChecklist();
+  // W8 C.5 — re-entry path also shows truncated groups.
+  truncateInspectionGroupsToCompleted();
+}
+
+// W15 — Instrument tick/cross handlers (per-item · separate from generic ic-item click wiring).
+function wireInstrumentActions() {
+  document.querySelectorAll('.ic-instr-tick').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', e => { e.stopPropagation(); onInstrumentTick(btn.dataset.item); });
+  });
+  document.querySelectorAll('.ic-instr-cross').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', e => { e.stopPropagation(); onInstrumentCross(btn.dataset.item); });
+  });
+  document.querySelectorAll('.ic-cross-reason-submit').forEach(btn => {
+    if (btn.dataset.wired === '1') return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', e => { e.stopPropagation(); onCrossReasonSubmit(btn.dataset.item); });
+  });
+  // Stop generic ic-item click handler on instrument rows (tick/cross owns toggle)
+  document.querySelectorAll('.ic-item-instrument').forEach(row => {
+    if (row.dataset.wiredInstr === '1') return;
+    row.dataset.wiredInstr = '1';
+    row.addEventListener('click', e => e.stopPropagation());
+  });
+}
+
+function onInstrumentTick(itemId) {
+  if (state.lim.checked[itemId]) return;
+  state.lim.instrumentResults = state.lim.instrumentResults || {};
+  state.lim.instrumentResults[itemId] = 'tick';
+  state.lim.checked[itemId] = true;
+  logChecklistItem(itemId);
+  paintLimChecklist();
+  updateChecklistProgress();
+}
+
+function onInstrumentCross(itemId) {
+  if (state.lim.checked[itemId]) return;
+  state.lim.instrumentResults = state.lim.instrumentResults || {};
+  state.lim.instrumentResults[itemId] = 'cross';
+  state.lim.checked[itemId] = true;
+  logChecklistItem(itemId);
+  paintLimChecklist();
+  updateChecklistProgress();
+}
+
+function onCrossReasonSubmit(itemId) {
+  const input = document.querySelector(`.ic-cross-reason-input[data-item="${itemId}"]`);
+  if (!input) return;
+  const reason = input.value.trim();
+  if (!reason) return;
+  state.lim.instrumentReasons = state.lim.instrumentReasons || {};
+  state.lim.instrumentReasons[itemId] = reason;
   paintLimChecklist();
 }
 
@@ -2190,16 +2154,18 @@ function paintLimChecklistComplete() {
 // FAB reveals after item 2 done. Popup w/ 4 options. Primary option ("Review with on-call Senior Engineer")
 // calls existing onVerdictReject() → chains into W12 SOP suggest dialogue → call flow.
 // ─────────────────────────────────────────────
+// W15 — 4 options · no sub-descriptions · primary "Senior Technical Expert" routes to existing onVerdictReject() chain.
 const ASSISTANT_OPTIONS = [
-  { id: 'ask-rene',      label: 'Ask Rene',                              sub: 'Peer engineer · Block 1 mechanical maintenance' },
-  { id: 'ask-lina',      label: 'Ask Lina',                              sub: 'Sulzer vendor field rep · BFP specialist' },
-  { id: 'check-maximo',  label: 'Check Maximo work-order history',       sub: 'Search prior BFP-3A WOs · last 90 days' },
-  { id: 'review-senior', label: 'Review with on-call Senior Engineer',   sub: 'Escalation playbook · SOP-BFP-VIBR-001', isPrimary: true },
+  { id: 'wo-history',       label: 'Check work-order history' },
+  { id: 'alt-diagnoses',    label: 'Potential alternative diagnoses' },
+  { id: 'troubleshoot-faq', label: 'Further troubleshooting FAQ' },
+  { id: 'senior-expert',    label: 'Connect to Senior Technical Expert', isPrimary: true },
 ];
 
 function spawnAssistantFloatingButton() {
   if (document.querySelector('.lim-assistant-fab')) return;
-  const host = document.getElementById('incident-detail-view') || document.body;
+  // W15 — Anchor INSIDE tablet bezel (was body via position:fixed). Tablet is already position:relative.
+  const host = document.getElementById('tablet') || document.getElementById('incident-detail-view') || document.body;
   const fab = document.createElement('button');
   fab.className = 'lim-assistant-fab';
   fab.type = 'button';
@@ -2222,10 +2188,13 @@ function openAssistantPopup() {
       <div class="lap-body">
         ${ASSISTANT_OPTIONS.map(o => `
           <button class="lap-option ${o.isPrimary ? 'lap-option-primary' : ''}" type="button" data-option="${o.id}">
-            <div class="lap-opt-label">${o.label}</div>
-            <div class="lap-opt-sub">${o.sub}</div>
+            <span class="lap-opt-label">${o.label}</span>
           </button>
         `).join('')}
+        <div class="lap-query-block">
+          <input type="text" class="lap-query-input" placeholder="Type your question..." />
+          <button class="lap-mic-btn" type="button" aria-label="Voice query">🎤</button>
+        </div>
       </div>
     </div>`;
   document.body.appendChild(popup);
@@ -2240,6 +2209,20 @@ function wireAssistantPopup() {
   document.querySelectorAll('.lim-assistant-popup .lap-option').forEach(btn => {
     btn.addEventListener('click', () => onAssistantOptionClick(btn.dataset.option));
   });
+  // W15 — mic icon: 2s "recording" → populate canned query in input box.
+  const micBtn = document.querySelector('.lim-assistant-popup .lap-mic-btn');
+  if (micBtn) {
+    micBtn.addEventListener('click', () => {
+      micBtn.disabled = true;
+      micBtn.textContent = '🎤 Recording…';
+      setTimeout(() => {
+        micBtn.disabled = false;
+        micBtn.textContent = '🎤';
+        const input = document.querySelector('.lim-assistant-popup .lap-query-input');
+        if (input) input.value = 'What is the failure mode for casing crack on NDE?';
+      }, 2000);
+    });
+  }
 }
 
 function closeAssistantPopup() {
@@ -2249,10 +2232,8 @@ function closeAssistantPopup() {
 
 function onAssistantOptionClick(optionId) {
   closeAssistantPopup();
-  if (optionId === 'review-senior') {
-    // FAB removes — call flow takes over the CTAs slot
-    const fab = document.querySelector('.lim-assistant-fab');
-    if (fab) fab.remove();
+  if (optionId === 'senior-expert') {
+    // W15 — FAB stays visible (always-present per Section D); call flow occupies CTAs slot.
     onVerdictReject();
     return;
   }
@@ -2294,6 +2275,8 @@ function truncateInspectionGroupsToCompleted() {
 
 function wireInspectionChecklist() {
   document.querySelectorAll('.ic-item').forEach(item => {
+    // W15 — Instrument rows handled by wireInstrumentActions (tick/cross buttons); skip generic wiring.
+    if (item.classList.contains('ic-item-instrument')) return;
     if (item.dataset.wired === '1') return;
     item.dataset.wired = '1';
     item.addEventListener('click', () => {
@@ -2357,6 +2340,7 @@ function triggerGroupTheater(targetGroupName, opts = {}) {
       if (replacement && target.parentNode) {
         target.parentNode.replaceChild(replacement, target);
         wireInspectionChecklist();
+        wireInstrumentActions();   // W15 — newly-spawned Instrument items need tick/cross wiring
       }
     }
   }, 3000);
@@ -2826,9 +2810,20 @@ function wireReviseDiagnosisTile() {
   btn.addEventListener('click', onConfirmRevisedDiagnosisClick);
 }
 
+// W15 — Severity bump (AMBER → CRITICAL) post crack-confirm. Persona-agnostic.
+function bumpSeverityToCritical() {
+  if (INCIDENT.severity === 'CRITICAL') return;
+  INCIDENT.severity = 'CRITICAL';
+  document.querySelectorAll('.sev-pill').forEach(el => {
+    el.dataset.severity = 'CRITICAL';
+    el.innerHTML = '▲ Severity: CRITICAL';
+  });
+}
+
 function onConfirmRevisedDiagnosisClick() {
   if (state.lim.confirmRevisedClicked) return;
   state.lim.confirmRevisedClicked = true;
+  bumpSeverityToCritical();   // W15 — flip severity to CRITICAL red on crack-confirm
   const btn = document.querySelector('.rdt-confirm-btn');
   if (btn) {
     btn.disabled = true;
@@ -2976,7 +2971,7 @@ function renderOffsiteIncidentDetail(root) {
         <div class="inc-id">${INCIDENT.id} · routed from Lim Wei Jie</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
-      <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
+      <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
@@ -3179,7 +3174,7 @@ function renderOpsEscalationReport(root) {
         <div class="inc-id">${INCIDENT.id} · returned from Dr. A. Ismail</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
-      <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
+      <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
@@ -3377,7 +3372,7 @@ function renderAnalystIncidentDetail(root) {
         <div class="inc-id">${INCIDENT.id} · routed from Faye Sit</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
-      <span class="sev-pill">▲ Severity: ${INCIDENT.severity}</span>
+      <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
@@ -4758,9 +4753,9 @@ const P1_WORKFLOWS = {
       tagline: 'Sensor anomaly · severity scoring · KG path-trace',
       durationMs: 24000,   // W14 R1 — 4x slower (was 6000)
       buckets: [
-        { name: 'Reasoning',        agents: ['Sensor Anomaly Inspector', 'Turbine Diagnostic Agent'],       persistent: ['inspection', 'triage'] },
+        { name: 'Domain Experts',   agents: ['Sensor Anomaly Inspector', 'Turbine Diagnostic Agent', 'Criticality Scoring Agent', 'Incident Summary Synthesizer'], persistent: ['inspection', 'triage', null, null] },
         { name: 'Critic',           agents: ['Critic · Power Gen', 'Criticality Standards Critic'],         persistent: ['critic-power-gen', null] },
-        { name: 'Vertical-aligned', agents: ['Criticality Scoring Agent', 'Incident Summary Synthesizer'],  persistent: [null, null] },
+        { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
       outputCaption: 'Triage Agent · 78% confidence · KG path traced',
     },
@@ -4770,9 +4765,9 @@ const P1_WORKFLOWS = {
       tagline: 'SOP retrieval · adherence check · telemetry pre-fetch',
       durationMs: 28000,   // W14 R1 — 4x slower (was 7000)
       buckets: [
-        { name: 'Reasoning',        agents: ['SOP Retrieval Agent', 'Sensor Anomaly Inspector'],            persistent: [null, 'inspection'] },
+        { name: 'Domain Experts',   agents: ['SOP Retrieval Agent', 'Sensor Anomaly Inspector', 'Telemetry Snapshot Compiler', 'SOP Compliance Agent'], persistent: [null, 'inspection', null, 'sop-action'] },
         { name: 'Critic',           agents: ['SOP Adherence Critic'],                                       persistent: [null] },
-        { name: 'Vertical-aligned', agents: ['Telemetry Snapshot Compiler', 'SOP Compliance Agent'],        persistent: [null, 'sop-action'] },
+        { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
       outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Review',
       hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (LHS Step 1 Review)',
@@ -4783,9 +4778,9 @@ const P1_WORKFLOWS = {
       tagline: 'Roster · expertise match · dispatch payload',
       durationMs: 20000,   // W14 R1 — 4x slower (was 5000)
       buckets: [
-        { name: 'Reasoning',        agents: ['Roster Lookup Agent', 'Expertise Match Agent'],               persistent: [null, null] },
+        { name: 'Domain Experts',   agents: ['Roster Lookup Agent', 'Expertise Match Agent'],               persistent: [null, null] },
         { name: 'Critic',           agents: ['Certs Validator'],                                            persistent: [null] },
-        { name: 'Vertical-aligned', agents: ['A2A Coordination Agent'],                                     persistent: ['workflow'] },
+        { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
       outputCaption: 'A2A Coordination Agent · dispatching to Lim Wei Jie · payload pre-attached',
     },
@@ -6512,23 +6507,23 @@ function initKG3D() {
         return group;
       })
       .nodeThreeObjectExtend(false)
-      // W14 R3 — slate-400 base · brighter than W12 white@0.32 (Pulkit: "NONE of the nodes
-      // are connected" — root cause was faint edges, not missing data).
+      // W15 — Solid colors (no rgba alpha) · linkOpacity owns attenuation · width bumped for projector legibility.
+      // Drops W14 R3 double-attenuation (rgba 0.75 × opacity 0.85 = 0.64 effective).
       .linkColor(link => {
         if (chainContainsLink(link)) return '#FFFFFF';
-        if (link.isPromotionEdge)    return 'rgba(0,166,81,0.85)';
-        return link.canonical ? 'rgba(148,163,184,0.75)' : 'rgba(148,163,184,0.50)';
+        if (link.isPromotionEdge)    return '#00A651';
+        return link.canonical ? '#94A3B8' : '#64748B';
       })
       .linkWidth(link => {
-        if (chainContainsLink(link)) return 3.0;
-        if (link.isPromotionEdge)    return 2.5;
-        return link.canonical ? 1.4 : 0.9;
+        if (chainContainsLink(link)) return 3.5;
+        if (link.isPromotionEdge)    return 2.8;
+        return link.canonical ? 2.0 : 1.5;
       })
       .linkDirectionalParticles(link => link.isPromotionEdge ? 3 : 0)
       .linkDirectionalParticleSpeed(0.008)
       .linkDirectionalParticleWidth(2.5)
       .linkDirectionalParticleColor(() => '#00A651')
-      .linkOpacity(0.85)
+      .linkOpacity(0.92)
       .backgroundColor('#0A0F1C')
       .showNavInfo(false)
       .enableNodeDrag(true)
@@ -6556,8 +6551,8 @@ function initKG3D() {
     if (graph.d3Force('charge')) graph.d3Force('charge').strength(-80);
     if (graph.d3Force('link'))   graph.d3Force('link').distance(35);
 
-    // W7 — widen camera + offset lookAt to fit main KG + auditor + tacit clusters (3-tier X spread).
-    graph.cameraPosition({ x: 100, y: 0, z: 480 }, { x: 200, y: 0, z: 0 }, 0);
+    // W15 — Pull camera back z=480→650 to frame full 8-layer Y range (180 to -240 = 420 units).
+    graph.cameraPosition({ x: 100, y: 0, z: 650 }, { x: 200, y: 0, z: 0 }, 0);
 
     // W3.5: hide node labels when camera zoomed far out (reduces clutter)
     if (typeof graph.onAfterRender === 'function') {

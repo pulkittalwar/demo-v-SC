@@ -1055,6 +1055,17 @@
       align-self: flex-start;
       box-shadow: 0 1px 3px rgba(180,83,9,0.25);
     }
+    /* W15 — CRITICAL severity (red) · post crack-confirm */
+    .sev-pill[data-severity="CRITICAL"] {
+      background: #DC2626;
+      color: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(127,29,29,0.35), 0 0 0 1px rgba(255,255,255,0.12) inset;
+      animation: sev-crit-pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes sev-crit-pulse {
+      0%, 100% { box-shadow: 0 1px 3px rgba(127,29,29,0.35), 0 0 0 1px rgba(255,255,255,0.12) inset; }
+      50%      { box-shadow: 0 2px 8px rgba(220,38,38,0.55),  0 0 0 1px rgba(255,255,255,0.18) inset; }
+    }
 
     /* `<source>.live` captions — W3.6 multi-source pattern */
     .hyperspace-source {
@@ -2784,12 +2795,12 @@
       font-style: italic;
     }
 
-    /* ── W14 R2 — Floating Assistant FAB + popup ── */
+    /* ── W15 — Floating Assistant FAB + popup (INSIDE tablet bezel) ── */
     .lim-assistant-fab {
-      position: fixed;
-      bottom: 20px;
-      right: 24px;
-      z-index: 60;
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 20;
       padding: 12px 20px;
       background: linear-gradient(135deg, #6366F1, #8B5CF6);
       color: white;
@@ -2878,6 +2889,119 @@
       margin-top: 3px;
       font-style: italic;
     }
+    /* W15 — query box + mic icon (popup body footer) */
+    .lap-query-block {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-soft, #F1F5F9);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .lap-query-input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--border-soft, #F1F5F9);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11.5px;
+    }
+    .lap-query-input:focus { outline: none; border-color: var(--green-vivid); }
+    .lap-mic-btn {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border: 1px solid var(--border-soft, #F1F5F9);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 200ms;
+      padding: 0;
+      white-space: nowrap;
+    }
+    .lap-mic-btn:hover:not(:disabled) { background: var(--green-soft, #DCFCE7); }
+    .lap-mic-btn:disabled { background: #FEF3C7; cursor: wait; width: auto; padding: 0 10px; font-size: 11px; }
+    /* W15 — Instrument tick/cross UX (inspection workflow Instrument group) */
+    .ic-item-instrument {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 6px;
+    }
+    .ic-instr-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ic-instr-row .ic-text { flex: 1; }
+    .ic-instrument-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ic-instr-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border-soft, #E2E8F0);
+      background: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: background 180ms;
+    }
+    .ic-instr-tick { color: var(--green-vivid, #00A651); }
+    .ic-instr-tick:hover { background: var(--green-soft, #DCFCE7); }
+    .ic-instr-cross { color: #B45309; }
+    .ic-instr-cross:hover { background: #FEF3C7; }
+    .ic-instr-done {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--green-vivid, #00A651);
+      white-space: nowrap;
+    }
+    .ic-instr-done-skip { color: #B45309; }
+    .ic-cross-reason-block {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      padding-left: 28px;
+    }
+    .ic-cross-reason-input {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid var(--border-soft, #E2E8F0);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11.5px;
+    }
+    .ic-cross-reason-input:focus { outline: none; border-color: var(--green-vivid); }
+    .ic-cross-reason-submit {
+      padding: 6px 12px;
+      background: var(--green-vivid, #00A651);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ic-cross-reason-submit:hover { background: #009448; }
+    .ic-cross-reason-saved {
+      padding: 6px 10px;
+      background: #FEF3C7;
+      border-left: 3px solid #F59E0B;
+      border-radius: 6px;
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 28px;
+    }
+    .ic-cross-reason-text { font-style: italic; color: #78350F; }
     .lim-assistant-toast {
       position: fixed;
       bottom: 80px;
@@ -6398,6 +6522,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=w14r3"></script>
+  <script src="app.js?v=w15"></script>
 </body>
 </html>
