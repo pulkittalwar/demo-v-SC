@@ -121,7 +121,7 @@ const PERSONA_INITIALS = {
 const BANNER_COPY = {
   ops: {
     label: 'NEW INCIDENT · Hyperspace OS',
-    body:  'JRG-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 SGT',
+    body:  'RYG-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 ICT',
   },
   opsRouteBack: {
     label: 'ROUTED BACK · Hyperspace OS',
@@ -158,7 +158,7 @@ const STATE_PILL_LABEL = {
 // W5 — option labels for Mali's lock-decision footer
 const PRIYA_OPTION_LABEL = {
   'hedge':       'Forward Q3 capacity hedge',
-  'cross-site':  'Cross-site balance · Sakra-CCGT-1 standby',
+  'cross-site':  'Cross-site balance · MTP-CCGT-1 standby',
   'spot':        'Spot market purchase · USEP peak',
   'curtailment': 'PSO curtailment notice',
 };
@@ -195,7 +195,7 @@ const INITIAL_DIAGNOSIS_RATIONALE = [
     strength: 'met',     badgeLabel: 'fully met' },
   { text: '1×RPM dominance · synchronous vibration component elevated',
     strength: 'partial', badgeLabel: 'partially met' },
-  { text: 'Pattern-match · 3 prior BFP race-spalling failures across fleet (Jurong-CCGT-2 · Sakra-CCGT-1 · Banyan-CHP)',
+  { text: 'Pattern-match · 3 prior BFP race-spalling failures across fleet (Rayong-CCGT-2 · MTP-CCGT-1 · Wang Noi-CHP)',
     strength: 'met',     badgeLabel: 'fully met' },
   { text: 'Bearing temperature trend · NDE housing rising over last 4 hours',
     strength: 'partial', badgeLabel: 'partially met' },
@@ -203,12 +203,12 @@ const INITIAL_DIAGNOSIS_RATIONALE = [
     strength: 'met',     badgeLabel: 'fully met' },
 ];
 
-// ── Hardcoded incident data (Jurong-CCGT-1 BFP-3A) — W3.9 pivot ──
+// ── Hardcoded incident data (Rayong-CCGT-1 BFP-3A) — W3.9 pivot ──
 const INCIDENT = {
   id: 'INC-2026-0537',
-  asset: 'JRG-CCGT-1 · Block 2 · BFP-3A',
+  asset: 'RYG-CCGT-1 · Block 2 · BFP-3A',
   title: 'BFP-3A vibration RMS drift · NDE bearing housing',
-  timestamp: '02:47 SGT · 2026-05-20',
+  timestamp: '02:47 ICT · 2026-05-20',
   severity: 'AMBER',
   alarm: 'BFP-3A VIBRATION RMS DRIFT — NDE bearing housing exceeds ISO 10816-7 Zone C threshold (8.4 mm/s vs 7.1 mm/s alarm).',
   alarmSource: 'Bently Nevada 3500 / Honeywell Experion DCS',
@@ -320,7 +320,7 @@ const PERSONA_SCENES = {
 const PRE_EXISTING_INCIDENTS = [
   {
     id: 'INC-2026-0521',
-    asset: 'Jurong-CCGT-2 · BFP-2A',
+    asset: 'Rayong-CCGT-2 · BFP-2A',
     body: 'Bearing vibration trending within OEM band — surveillance only.',
     severity: 'GREEN',
     state: 'MONITORING',
@@ -333,7 +333,7 @@ const PRE_EXISTING_INCIDENTS = [
   },
   {
     id: 'INC-2026-0529',
-    asset: 'Sakra-CCGT-1 · ST-1',
+    asset: 'MTP-CCGT-1 · ST-1',
     body: 'LP turbine exhaust pressure rise — wash cycle scheduled per OEM PTC.',
     severity: 'AMBER',
     state: 'SCHEDULED',
@@ -341,11 +341,11 @@ const PRE_EXISTING_INCIDENTS = [
     owner: 'Nan Chai',
     ownerInitials: 'NC',
     clickable: false,
-    dynamicTagText: { label: 'task scheduled for', value: '06:30 SGT', from: 'Pim Rat' },
+    dynamicTagText: { label: 'task scheduled for', value: '06:30 ICT', from: 'Pim Rat' },
   },
   {
     id: 'INC-2026-0532',
-    asset: 'Banyan-CHP · Cooling Tower 2',
+    asset: 'Wang Noi-CHP · Cooling Tower 2',
     body: 'CT2 fill media plugging — supplementary cooling engaged.',
     severity: 'RED',
     state: 'MONITORING',
@@ -363,15 +363,15 @@ const PERSONA_OWN_TASKS = {
   onsite: [
     {
       id: 'WO-2026-1182',
-      asset: 'JRG-CCGT-1 · GT-2',
+      asset: 'RYG-CCGT-1 · GT-2',
       body: 'GT-2 borescope inspection · stage 1 compressor',
-      severity: 'INFO', state: 'SCHEDULED 09:00 SGT', stateClass: 'info',
+      severity: 'INFO', state: 'SCHEDULED 09:00 ICT', stateClass: 'info',
       age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'WO-2026-1156',
-      asset: 'JRG-CCGT-1 · BFP-2B',
+      asset: 'RYG-CCGT-1 · BFP-2B',
       body: 'BFP-2B coupling re-greasing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
@@ -379,7 +379,7 @@ const PERSONA_OWN_TASKS = {
     },
     {
       id: 'WO-2026-1173',
-      asset: 'JRG-CCGT-1 · HRSG-2',
+      asset: 'RYG-CCGT-1 · HRSG-2',
       body: 'HRSG-2 hand valve overhaul · awaiting parts',
       severity: 'INFO', state: 'BLOCKED · PARTS ETA 4D', stateClass: 'info',
       age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
@@ -389,25 +389,25 @@ const PERSONA_OWN_TASKS = {
   offsite: [
     {
       id: 'RCA-2026-0034',
-      asset: 'Sakra-CCGT-1 · GT-1',
-      body: 'Sakra-CCGT-1 GT-1 trip RCA · lead investigator',
+      asset: 'MTP-CCGT-1 · GT-1',
+      body: 'MTP-CCGT-1 GT-1 trip RCA · lead investigator',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'ER-2026-0089',
-      asset: 'Jurong-CCGT-2 · BFP',
-      body: 'Jurong-CCGT-2 BFP overhaul technical review',
+      asset: 'Rayong-CCGT-2 · BFP',
+      body: 'Rayong-CCGT-2 BFP overhaul technical review',
       severity: 'INFO', state: 'AWAITING INPUT', stateClass: 'info',
       age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'CR-2026-0156',
-      asset: 'Tuas-Power · Generator',
-      body: 'Tuas-Power generator stator advisory · stakeholder call',
-      severity: 'INFO', state: 'SCHEDULED 11:00 SGT', stateClass: 'info',
+      asset: 'Bangpakong-Power · Generator',
+      body: 'Bangpakong-Power generator stator advisory · stakeholder call',
+      severity: 'INFO', state: 'SCHEDULED 11:00 ICT', stateClass: 'info',
       age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
@@ -415,15 +415,15 @@ const PERSONA_OWN_TASKS = {
   analyst: [
     {
       id: 'TRD-2026-0218',
-      asset: 'Sakra-CCGT-1 · Block 1',
-      body: 'Cross-site balancing · Sakra-CCGT-1 standby evaluation · capacity reserve sizing',
+      asset: 'MTP-CCGT-1 · Block 1',
+      body: 'Cross-site balancing · MTP-CCGT-1 standby evaluation · capacity reserve sizing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'TRD-2026-0224',
-      asset: 'Jurong-CCGT-1 · Forward Curve',
+      asset: 'Rayong-CCGT-1 · Forward Curve',
       body: 'USEP forward curve review · Q3 capacity hedge eligibility',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
@@ -859,7 +859,7 @@ function playSOPAnticipationTheater() {
     </div>`;
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Compliance Agent · confirming SOP-BFP-VIBR-001 specific steps · checking pre-conditions',
       dataSource: 'Hyperspace OS',
@@ -1023,7 +1023,7 @@ function paintActionStepsComplete(actionSlot) {
           <span class="as-step-msg">Tan Suk selected</span>
         </div>
       </div>
-      <div class="dispatch-confirmed">✓ Dispatched at ${currentSGTTime()} · ${DISPATCH_LABEL[state.activePersona] || 'next persona'} notified</div>
+      <div class="dispatch-confirmed">✓ Dispatched at ${currentICTTime()} · ${DISPATCH_LABEL[state.activePersona] || 'next persona'} notified</div>
     </div>`;
   wireTelemetryModal();
 }
@@ -1068,7 +1068,7 @@ function unlockActionStep2() {
       <div class="as-engineer-card" data-engineer="lim-wei-jie">
         <div class="as-eng-status-pill">AVAILABLE</div>
         <div class="as-eng-name">Tan Suk</div>
-        <div class="as-eng-meta">Block 2 mechanical maintenance · on-duty · 02:47 SGT</div>
+        <div class="as-eng-meta">Block 2 mechanical maintenance · on-duty · 02:47 ICT</div>
         <div class="as-eng-hint">Click to select</div>
       </div>`;
     wireEngineerCardClick();
@@ -1173,7 +1173,7 @@ function buildOpsImpactCard() {
     <div class="ops-impact-text">
       <ul style="margin: 0 0 0 18px; padding: 0;">
         <li>MW dispatch reliability at risk — <span class="dyn-entity dyn-entity-asset">Block 2</span> derate <span class="dyn-entity dyn-entity-metric">circa 50 MW</span> if unmitigated</li>
-        <li>PSO commitment window 09:00–18:00 SGT · 4h peak tariff exposure per <a class="dyn-entity dyn-entity-ref" href="#" data-doc-ref="ieee-1159">IEEE 1159 § 4.2</a></li>
+        <li>PSO commitment window 09:00–18:00 ICT · 4h peak tariff exposure per <a class="dyn-entity dyn-entity-ref" href="#" data-doc-ref="ieee-1159">IEEE 1159 § 4.2</a></li>
         <li>Revenue at risk: ~<span class="dyn-entity dyn-entity-metric">${revenueRisk}</span> (50 MW × 4h × ${tariff}) <em style="color: var(--text-muted); font-style: italic;">[illustrative]</em></li>
       </ul>
       <div style="margin-top: 8px;">Hedge: forward Q3 capacity contract eligible (P&amp;L Validator confirms)</div>
@@ -1254,7 +1254,7 @@ function buildRecommendationBlock() {
         </div>
         <div class="reasoning-step">
           <span class="rs-num">3</span>
-          <span class="rs-body"><span class="rs-agent">Turbine Diagnostic Agent</span> pattern-matched against 3 prior RCAs across the fleet (Jurong-CCGT-2 &middot; 2025-08, Sakra-CCGT-1 &middot; 2025-11, Jurong-CCGT-1 &middot; 2024-09 &mdash; all compressor fouling, all humidity-correlated).</span>
+          <span class="rs-body"><span class="rs-agent">Turbine Diagnostic Agent</span> pattern-matched against 3 prior RCAs across the fleet (Rayong-CCGT-2 &middot; 2025-08, MTP-CCGT-1 &middot; 2025-11, Rayong-CCGT-1 &middot; 2024-09 &mdash; all compressor fouling, all humidity-correlated).</span>
         </div>
         <div class="reasoning-step">
           <span class="rs-num">4</span>
@@ -1313,7 +1313,7 @@ function buildRecommendationBlock() {
     next.appendChild(sub);
   } else {
     const confirm = el('div', 'dispatch-confirmed');
-    confirm.innerHTML = `✓ Dispatched at ${currentSGTTime()} · ${nextName} notified`;
+    confirm.innerHTML = `✓ Dispatched at ${currentICTTime()} · ${nextName} notified`;
     next.appendChild(confirm);
   }
 
@@ -1424,7 +1424,7 @@ function fireRevealBlock2Agents() {
   const agentId = 'pl';
   setAgentActive(agentId, 'Revenue Commitment Exposure', 3);
   const lines = [
-    { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 SGT',         dataSource: 'Hyperspace OS', nodeChain: ['esc-pso','pred-mw-derate'] },
+    { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 ICT',         dataSource: 'Hyperspace OS', nodeChain: ['esc-pso','pred-mw-derate'] },
     { ts: '02:47:17', source: 'pl', text: 'revenue at risk · 50MW × 4h × SGD 120/MWh peak tariff', dataSource: 'NetZeroOS',     nodeChain: ['pred-mw-derate'] },
     { ts: '02:47:18', source: 'pl', text: 'exposure ~SGD 2.4M · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
   ];
@@ -1444,7 +1444,7 @@ function fireRevealBlock3Agents() {
   activateAgentParallel('critic-power-gen', 1);
 
   const lines = [
-    { ts: '02:47:19', source: 'triage',           text: 'pattern-match · 3 prior RCAs · compressor fouling humidity-correlated', dataSource: 'Hyperspace KG', nodeChain: ['rca-2025-014-sakra','rca-2024-093-jurong','rca-2025-031-jurong2','pat-comp-fouling'] },
+    { ts: '02:47:19', source: 'triage',           text: 'pattern-match · 3 prior RCAs · compressor fouling humidity-correlated', dataSource: 'Hyperspace KG', nodeChain: ['rca-2025-014-map-ta-phut','rca-2024-093-rayong','rca-2025-031-rayong2','pat-comp-fouling'] },
     { ts: '02:47:20', source: 'triage',           text: 'diagnosis hypothesis · 78% confidence',                                  dataSource: 'Hyperspace OS', nodeChain: ['pat-comp-fouling'] },
     { ts: '02:47:21', source: 'playbook',         text: 'OEM procedure · GE 9HA compressor offline wash · est 6h',                dataSource: 'Maximo',         nodeChain: ['oem-ge-9ha-manual','rec-oem-playbook'] },
     { ts: '02:47:22', source: 'critic-power-gen', text: 'KG path validated · humidity-fouling matches GE 9HA degradation curve ✓', dataSource: 'Hyperspace KG', nodeChain: ['pat-comp-fouling','mdl-humidity-v3','oem-ge-9ha-manual'] },
@@ -1516,7 +1516,7 @@ function onInitialDiagnosisConfirmClick() {
 
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'orchestrator',
       text: 'Initial diagnosis confirmed by Nan Chai · workflow handoff to SOP-relevant next-best actions',
       dataSource: 'Hyperspace OS',
@@ -1660,7 +1660,7 @@ function appendDispatchCaptureFooter() {
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
   const nextName = DISPATCH_LABEL[state.activePersona] || 'next persona';
-  lbl.innerHTML = `Dispatched to <span class="dyn-name">${nextName}</span> · 02:47 SGT`;
+  lbl.innerHTML = `Dispatched to <span class="dyn-name">${nextName}</span> · 02:47 ICT`;
   container.appendChild(lbl);
 }
 
@@ -1851,7 +1851,7 @@ function buildLimNotesSection() {
     <div class="notes-section notes-section-display">
       <div class="notes-header notes-header-display">
         <span class="notes-title">Note from <span class="dyn-name">Nan Chai</span></span>
-        <span class="notes-incoming-chip">incoming · 02:48 SGT</span>
+        <span class="notes-incoming-chip">incoming · 02:48 ICT</span>
       </div>
       <div class="notes-body-display">${LIM_INCOMING_NOTE}</div>
     </div>`;
@@ -1968,7 +1968,7 @@ function paintLimSummaryComplete(revised) {
 
 function buildRevisedDiagnosisTileHTML() {
   const hyp = INCIDENT.hypothesis;
-  const ts = state.lim.revisionTimestamp || '02:55 SGT';
+  const ts = state.lim.revisionTimestamp || '02:55 ICT';
   return `
     <div class="sr-hypothesis sr-hypothesis-revised">
       <div class="sr-hyp-row sr-hyp-original">
@@ -2316,7 +2316,7 @@ function triggerGroupTheater(targetGroupName, opts = {}) {
 
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: meta.source,
       text: `${meta.displayName} · ${meta.loadingText}`,
       dataSource: 'Hyperspace OS',
@@ -2349,7 +2349,7 @@ function triggerGroupTheater(targetGroupName, opts = {}) {
 function logChecklistItem(itemId) {
   if (!window.LOG) return;
   window.LOG.appendLine({
-    ts: currentSGTLog(),
+    ts: currentICTLog(),
     source: 'workflow',
     text: `Inspection check · ${itemId} · confirmed by Tan Suk`,
     dataSource: 'Hyperspace OS',
@@ -2357,11 +2357,11 @@ function logChecklistItem(itemId) {
   });
 }
 
-let _SGT_LOG_SEC = 30;
-function currentSGTLog() {
-  _SGT_LOG_SEC += 3;
-  const m = 51 + Math.floor(_SGT_LOG_SEC / 60);
-  const s = _SGT_LOG_SEC % 60;
+let _ICT_LOG_SEC = 30;
+function currentICTLog() {
+  _ICT_LOG_SEC += 3;
+  const m = 51 + Math.floor(_ICT_LOG_SEC / 60);
+  const s = _ICT_LOG_SEC % 60;
   return `02:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
@@ -2423,7 +2423,7 @@ function paintDiagnosisVerdict() {
   wireVerdictButtons();
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'workflow',
       text: 'Inspection workflow complete · 10/10 checks logged · Fault review gated open',
       dataSource: 'Hyperspace OS',
@@ -2495,7 +2495,7 @@ function onSOPSuggestCallClick() {
 
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Action Agent · Connecting to Dr. Anan Pong via call · routing through escalation playbook',
       dataSource: 'Hyperspace OS',
@@ -2526,8 +2526,8 @@ function onVerdictConfirm() {
   appendConfirmedCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Hyperspace OS hypothesis confirmed by Tan Suk · WO submitted', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation'] });
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Nan Chai notified', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'Hyperspace OS hypothesis confirmed by Tan Suk · WO submitted', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Nan Chai notified', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
   render();
@@ -2544,7 +2544,7 @@ function appendConfirmedCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><span class="dyn-name">Nan Chai</span> notified · returned for ops + commercial action</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `WO submitted · returned to <span class="dyn-name">Nan Chai</span> · ${currentSGTLog()}`;
+  lbl.innerHTML = `WO submitted · returned to <span class="dyn-name">Nan Chai</span> · ${currentICTLog()}`;
   container.appendChild(lbl);
 }
 
@@ -2561,7 +2561,7 @@ function spawnInCallStrip() {
   if (state.lim.callEnded) {
     strip.classList.add('call-ended');
     const label = strip.querySelector('.in-call-label');
-    if (label) label.textContent = `Call ended · transcript captured · ${state.lim.revisionTimestamp || '02:55 SGT'}`;
+    if (label) label.textContent = `Call ended · transcript captured · ${state.lim.revisionTimestamp || '02:55 ICT'}`;
     const endBtn = strip.querySelector('.in-call-end-btn');
     if (endBtn) endBtn.remove();
   }
@@ -2594,14 +2594,14 @@ function onCallEnd() {
   if (!strip) return;
   strip.classList.add('call-ended');
   const label = strip.querySelector('.in-call-label');
-  if (label) label.textContent = `Call ended · transcript captured · ${currentSGTLog()}`;
+  if (label) label.textContent = `Call ended · transcript captured · ${currentICTLog()}`;
   if (endBtn) endBtn.remove();
 
   // Stage 1: generating-transcript (3s · Audio-transcription Agent — W8 A.6)
   spawnPostCallStage('generating-transcript');
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'audio-transcription',
       text: 'Audio-transcription Agent · Capturing call audio · generating transcript',
       dataSource: 'Hyperspace OS',
@@ -2622,7 +2622,7 @@ function onCallEnd() {
 
     if (window.LOG) {
       window.LOG.appendLine({
-        ts: currentSGTLog(),
+        ts: currentICTLog(),
         source: 'audio-transcription',
         text: 'Call transcript generated · 7m 23s · 6 exchanges · auto-attached',
         dataSource: 'Hyperspace OS',
@@ -2640,7 +2640,7 @@ function onCallEnd() {
 
       if (window.LOG) {
         window.LOG.appendLine({
-          ts: currentSGTLog(),
+          ts: currentICTLog(),
           source: 'audio-transcription',
           text: 'Transcript analysis · diarized speakers · revised diagnosis extracted',
           dataSource: 'Hyperspace OS',
@@ -2715,14 +2715,14 @@ function postCallStageHTML(stage) {
 function onDiagnosisConfirmedClick() {
   if (state.lim.diagnosisRevised) return;
   state.lim.diagnosisRevised = true;
-  state.lim.revisionTimestamp = '02:55 SGT';
+  state.lim.revisionTimestamp = '02:55 ICT';
   // Replace diagnosis hypothesis tile inline
   morphDiagnosisTile();
   // W8 E.2 — spawn Revise diagnosis TILE w/ inline Confirm button (replaces W7 standalone button)
   spawnReviseDiagnosisTile();
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'workflow',
       text: `Diagnosis revised at ${state.lim.revisionTimestamp} · pump casing crack confirmed via call + targeted inspection`,
       dataSource: 'Hyperspace OS',
@@ -2739,7 +2739,7 @@ function triggerKGGrowth() {
   state.kgGrowthFired = true;
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'workflow',
       text: "Tacit knowledge captured from Dr. Anan Pong's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
       dataSource: 'Hyperspace OS',
@@ -2841,7 +2841,7 @@ function onConfirmRevisedDiagnosisClick() {
   }
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Action Agent · Reviewing SOP-BFP-VIBR-001 + cross-checking revised diagnosis · routing to Ops',
       dataSource: 'Hyperspace OS',
@@ -2864,13 +2864,13 @@ function advanceToRoutedRevisedDiagnosis() {
   ticket.handoffPending.ops = true;
   ticket.byPersona.ops.seen = false;
   ticket.byPersona.ops.opened = false;
-  state.lim.revisionTimestamp = state.lim.revisionTimestamp || '02:55 SGT';
+  state.lim.revisionTimestamp = state.lim.revisionTimestamp || '02:55 ICT';
 
   appendRevisedDiagnosisCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Nan Chai for ops + commercial impact', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'Hyperspace OS', nodeChain: ['pump-casing-crack-pattern'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Nan Chai for ops + commercial impact', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'Hyperspace OS', nodeChain: ['pump-casing-crack-pattern'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
   render();
@@ -2887,7 +2887,7 @@ function appendRevisedDiagnosisCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · revised diagnosis + transcript enriched · routing recorded</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${currentSGTLog()}`;
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${currentICTLog()}`;
   container.appendChild(lbl);
 }
 
@@ -2897,7 +2897,7 @@ function onEscalateForApprovalClick() {
   ticket.byPersona.onsite.actioned = true;
   setStatePill('ESCALATED_TO_OFFSITE');
   ticket.handoffPending.offsite = true;
-  state.lim.revisionTimestamp = state.lim.revisionTimestamp || '02:55 SGT';
+  state.lim.revisionTimestamp = state.lim.revisionTimestamp || '02:55 ICT';
   fireWorkflowAgentArcEscalate();
   appendEscalationCaptureFooter();
   paintLimEscalationComplete();
@@ -2921,7 +2921,7 @@ function appendEscalationCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · team · incident · revised diagnosis + transcript enriched</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. Anan Pong</span> · 02:56 SGT`;
+  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. Anan Pong</span> · 02:56 ICT`;
   container.appendChild(lbl);
 }
 
@@ -3022,9 +3022,9 @@ function startIsmailScreenDReveal() {
   fireAgentCardsParallel(['triage', 'critic-power-gen'], 5000);
   if (window.LOG) {
     window.LOG.appendLine({
-      ts: currentSGTLog(),
+      ts: currentICTLog(),
       source: 'triage',
-      text: 'Turbine Diagnostic Agent · pulling Anan\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
+      text: 'Turbine Diagnostic Agent · pulling Anan\'s 2023 Rayong-2 BFP casing field-experience pattern + prior RCA traversal',
       dataSource: 'Hyperspace OS',
       nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
     });
@@ -3039,7 +3039,7 @@ function startIsmailScreenDReveal() {
 function paintIsmailSummaryComplete() {
   const slot = document.getElementById('ismail-summary-slot');
   if (!slot) return;
-  const ts = state.lim.revisionTimestamp || '02:55 SGT';
+  const ts = state.lim.revisionTimestamp || '02:55 ICT';
   slot.innerHTML = `
     <div class="summary-report ismail-summary">
       <div class="sr-heading">Predicted diagnosis</div>
@@ -3106,7 +3106,7 @@ function onIsmailApproveClick() {
   ticket.byPersona.ops.seen = false;
   ticket.byPersona.ops.opened = false;
   state.ismail.approvalGiven = true;
-  state.ismail.approvalTimestamp = '02:58 SGT';
+  state.ismail.approvalTimestamp = '02:58 ICT';
   fireWorkflowAgentArcApprove();
   appendIsmailApprovalCaptureFooter();
   paintIsmailCTAApproved();
@@ -3124,7 +3124,7 @@ function appendIsmailApprovalCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · sign-off attached to incident · routed back to Site Operations Manager</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${state.ismail.approvalTimestamp || '02:58 SGT'}`;
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${state.ismail.approvalTimestamp || '02:58 ICT'}`;
   container.appendChild(lbl);
 }
 
@@ -3253,7 +3253,7 @@ function spawnEscalationReportContent() {
         </div>
         <div class="oer-impact">
           <div class="oer-imp-label">Impact</div>
-          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 SGT · 4h peak tariff exposure · ~SGD 2.4M revenue at risk · curtailment / hedge eligible</div>
+          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 ICT · 4h peak tariff exposure · ~SGD 2.4M revenue at risk · curtailment / hedge eligible</div>
         </div>
       </div>
     </div>
@@ -3324,7 +3324,7 @@ function appendNotifyTradingDeskCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · commercial-impact context attached · routed to Trader</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed to <span class="dyn-name">Mali Sri</span> · 02:59 SGT`;
+  lbl.innerHTML = `Routed to <span class="dyn-name">Mali Sri</span> · 02:59 ICT`;
   container.appendChild(lbl);
 }
 
@@ -3432,7 +3432,7 @@ function spawnAnalystScreenContent() {
           <div class="ac-ctx-label">EXPOSURE</div>
           <div class="ac-ctx-content">
             <div class="ac-ctx-primary">50 MW derate · SGD 2.4M revenue at risk</div>
-            <div class="ac-ctx-secondary">4× 30-min settlement periods · HH18 (09:00 SGT) → HH21 (10:30 SGT) · PSO commitment window</div>
+            <div class="ac-ctx-secondary">4× 30-min settlement periods · HH18 (09:00 ICT) → HH21 (10:30 ICT) · PSO commitment window</div>
           </div>
         </div>
         <button class="ac-transcript-link" type="button">View source transcript</button>
@@ -3464,8 +3464,8 @@ function spawnAnalystScreenContent() {
             <div class="ac-opt-header">
               <span class="ac-opt-bullet">○</span>
               <div class="ac-opt-body">
-                <span class="ac-opt-title">Cross-site balance · Sakra-CCGT-1 standby</span>
-                <span class="ac-opt-detail">Dispatch Sakra standby capacity · cover BFP-3A derate</span>
+                <span class="ac-opt-title">Cross-site balance · MTP-CCGT-1 standby</span>
+                <span class="ac-opt-detail">Dispatch Map Ta Phut standby capacity · cover BFP-3A derate</span>
               </div>
             </div>
             <div class="ac-opt-viz">
@@ -3592,7 +3592,7 @@ function onLockDecisionClick() {
   setStatePill('HEDGED');
   ticket.handoffPending.analyst = false;
   state.priya.decisionLocked = true;
-  state.priya.decisionTimestamp = '03:01 SGT';
+  state.priya.decisionTimestamp = '03:01 ICT';
   state.priya.demoEndBannerShown = true;
   fireWorkflowAgentArcLock();
   appendLockDecisionCaptureFooter();
@@ -3631,7 +3631,7 @@ function appendLockDecisionCaptureFooter() {
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
   const optionLabel = state.priya.selectedOption ? PRIYA_OPTION_LABEL[state.priya.selectedOption] : '—';
-  lbl.innerHTML = `Decision locked · <span class="dyn-name">${optionLabel}</span> · ${state.priya.decisionTimestamp || '03:01 SGT'}`;
+  lbl.innerHTML = `Decision locked · <span class="dyn-name">${optionLabel}</span> · ${state.priya.decisionTimestamp || '03:01 ICT'}`;
   container.appendChild(lbl);
 }
 
@@ -3691,9 +3691,9 @@ function initTranscriptModal() {
 }
 
 // ── Monitoring dashboard (Screens A / B / C) — W2.6 ──
-function currentSGTTime() {
-  // Hardcoded for demo — 02:47 SGT matches INC-2026-0537 timestamp
-  return '02:47 SGT';
+function currentICTTime() {
+  // Hardcoded for demo — 02:47 ICT matches INC-2026-0537 timestamp
+  return '02:47 ICT';
 }
 
 function buildLandedIncidentRow() {
@@ -3702,27 +3702,27 @@ function buildLandedIncidentRow() {
     case 'DISPATCHED_TO_ONSITE':
       stateText = STATE_PILL_LABEL.DISPATCHED_TO_ONSITE;
       stateClass = 'dispatched';
-      dynamicTagText = { label: 'dispatched to Tan Suk ·', value: '02:47 SGT', from: null };
+      dynamicTagText = { label: 'dispatched to Tan Suk ·', value: '02:47 ICT', from: null };
       break;
     case 'REVISED_DIAGNOSIS_ROUTED':
       stateText = STATE_PILL_LABEL.REVISED_DIAGNOSIS_ROUTED;
       stateClass = 'revised-diagnosis-routed';
-      dynamicTagText = { label: 'returned by Tan Suk ·', value: '02:58 SGT', from: null };
+      dynamicTagText = { label: 'returned by Tan Suk ·', value: '02:58 ICT', from: null };
       break;
     case 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED':
       stateText = STATE_PILL_LABEL.DIAGNOSIS_CONFIRMED_WO_SUBMITTED;
       stateClass = 'revised-diagnosis-routed';
-      dynamicTagText = { label: 'WO submitted by Tan Suk ·', value: '02:58 SGT', from: null };
+      dynamicTagText = { label: 'WO submitted by Tan Suk ·', value: '02:58 ICT', from: null };
       break;
     case 'ROUTED_TO_TRADING_DESK':
       stateText = STATE_PILL_LABEL.ROUTED_TO_TRADING_DESK;
       stateClass = 'routed-to-trading-desk';
-      dynamicTagText = { label: 'routed to Mali Sri ·', value: '02:59 SGT', from: null };
+      dynamicTagText = { label: 'routed to Mali Sri ·', value: '02:59 ICT', from: null };
       break;
     case 'HEDGED':
       stateText = STATE_PILL_LABEL.HEDGED;
       stateClass = 'hedged';
-      dynamicTagText = { label: 'cycle closed ·', value: '03:01 SGT', from: null };
+      dynamicTagText = { label: 'cycle closed ·', value: '03:01 ICT', from: null };
       break;
     case 'TRIAGE_READY':
     default:
@@ -3764,7 +3764,7 @@ function renderMonitoringView(root) {
       <div class="mon-hdr-brand">Hyperspace OS</div>
     </div>
     <div class="mon-hdr-right">
-      <div class="mon-hdr-time">${currentSGTTime()}</div>
+      <div class="mon-hdr-time">${currentICTTime()}</div>
       <div class="mon-hdr-engineer">
         <span class="mon-hdr-engineer-pill" title="${persona.name}"><span class="mon-hdr-engineer-initials">${persona.initials}</span>My view</span>
         <span class="mon-hdr-engineer-all">Team view</span>
@@ -3821,7 +3821,7 @@ function renderMonitoringView(root) {
     wpab.innerHTML = `
       <span class="wpab-ic">✓</span>
       <span class="wpab-txt">
-        Approval given · returned to <span class="dyn-name">Nan Chai</span> · <span class="wpab-ts">${state.ismail.approvalTimestamp || '02:58 SGT'}</span>
+        Approval given · returned to <span class="dyn-name">Nan Chai</span> · <span class="wpab-ts">${state.ismail.approvalTimestamp || '02:58 ICT'}</span>
       </span>`;
     list.appendChild(wpab);
   }
@@ -3833,7 +3833,7 @@ function renderMonitoringView(root) {
     deb.innerHTML = `
       <span class="deb-ic">✓</span>
       <span class="deb-txt">
-        Cycle complete · <span class="dyn-name">${optionLabel}</span> locked · revenue exposure neutralized · INC-2026-0537 closed · <span class="deb-ts">${state.priya.decisionTimestamp || '03:01 SGT'}</span>
+        Cycle complete · <span class="dyn-name">${optionLabel}</span> locked · revenue exposure neutralized · INC-2026-0537 closed · <span class="deb-ts">${state.priya.decisionTimestamp || '03:01 ICT'}</span>
       </span>`;
     list.appendChild(deb);
   }
@@ -4091,12 +4091,12 @@ function paintLaptopDashboard(content) {
           <img class="td-brand-logo" src="vendor/sembcorp-logo.png" alt="Sembcorp"/>
           <div class="td-brand-text-block">
             <span class="td-brand-text">Sembcorp</span>
-            <span class="td-brand-text-sub">Energy Trading · Singapore</span>
+            <span class="td-brand-text-sub">Energy Trading · Thailand</span>
           </div>
         </div>
         <div class="td-persona">
           <span class="td-persona-name">Mali Sri</span>
-          <span class="td-persona-role">Senior Power Trader · Singapore</span>
+          <span class="td-persona-role">Senior Power Trader · Thailand</span>
         </div>
       </div>
 
@@ -4107,7 +4107,7 @@ function paintLaptopDashboard(content) {
               <circle cx="12" cy="12" r="9"/>
               <path d="M12 7v5l3 2"/>
             </svg>
-            <span>Next settlement period · HH18 · 09:00–09:30 SGT</span>
+            <span>Next settlement period · HH18 · 09:00–09:30 ICT</span>
           </div>
           <div class="td-kpi-rows">
             <div class="td-kpi-row">
@@ -4155,11 +4155,11 @@ function paintLaptopDashboard(content) {
           <div class="td-zone">
             <div class="td-zone-header">
               <span class="td-zone-num">1</span>
-              <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
+              <span class="td-zone-title">Portfolio Overview · Thailand Market</span>
             </div>
             <div class="td-portfolio">
-              <div class="td-pf-card"><div class="td-pf-label">Jurong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
-              <div class="td-pf-card"><div class="td-pf-label">Tuas Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Rayong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Bangpakong Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
@@ -4217,7 +4217,7 @@ function paintLaptopDashboard(content) {
           <div class="td-zone td-zone-margin-gauge">
             <div class="td-zone-header">
               <span class="td-zone-num">◐</span>
-              <span class="td-zone-title">Reserve Margin · Singapore</span>
+              <span class="td-zone-title">Reserve Margin · Thailand</span>
             </div>
             <div class="td-zone-margin-body">
               <svg class="td-margin-donut" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -4239,7 +4239,7 @@ function paintLaptopDashboard(content) {
 // W11 Section H — render Active Tasks list with URGENT tile gated by state.
 const PRIYA_LOCKED_OPTION_TILE = {
   hedge:        { what: 'Hedge locked · Forward Q3 capacity hedge',     why: 'Revenue exposure neutralized via Q3 forward hedge instrument.' },
-  'cross-site': { what: 'Hedge locked · Cross-site Sakra balancing',    why: 'Sakra-CCGT-1 standby capacity nominated for HH18–HH21 cover.' },
+  'cross-site': { what: 'Hedge locked · Cross-site Map Ta Phut balancing',    why: 'MTP-CCGT-1 standby capacity nominated for HH18–HH21 cover.' },
   spot:         { what: 'Hedge locked · Spot market purchase',          why: 'Spot purchase covers PSO commitment shortfall.' },
   curtailment:  { what: 'Curtailment notice locked · PSO',              why: 'PSO commitment curtailed under force-majeure clause.' },
 };
@@ -4254,8 +4254,8 @@ function updateLaptopActiveTasks() {
 
   const baselineTiles = `
     <div class="td-task-tile" data-tile="trd-0218">
-      <div class="td-task-what">Cover Sakra-CCGT-1 standby balancing position</div>
-      <div class="td-task-why">Cross-site availability window · 14:00–22:00 SGT</div>
+      <div class="td-task-what">Cover MTP-CCGT-1 standby balancing position</div>
+      <div class="td-task-why">Cross-site availability window · 14:00–22:00 ICT</div>
       <div class="td-task-meta">
         <span class="td-task-money">~SGD 0.85M spread potential</span>
         <span class="td-task-timer">⏱ 45 min</span>
@@ -4292,7 +4292,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-tile td-task-urgent" data-tile="inc">
         <div class="td-task-urgent-badge">URGENT</div>
         <div class="td-task-what">Buy USEP forward · Jul-26 · 50 MW · Q3 peak window</div>
-        <div class="td-task-why">JRG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT</div>
+        <div class="td-task-why">RYG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 ICT</div>
         <div class="td-task-meta">
           <span class="td-task-money">~SGD 2.4M at risk</span>
           <span class="td-task-timer">⏱ 28 min</span>
@@ -4337,7 +4337,7 @@ function updateLaptopDemoEndBanner() {
     const banner = el('div', 'td-demo-end-banner');
     banner.innerHTML = `
       <span>✓</span>
-      <span>Cycle complete · <strong>${optLabel}</strong> locked · revenue exposure neutralized · INC-2026-0537 closed · ${state.priya.decisionTimestamp || '03:01 SGT'}</span>`;
+      <span>Cycle complete · <strong>${optLabel}</strong> locked · revenue exposure neutralized · INC-2026-0537 closed · ${state.priya.decisionTimestamp || '03:01 ICT'}</span>`;
     const topbar = dash.querySelector('.td-topbar');
     if (topbar && topbar.nextSibling) {
       dash.insertBefore(banner, topbar.nextSibling);
@@ -5536,16 +5536,16 @@ function buildTacitSinglishCanvas(sectionDef) {
   const bubbles = [
     '"the pump tio jam already"',
     '"casing got crack lah"',
-    '"same as Jurong 2 case"',
+    '"same as Rayong 2 case"',
     '"4 o\'clock side, near the discharge"',
     '"Sulzer fail like this also can"',
   ];
   const bytes = [
-    { txt: 'Byte · casing weld pattern matches Jurong 2023',  unpromoted: false },
+    { txt: 'Byte · casing weld pattern matches Rayong 2023',  unpromoted: false },
     { txt: 'Byte · always check 4-o\'clock volute first',      unpromoted: false },
     { txt: 'Byte · Sulzer-specific failure mode',              unpromoted: false },
     { txt: 'Byte · vendor service rep visit (casual)',         unpromoted: true  },
-    { txt: 'Byte · Anan mentioned Banyan case',              unpromoted: true  },
+    { txt: 'Byte · Anan mentioned Wang Noi case',              unpromoted: true  },
   ];
   return `
     <div class="nv-tacit-singlish-canvas">
@@ -5557,7 +5557,7 @@ function buildTacitSinglishCanvas(sectionDef) {
         <div class="nv-ts-audio-meta">Call audio · Tan Suk ↔ <span class="dyn-name">Dr. Anan Pong</span> · 7m 23s</div>
       </div>
       <div class="nv-ts-detection" data-revealed="false">
-        🎤 <strong>Detected:</strong> English-Singapore (Singlish) · regional engineering vocabulary
+        🎤 <strong>Detected:</strong> English-Thai (Thai-English) · regional engineering vocabulary
         <div class="nv-ts-agent">Audio-transcription Agent · language model adapted</div>
       </div>
       <div class="nv-ts-bubbles" data-revealed="false">
@@ -5751,10 +5751,10 @@ const KG_NODES = [
   // L3 Historical State (amber) — y = -30
   { id: 'vib-rms-90d',         label: 'BFP-3A · 90d vib RMS',           layer: 'L3', x: -60, y: -30, z:   0 },
   { id: 'bearing-temp-30d',    label: 'NDE bearing · 30d temp',         layer: 'L3', x: -45, y: -30, z:  20 },
-  { id: 'rca-bfp-jrg-2025',    label: 'RCA · Jurong-2 BFP · 2025-08',   layer: 'L3', x: -15, y: -30, z:  10 },
-  { id: 'rca-bfp-skr-2024',    label: 'RCA · Sakra-1 BFP · 2024-11',    layer: 'L3', x:  15, y: -30, z:  10 },
-  { id: 'rca-bfp-banyan-2024', label: 'RCA · Banyan BFP · 2024-05',     layer: 'L3', x:  45, y: -30, z:  10 },
-  { id: 'casing-rca-jrg-2023', label: 'RCA · Jurong-2 BFP casing · 2023-08', layer: 'L3', x:  30, y: -30, z:  -10 },
+  { id: 'rca-bfp-jrg-2025',    label: 'RCA · Rayong-2 BFP · 2025-08',   layer: 'L3', x: -15, y: -30, z:  10 },
+  { id: 'rca-bfp-skr-2024',    label: 'RCA · Map Ta Phut-1 BFP · 2024-11',    layer: 'L3', x:  15, y: -30, z:  10 },
+  { id: 'rca-bfp-wang-noi-2024', label: 'RCA · Wang Noi BFP · 2024-05',     layer: 'L3', x:  45, y: -30, z:  10 },
+  { id: 'casing-rca-jrg-2023', label: 'RCA · Rayong-2 BFP casing · 2023-08', layer: 'L3', x:  30, y: -30, z:  -10 },
   { id: 'wo-log-47',           label: 'WO log · 47 prior',              layer: 'L3', x:  60, y: -30, z:   0 },
   { id: 'pi-18mo',             label: 'PI · 18mo telemetry',            layer: 'L3', x: -15, y: -30, z: -30 },
   { id: 'audit-iso50001',      label: 'Audit · ISO 50001',              layer: 'L3', x:  15, y: -30, z: -30 },
@@ -5811,7 +5811,7 @@ const KG_EDGES = [
   // L3 RCA → L4 pattern
   { source: 'rca-bfp-jrg-2025',    target: 'bearing-spalling-pattern' },
   { source: 'rca-bfp-skr-2024',    target: 'bearing-spalling-pattern' },
-  { source: 'rca-bfp-banyan-2024', target: 'bearing-spalling-pattern' },
+  { source: 'rca-bfp-wang-noi-2024', target: 'bearing-spalling-pattern' },
   { source: 'vib-rms-90d',         target: 'bearing-spalling-pattern' },
 
   // L4 patterns → models / SOP
@@ -5900,7 +5900,7 @@ const KG_THEATER_NODES = [
 
   // L4 Predictive Intelligence
   { id: 't-mdl-plant-mw',   label: 'Plant-wide MW model',              layer: 'L4', canonical: false },
-  { id: 't-mdl-demand',     label: 'Singapore demand curve',           layer: 'L4', canonical: false },
+  { id: 't-mdl-demand',     label: 'Thailand demand curve',            layer: 'L4', canonical: false },
   { id: 't-mdl-retail',     label: 'Retail price model',               layer: 'L4', canonical: false },
   { id: 't-mdl-heat-rate',  label: 'Heat rate degradation model',      layer: 'L4', canonical: false },
   { id: 't-mdl-emissions',  label: 'Emissions prediction',             layer: 'L4', canonical: false },
@@ -6010,7 +6010,7 @@ const KG_STATE = {
 // Nodes present from cold load; triggerKGGrowth flashes green halo on tacit cluster 10s post-click.
 const KG_TACIT_NODES = [
   { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern', layer: 'L4', x: 360, y: -90, z:  30, canonical: false, isNew: true, cluster: 'tacit' },
-  { id: 'ismail-field-experience-2023',     label: 'Field experience · Anan · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'ismail-field-experience-2023',     label: 'Field experience · Anan · Rayong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
   { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',     layer: 'L1', x: 400, y:  90, z: -20, canonical: false, isNew: true, cluster: 'tacit' },
 ];
 const KG_AUDITOR_NODES = [
@@ -6041,10 +6041,10 @@ const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 // 4-tier visual: main KG (-100..+100) → Auditor (180..260) → W7 Tacit (340..420) → Staging (500..600).
 const KG_STAGING_NODES = [
   // 5 tacit bytes — diamond glyph, 3 promoted green / 2 unpromoted amber
-  { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Jurong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
+  { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Rayong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-2', label: 'Byte · "always check 4-o\'clock volute first"',     layer: 'L4', x: 540, y:  30, z: -20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-3', label: 'Byte · "Sulzer-specific failure mode"',              layer: 'L4', x: 560, y:   0, z:  20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
-  { id: 'tacit-byte-4', label: 'Byte · "Anan mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  { id: 'tacit-byte-4', label: 'Byte · "Anan mentioned similar case in Wang Noi"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   { id: 'tacit-byte-5', label: 'Byte · "casual aside · vendor service rep visit"',   layer: 'L4', x: 540, y: -60, z:  30, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   // 2 staging agents — gateway + promoter (blue halo, mirroring auditor cluster)
   { id: 'knowledge-triage-agent',           label: 'Knowledge Triage Agent',           layer: 'L1', x: 580, y:  20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
@@ -6081,8 +6081,8 @@ const KG_STAGING_PROMOTED_IDS = KG_STAGING_NODES.filter(n => n.isPromoted).map(n
 // W11 Section I — relayered across L5 (Markets) / L6 (Contracts) / L7 (Cross-site Network)
 const KG_COMMERCIAL_NODES = [
   // L5 — Markets (W12 Section C: densified 3 → 8)
-  { id: 'merchant-market-sg',         label: 'Merchant market · USEP · Singapore',   layer: 'L5', x: 710, y: LAYER_Y.L5, z:  20, canonical: false, cluster: 'commercial' },
-  { id: 'supply-curve-singapore',     label: 'Supply curve · Singapore · Q3-2026',   layer: 'L5', x: 750, y: LAYER_Y.L5, z:   0, canonical: false, cluster: 'commercial' },
+  { id: 'merchant-market-sg',         label: 'Merchant market · USEP · Thailand',    layer: 'L5', x: 710, y: LAYER_Y.L5, z:  20, canonical: false, cluster: 'commercial' },
+  { id: 'supply-curve-singapore',     label: 'Supply curve · Thailand · Q3-2026',    layer: 'L5', x: 750, y: LAYER_Y.L5, z:   0, canonical: false, cluster: 'commercial' },
   { id: 'demand-forecast-q3-2026',    label: 'Demand forecast · Q3-2026',            layer: 'L5', x: 790, y: LAYER_Y.L5, z: -20, canonical: false, cluster: 'commercial' },
   { id: 'usep-30min-clearing',        label: 'USEP · 30-min clearing price',         layer: 'L5', x: 720, y: LAYER_Y.L5, z:  40, canonical: false, cluster: 'commercial' },
   { id: 'lng-spot-index-asia',        label: 'LNG spot index · Asia JKM',            layer: 'L5', x: 740, y: LAYER_Y.L5, z:  30, canonical: false, cluster: 'commercial' },
@@ -6100,14 +6100,14 @@ const KG_COMMERCIAL_NODES = [
   { id: 'ancillary-services-contract', label: 'Ancillary services · 2026',           layer: 'L6', x: 810, y: LAYER_Y.L6, z: -10, canonical: false, cluster: 'commercial' },
 
   // L7 — Cross-site Network (W12 Section C: densified 2 → 8)
-  { id: 'cross-site-sakra-availability', label: 'Cross-site · Sakra-CCGT-1 standby', layer: 'L7', x: 720, y: LAYER_Y.L7, z:  10, canonical: false, cluster: 'commercial' },
-  { id: 'cross-site-tuas-availability',  label: 'Cross-site · Tuas-Power available', layer: 'L7', x: 780, y: LAYER_Y.L7, z: -10, canonical: false, cluster: 'commercial' },
-  { id: 'banyan-chp-availability',    label: 'Banyan-CHP · availability',            layer: 'L7', x: 700, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
-  { id: 'tuas-power-spinning-reserve', label: 'Tuas-Power · spinning reserve',       layer: 'L7', x: 730, y: LAYER_Y.L7, z: -20, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-map-ta-phut-availability', label: 'Cross-site · MTP-CCGT-1 standby', layer: 'L7', x: 720, y: LAYER_Y.L7, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-bangpakong-availability',  label: 'Cross-site · Bangpakong-Power available', layer: 'L7', x: 780, y: LAYER_Y.L7, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'wang-noi-chp-availability',    label: 'Wang Noi-CHP · availability',            layer: 'L7', x: 700, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'bangpakong-power-spinning-reserve', label: 'Bangpakong-Power · spinning reserve',       layer: 'L7', x: 730, y: LAYER_Y.L7, z: -20, canonical: false, cluster: 'commercial' },
   { id: 'transmission-275kv-ehv',     label: 'Transmission · 275kV EHV',             layer: 'L7', x: 760, y: LAYER_Y.L7, z:  20, canonical: false, cluster: 'commercial' },
   { id: 'interconnector-malaysia',    label: 'Interconnector · Malaysia',            layer: 'L7', x: 790, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
   { id: 'grid-frequency-50hz',        label: 'Grid frequency · 50 Hz status',        layer: 'L7', x: 810, y: LAYER_Y.L7, z:   0, canonical: false, cluster: 'commercial' },
-  { id: 'sakra-cogen-standby',        label: 'Sakra-Cogen · standby state',          layer: 'L7', x: 750, y: LAYER_Y.L7, z: -30, canonical: false, cluster: 'commercial' },
+  { id: 'map-ta-phut-cogen-standby',        label: 'Map Ta Phut-Cogen · standby state',          layer: 'L7', x: 750, y: LAYER_Y.L7, z: -30, canonical: false, cluster: 'commercial' },
 ];
 KG_NODES.push(...KG_COMMERCIAL_NODES);
 
@@ -6118,18 +6118,18 @@ const KG_COMMERCIAL_EDGES = [
   { source: 'merchant-market-sg',           target: 'supply-curve-singapore',       canonical: false, cluster: 'commercial-internal' },
   { source: 'supply-curve-singapore',       target: 'demand-forecast-q3-2026',      canonical: false, cluster: 'commercial-internal' },
   { source: 'demand-forecast-q3-2026',      target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
-  { source: 'ppa-pso-2026',                 target: 'cross-site-sakra-availability', canonical: false, cluster: 'commercial-internal' },
-  { source: 'ppa-pso-2026',                 target: 'cross-site-tuas-availability',  canonical: false, cluster: 'commercial-internal' },
-  { source: 'cross-site-sakra-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-map-ta-phut-availability', canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-bangpakong-availability',  canonical: false, cluster: 'commercial-internal' },
+  { source: 'cross-site-map-ta-phut-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
   // W12 Section C.4 — new inter/intra-layer edges for densified L5/L6/L7
   { source: 'usep-30min-clearing',         target: 'merchant-market-sg',     canonical: false, cluster: 'commercial-internal' },
   { source: 'lng-spot-index-asia',         target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'gas-pipeline-utilization',    target: 'lng-spot-index-asia',    canonical: false, cluster: 'commercial-internal' },
   { source: 'pso-bilateral-2024-sembcorp', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'futures-sgd-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
-  { source: 'banyan-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
+  { source: 'wang-noi-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
   { source: 'interconnector-malaysia',     target: 'grid-frequency-50hz',    canonical: false, cluster: 'commercial-internal' },
-  { source: 'transmission-275kv-ehv',      target: 'sakra-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'transmission-275kv-ehv',      target: 'map-ta-phut-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
   // Cross-cluster bridge: L4 predictive → L5 markets
   { source: 'pump-casing-crack-pattern',   target: 'demand-forecast-q3-2026', canonical: false, cluster: 'main-to-commercial' },
 ];
@@ -6232,7 +6232,7 @@ const KG_W14R3_EDGES = [
   { source: 'industrial-customer-ccaa',     target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
   { source: 'vesting-contract-ema',         target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
   { source: 'ancillary-services-contract',  target: 'grid-frequency-50hz',        canonical: false, cluster: 'w14r3-commercial-fix' },
-  { source: 'tuas-power-spinning-reserve',  target: 'cross-site-tuas-availability', canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'bangpakong-power-spinning-reserve',  target: 'cross-site-bangpakong-availability', canonical: false, cluster: 'w14r3-commercial-fix' },
 ];
 KG_EDGES.push(...KG_W14R3_EDGES);
 
@@ -6958,7 +6958,7 @@ const TRIAGE_AGENT_SCRIPT = {
   taskTreeLabel: 'Bearing Hypothesis · Pattern-Match',
   steps: [
     {
-      log: { ts: '02:47:19', source: 'triage', text: 'pattern-match · 3 prior BFP bearing failures · Jurong-CCGT-2 / Sakra-CCGT-1 / Banyan-CHP', dataSource: 'Hyperspace KG', nodeChain: ['rca-bfp-jrg-2025','rca-bfp-skr-2024','rca-bfp-banyan-2024','bearing-spalling-pattern'] },
+      log: { ts: '02:47:19', source: 'triage', text: 'pattern-match · 3 prior BFP bearing failures · Rayong-CCGT-2 / MTP-CCGT-1 / Wang Noi-CHP', dataSource: 'Hyperspace KG', nodeChain: ['rca-bfp-jrg-2025','rca-bfp-skr-2024','rca-bfp-wang-noi-2024','bearing-spalling-pattern'] },
       treeLabel: 'Pattern-match prior RCAs',
       delayMs: 200,
     },
@@ -7019,7 +7019,7 @@ const WORKFLOW_AGENT_SCRIPT = {
       delayMs: 200,
     },
     {
-      log: { ts: '02:47:49', source: 'workflow', text: 'dispatch sequence recorded · P1 Ops Tower → P2 Onsite · 02:47:48 SGT', nodeChain: ['r-kumar', 'lim-wei-jie'] },
+      log: { ts: '02:47:49', source: 'workflow', text: 'dispatch sequence recorded · P1 Ops Tower → P2 Onsite · 02:47:48 ICT', nodeChain: ['r-kumar', 'lim-wei-jie'] },
       treeLabel: 'Record dispatch sequence',
       delayMs: 900,
     },
@@ -7208,7 +7208,7 @@ function seedLogLines() {
   appendLogLine({
     ts: '02:47:08',
     source: 'orchestrator',
-    text: 'received INC-2026-0537 · JRG-CCGT-1 · Block 2 · BFP-3A',
+    text: 'received INC-2026-0537 · RYG-CCGT-1 · Block 2 · BFP-3A',
     nodeChain: ['bfp-3a', 'r-kumar'],
   });
   appendLogLine({
@@ -7487,13 +7487,13 @@ const P2_KG_NODES_DEF = [
   { id: 'manual-abb',         label: 'Manual · ABB drives',         layer: 'L3', x: 1020, y: 410 },
 
   // L4 row 1 (y=510) — WOs + RCAs (7 nodes · x spacing ~157px)
-  { id: 'wo-jrg-2025',        label: 'WO · Jurong 2025',            layer: 'L4', x: 80,   y: 510 },
-  { id: 'wo-skr-2024',        label: 'WO · Sakra 2024',             layer: 'L4', x: 237,  y: 510 },
-  { id: 'wo-banyan-2024',     label: 'WO · Banyan 2024',            layer: 'L4', x: 393,  y: 510 },
-  { id: 'wo-tuas-2023',       label: 'WO · Tuas 2023',              layer: 'L4', x: 550,  y: 510 },
-  { id: 'rca-jrg-2025',       label: 'RCA · Jurong 2025',           layer: 'L4', x: 707,  y: 510 },
-  { id: 'rca-banyan-2024',    label: 'RCA · Banyan 2024',           layer: 'L4', x: 863,  y: 510 },
-  { id: 'rca-sakra-coupling', label: 'RCA · Sakra coupling 2025',   layer: 'L4', x: 1020, y: 510 },
+  { id: 'wo-jrg-2025',        label: 'WO · Rayong 2025',            layer: 'L4', x: 80,   y: 510 },
+  { id: 'wo-skr-2024',        label: 'WO · Map Ta Phut 2024',             layer: 'L4', x: 237,  y: 510 },
+  { id: 'wo-wang-noi-2024',     label: 'WO · Wang Noi 2024',            layer: 'L4', x: 393,  y: 510 },
+  { id: 'wo-bangpakong-2023',       label: 'WO · Bangpakong 2023',              layer: 'L4', x: 550,  y: 510 },
+  { id: 'rca-jrg-2025',       label: 'RCA · Rayong 2025',           layer: 'L4', x: 707,  y: 510 },
+  { id: 'rca-wang-noi-2024',    label: 'RCA · Wang Noi 2024',           layer: 'L4', x: 863,  y: 510 },
+  { id: 'rca-map-ta-phut-coupling', label: 'RCA · Map Ta Phut coupling 2025',   layer: 'L4', x: 1020, y: 510 },
 
   // L4 row 2 (y=580) — historical telemetry + logs (7 nodes)
   { id: 'vib-90d',            label: 'Vibration history · 90d',     layer: 'L4', x: 80,   y: 580 },
@@ -7565,19 +7565,19 @@ const P2_KG_EDGES_DEF = [
   ['bfp-3a', 'maint-log'], ['hrsg-3', 'maint-log'],
 
   // L4 intra (9 edges)
-  ['wo-jrg-2025', 'rca-jrg-2025'], ['wo-skr-2024', 'rca-banyan-2024'],
-  ['wo-banyan-2024', 'rca-banyan-2024'], ['wo-tuas-2023', 'rca-sakra-coupling'],
+  ['wo-jrg-2025', 'rca-jrg-2025'], ['wo-skr-2024', 'rca-wang-noi-2024'],
+  ['wo-wang-noi-2024', 'rca-wang-noi-2024'], ['wo-bangpakong-2023', 'rca-map-ta-phut-coupling'],
   ['vib-90d', 'trend-90d'], ['temp-30d', 'trend-90d'],
   ['trend-90d', 'spec-compliance'], ['maint-log', 'align-history'],
   ['brg-replace-log', 'maint-log'],
 
   // L4 → L5 (11 edges)
-  ['rca-jrg-2025', 'pattern-race'], ['rca-banyan-2024', 'pattern-crack'],
+  ['rca-jrg-2025', 'pattern-race'], ['rca-wang-noi-2024', 'pattern-crack'],
   ['vib-90d', 'pattern-race'], ['temp-30d', 'pattern-race'],
-  ['rca-sakra-coupling', 'pattern-misalign'], ['align-history', 'pattern-misalign'],
+  ['rca-map-ta-phut-coupling', 'pattern-misalign'], ['align-history', 'pattern-misalign'],
   ['brg-replace-log', 'pattern-race'],
   ['spec-compliance', 'mtbf-model'], ['maint-log', 'mtbf-model'],
-  ['trend-90d', 'pattern-imbalance'], ['wo-banyan-2024', 'pattern-cavitation'],
+  ['trend-90d', 'pattern-imbalance'], ['wo-wang-noi-2024', 'pattern-cavitation'],
 
   // L5 intra + L5 → L3 (12 edges)
   ['pattern-race', 'derate-model'], ['pattern-crack', 'derate-model'],
@@ -7590,7 +7590,7 @@ const P2_KG_EDGES_DEF = [
 
   // W18 Section D — L4 RCAs/telemetry → L4.5 tacit bytes → L5 patterns (8 edges · narrative:
   // tacit knowledge captured from past incidents now feeds predictive pattern recognition).
-  ['rca-jrg-2025', 'tacit-1'], ['rca-banyan-2024', 'tacit-2'],
+  ['rca-jrg-2025', 'tacit-1'], ['rca-wang-noi-2024', 'tacit-2'],
   ['vib-90d', 'tacit-3'], ['temp-30d', 'tacit-4'],
   ['tacit-1', 'pattern-race'], ['tacit-2', 'pattern-crack'],
   ['tacit-3', 'pattern-race'], ['tacit-5', 'pattern-crack'],
@@ -7635,11 +7635,11 @@ function renderP3KGSvg() {
 
     // L7 Contracts row 1 (y=980 · 8 nodes)
     { id: 'ppa-pso',             label: 'PPA · PSO 2026',         layer: 'L7', x: 80,   y: 980 },
-    { id: 'ppa-banyan-2025',     label: 'PPA · Banyan 2025',      layer: 'L7', x: 214,  y: 980 },
-    { id: 'ppa-tuas-2028',       label: 'PPA · Tuas 2028',        layer: 'L7', x: 348,  y: 980 },
+    { id: 'ppa-wang-noi-2025',     label: 'PPA · Wang Noi 2025',      layer: 'L7', x: 214,  y: 980 },
+    { id: 'ppa-bangpakong-2028',       label: 'PPA · Bangpakong 2028',        layer: 'L7', x: 348,  y: 980 },
     { id: 'ppa-10yr',            label: 'PPA · 10-yr',            layer: 'L7', x: 482,  y: 980 },
     { id: 'ppa-5yr',             label: 'PPA · 5-yr',             layer: 'L7', x: 616,  y: 980 },
-    { id: 'longterm-sakra',      label: 'Long-term · Sakra',      layer: 'L7', x: 750,  y: 980 },
+    { id: 'longterm-map-ta-phut',      label: 'Long-term · Map Ta Phut',      layer: 'L7', x: 750,  y: 980 },
     { id: 'vesting-baseline',    label: 'Vesting baseline',       layer: 'L7', x: 884,  y: 980 },
     { id: 'embedded-gen',        label: 'Embedded gen contract',  layer: 'L7', x: 1020, y: 980 },
 
@@ -7653,11 +7653,11 @@ function renderP3KGSvg() {
     { id: 'ancillary',           label: 'Ancillary services',     layer: 'L7', x: 1020, y: 1050 },
 
     // L8 Cross-site row 1 (y=1170 · 8 nodes)
-    { id: 'banyan',              label: 'Banyan-CHP',             layer: 'L8', x: 80,   y: 1170 },
-    { id: 'tuas-power',          label: 'Tuas-Power',             layer: 'L8', x: 214,  y: 1170 },
-    { id: 'sakra-cogen',         label: 'Sakra-Cogen',            layer: 'L8', x: 348,  y: 1170 },
+    { id: 'wang-noi',              label: 'Wang Noi-CHP',             layer: 'L8', x: 80,   y: 1170 },
+    { id: 'bangpakong-power',          label: 'Bangpakong-Power',             layer: 'L8', x: 214,  y: 1170 },
+    { id: 'map-ta-phut-cogen',         label: 'Map Ta Phut-Cogen',            layer: 'L8', x: 348,  y: 1170 },
     { id: 'senoko',              label: 'Senoko',                 layer: 'L8', x: 482,  y: 1170 },
-    { id: 'tuaspring',           label: 'Tuaspring',              layer: 'L8', x: 616,  y: 1170 },
+    { id: 'bangpakongpring',           label: 'Bangpakongpring',              layer: 'L8', x: 616,  y: 1170 },
     { id: 'ytl-power-seraya',    label: 'YTL PowerSeraya',        layer: 'L8', x: 750,  y: 1170 },
     { id: 'pulau-seraya',        label: 'Pulau Seraya',           layer: 'L8', x: 884,  y: 1170 },
     { id: 'interconnect-my',     label: 'Interconnector MY-SG',   layer: 'L8', x: 1020, y: 1170 },
@@ -7666,9 +7666,9 @@ function renderP3KGSvg() {
     { id: 'interconnect-id',     label: 'Interconnector IND-SG',  layer: 'L8', x: 80,   y: 1240 },
     { id: 'pasir-panjang-sw',    label: 'Pasir Panjang switching',layer: 'L8', x: 237,  y: 1240 },
     { id: 'bukit-panjang-fdr',   label: 'Bukit Panjang feeder',   layer: 'L8', x: 393,  y: 1240 },
-    { id: 'tuas-substation',     label: 'Tuas substation',        layer: 'L8', x: 550,  y: 1240 },
-    { id: 'jurong-substation',   label: 'Jurong substation',      layer: 'L8', x: 707,  y: 1240 },
-    { id: 'sakra-intertie',      label: 'Sakra grid intertie',    layer: 'L8', x: 863,  y: 1240 },
+    { id: 'bangpakong-substation',     label: 'Bangpakong substation',        layer: 'L8', x: 550,  y: 1240 },
+    { id: 'rayong-substation',   label: 'Rayong substation',      layer: 'L8', x: 707,  y: 1240 },
+    { id: 'map-ta-phut-intertie',      label: 'Map Ta Phut grid intertie',    layer: 'L8', x: 863,  y: 1240 },
     { id: 'grid-50hz',           label: 'Grid · 50 Hz',           layer: 'L8', x: 1020, y: 1240 },
   ];
 
@@ -7689,32 +7689,32 @@ function renderP3KGSvg() {
     ['usep', 'ppa-pso'], ['usep', 'hedges'], ['lng-spot', 'futures'],
     ['demand-q3', 'industrial-cust'],
     ['vesting-price', 'vesting-baseline'], ['usep-day-ahead', 'spot-trader-desk'],
-    ['electricity-futures', 'trader-hedge-book'], ['lng-charter', 'longterm-sakra'],
+    ['electricity-futures', 'trader-hedge-book'], ['lng-charter', 'longterm-map-ta-phut'],
     ['spinning-reserve', 'ancillary'], ['reg-ancillary', 'ancillary'],
     ['grid-rel-levy', 'embedded-gen'], ['imbalance-settle', 'hedges'],
 
     // L7 intra (10 edges · contracts internal)
     ['ppa-pso', 'hedges'], ['hedges', 'futures'], ['ppa-pso', 'ancillary'],
-    ['ppa-banyan-2025', 'ppa-pso'], ['ppa-tuas-2028', 'ppa-10yr'],
-    ['ppa-10yr', 'ppa-5yr'], ['longterm-sakra', 'ppa-10yr'],
+    ['ppa-wang-noi-2025', 'ppa-pso'], ['ppa-bangpakong-2028', 'ppa-10yr'],
+    ['ppa-10yr', 'ppa-5yr'], ['longterm-map-ta-phut', 'ppa-10yr'],
     ['trader-hedge-book', 'spot-trader-desk'], ['esco-industrial', 'industrial-cust'],
     ['vesting-baseline', 'ppa-pso'],
 
     // L7 → L8 (10 edges · contracts bound to sites)
-    ['ppa-pso', 'banyan'], ['ancillary', 'tuas-power'], ['hedges', 'sakra-cogen'],
-    ['ppa-banyan-2025', 'banyan'], ['ppa-tuas-2028', 'tuas-power'],
-    ['longterm-sakra', 'sakra-cogen'], ['ppa-10yr', 'senoko'],
-    ['ppa-5yr', 'tuaspring'], ['embedded-gen', 'ytl-power-seraya'],
+    ['ppa-pso', 'wang-noi'], ['ancillary', 'bangpakong-power'], ['hedges', 'map-ta-phut-cogen'],
+    ['ppa-wang-noi-2025', 'wang-noi'], ['ppa-bangpakong-2028', 'bangpakong-power'],
+    ['longterm-map-ta-phut', 'map-ta-phut-cogen'], ['ppa-10yr', 'senoko'],
+    ['ppa-5yr', 'bangpakongpring'], ['embedded-gen', 'ytl-power-seraya'],
     ['esco-industrial', 'pulau-seraya'],
 
     // L8 intra (8 edges · cross-site grid topology)
-    ['banyan', 'tuas-power'], ['tuas-power', 'interconnect-my'], ['sakra-cogen', 'grid-50hz'],
-    ['senoko', 'tuaspring'], ['tuas-substation', 'tuas-power'],
-    ['jurong-substation', 'banyan'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
-    ['sakra-intertie', 'interconnect-id'],
+    ['wang-noi', 'bangpakong-power'], ['bangpakong-power', 'interconnect-my'], ['map-ta-phut-cogen', 'grid-50hz'],
+    ['senoko', 'bangpakongpring'], ['bangpakong-substation', 'bangpakong-power'],
+    ['rayong-substation', 'wang-noi'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
+    ['map-ta-phut-intertie', 'interconnect-id'],
 
     // L8 → L3 (1 edge · cross-site touches plant)
-    ['banyan', 'bfp-3a'],
+    ['wang-noi', 'bfp-3a'],
   ];
 
   return buildKGSvg({
