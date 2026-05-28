@@ -242,7 +242,7 @@ const PERSONAS = [
 ];
 
 // ── Persona scene SVGs (light-theme retuned) ──
-// Stroke #475569 (slate-600) for silhouette/structure, #00529B (Sembcorp green) for active accents,
+// Stroke #475569 (slate-600) for silhouette/structure, #00529B (PTT blue) for active accents,
 // #94A3B8 (slate-400) for schematic lines.
 const PERSONA_SCENES = {
   ops: `
