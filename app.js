@@ -159,7 +159,7 @@ const STATE_PILL_LABEL = {
 const PRIYA_OPTION_LABEL = {
   'hedge':       'Forward Q3 capacity hedge',
   'cross-site':  'Cross-site balance · MTP-CCGT-1 standby',
-  'spot':        'Spot market purchase · USEP peak',
+  'spot':        'Spot market purchase · EGAT tariff peak',
   'curtailment': 'PSO curtailment notice',
 };
 
@@ -424,7 +424,7 @@ const PERSONA_OWN_TASKS = {
     {
       id: 'TRD-2026-0224',
       asset: 'Rayong-CCGT-1 · Forward Curve',
-      body: 'USEP forward curve review · Q3 capacity hedge eligibility',
+      body: 'EGAT tariff forward curve review · Q3 capacity hedge eligibility',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
       clickable: false, dynamicTagText: null,
@@ -3483,8 +3483,8 @@ function spawnAnalystScreenContent() {
             <div class="ac-opt-header">
               <span class="ac-opt-bullet">○</span>
               <div class="ac-opt-body">
-                <span class="ac-opt-title">Sell-back to spot · USEP arbitrage</span>
-                <span class="ac-opt-detail">Sell uncommitted MW into spot market · capture forecast +20% USEP spike</span>
+                <span class="ac-opt-title">Sell-back to spot · EGAT tariff arbitrage</span>
+                <span class="ac-opt-detail">Sell uncommitted MW into spot market · capture forecast +20% EGAT tariff spike</span>
               </div>
             </div>
             <div class="ac-opt-viz">
@@ -4161,8 +4161,8 @@ function paintLaptopDashboard(content) {
               <div class="td-pf-card"><div class="td-pf-label">Rayong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Bangpakong Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
-              <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
-              <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (TH)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">Battery Storage (TH)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
             </div>
           </div>
 
@@ -4180,7 +4180,7 @@ function paintLaptopDashboard(content) {
       <div class="td-zone td-zone-trend">
         <div class="td-zone-header">
           <span class="td-zone-num">3</span>
-          <span class="td-zone-title">USEP Forward Curve · Q3-2026</span>
+          <span class="td-zone-title">EGAT Tariff Forward Curve · Q3-2026</span>
         </div>
         <div class="td-zone-trend-body">
           <svg class="td-usep-trend" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
@@ -4262,7 +4262,7 @@ function updateLaptopActiveTasks() {
       </div>
     </div>
     <div class="td-task-tile" data-tile="trd-0224">
-      <div class="td-task-what">USEP forward curve · Q3 hedge eligibility review</div>
+      <div class="td-task-what">EGAT tariff forward curve · Q3 hedge eligibility review</div>
       <div class="td-task-why">Position review before settlement window close</div>
       <div class="td-task-meta">
         <span class="td-task-money">~SGD 1.2M hedge exposure</span>
@@ -4291,7 +4291,7 @@ function updateLaptopActiveTasks() {
     topTile = `
       <div class="td-task-tile td-task-urgent" data-tile="inc">
         <div class="td-task-urgent-badge">URGENT</div>
-        <div class="td-task-what">Buy USEP forward · Jul-26 · 50 MW · Q3 peak window</div>
+        <div class="td-task-what">Buy EGAT tariff forward · Jul-26 · 50 MW · Q3 peak window</div>
         <div class="td-task-why">RYG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 ICT</div>
         <div class="td-task-meta">
           <span class="td-task-money">~SGD 2.4M at risk</span>
@@ -6081,14 +6081,14 @@ const KG_STAGING_PROMOTED_IDS = KG_STAGING_NODES.filter(n => n.isPromoted).map(n
 // W11 Section I — relayered across L5 (Markets) / L6 (Contracts) / L7 (Cross-site Network)
 const KG_COMMERCIAL_NODES = [
   // L5 — Markets (W12 Section C: densified 3 → 8)
-  { id: 'merchant-market-sg',         label: 'Merchant market · USEP · Thailand',    layer: 'L5', x: 710, y: LAYER_Y.L5, z:  20, canonical: false, cluster: 'commercial' },
+  { id: 'merchant-market-sg',         label: 'Merchant market · EGAT tariff · Thailand',    layer: 'L5', x: 710, y: LAYER_Y.L5, z:  20, canonical: false, cluster: 'commercial' },
   { id: 'supply-curve-singapore',     label: 'Supply curve · Thailand · Q3-2026',    layer: 'L5', x: 750, y: LAYER_Y.L5, z:   0, canonical: false, cluster: 'commercial' },
   { id: 'demand-forecast-q3-2026',    label: 'Demand forecast · Q3-2026',            layer: 'L5', x: 790, y: LAYER_Y.L5, z: -20, canonical: false, cluster: 'commercial' },
-  { id: 'usep-30min-clearing',        label: 'USEP · 30-min clearing price',         layer: 'L5', x: 720, y: LAYER_Y.L5, z:  40, canonical: false, cluster: 'commercial' },
+  { id: 'usep-30min-clearing',        label: 'EGAT tariff · 30-min clearing price',  layer: 'L5', x: 720, y: LAYER_Y.L5, z:  40, canonical: false, cluster: 'commercial' },
   { id: 'lng-spot-index-asia',        label: 'LNG spot index · Asia JKM',            layer: 'L5', x: 740, y: LAYER_Y.L5, z:  30, canonical: false, cluster: 'commercial' },
   { id: 'carbon-credit-corsia',       label: 'Carbon credit · CORSIA',               layer: 'L5', x: 770, y: LAYER_Y.L5, z:  10, canonical: false, cluster: 'commercial' },
-  { id: 'weather-temp-forecast-sg',   label: 'Weather · temp forecast SG · 7-day',   layer: 'L5', x: 800, y: LAYER_Y.L5, z: -10, canonical: false, cluster: 'commercial' },
-  { id: 'gas-pipeline-utilization',   label: 'Gas pipeline · MY-SG utilization',     layer: 'L5', x: 760, y: LAYER_Y.L5, z: -30, canonical: false, cluster: 'commercial' },
+  { id: 'weather-temp-forecast-sg',   label: 'Weather · temp forecast TH · 7-day',   layer: 'L5', x: 800, y: LAYER_Y.L5, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'gas-pipeline-utilization',   label: 'Gas pipeline · MM-TH utilization',     layer: 'L5', x: 760, y: LAYER_Y.L5, z: -30, canonical: false, cluster: 'commercial' },
 
   // L6 — Contracts (W12 Section C: densified 2 → 7)
   { id: 'ppa-pso-2026',               label: 'PPA · PSO commitment · 2026',          layer: 'L6', x: 720, y: LAYER_Y.L6, z:  15, canonical: false, cluster: 'commercial' },
@@ -7615,14 +7615,14 @@ function renderP3KGSvg() {
 
   const extraNodes = [
     // L6 Markets row 1 (y=800 · 8 nodes · spacing ~134px)
-    { id: 'usep',                label: 'USEP · 30-min',          layer: 'L6', x: 80,   y: 800 },
-    { id: 'usep-day-ahead',      label: 'USEP · day-ahead',       layer: 'L6', x: 214,  y: 800 },
+    { id: 'usep',                label: 'EGAT tariff · 30-min',   layer: 'L6', x: 80,   y: 800 },
+    { id: 'usep-day-ahead',      label: 'EGAT tariff · day-ahead',layer: 'L6', x: 214,  y: 800 },
     { id: 'lng-spot',            label: 'LNG spot · JKM',         layer: 'L6', x: 348,  y: 800 },
     { id: 'lng-charter',         label: 'LNG charter rate',       layer: 'L6', x: 482,  y: 800 },
     { id: 'gas-spot',            label: 'Gas spot index',         layer: 'L6', x: 616,  y: 800 },
     { id: 'coal-price',          label: 'Coal price · API4',      layer: 'L6', x: 750,  y: 800 },
     { id: 'carbon',              label: 'Carbon · CORSIA',        layer: 'L6', x: 884,  y: 800 },
-    { id: 'weather',             label: 'Weather · SG 7-day',     layer: 'L6', x: 1020, y: 800 },
+    { id: 'weather',             label: 'Weather · TH 7-day',     layer: 'L6', x: 1020, y: 800 },
 
     // L6 Markets row 2 (y=870 · 7 nodes · spacing ~157px)
     { id: 'demand-q3',           label: 'Demand forecast Q3',     layer: 'L6', x: 80,   y: 870 },
@@ -7657,13 +7657,13 @@ function renderP3KGSvg() {
     { id: 'bangpakong-power',          label: 'Bangpakong-Power',             layer: 'L8', x: 214,  y: 1170 },
     { id: 'map-ta-phut-cogen',         label: 'Map Ta Phut-Cogen',            layer: 'L8', x: 348,  y: 1170 },
     { id: 'senoko',              label: 'Senoko',                 layer: 'L8', x: 482,  y: 1170 },
-    { id: 'bangpakongpring',           label: 'Bangpakongpring',              layer: 'L8', x: 616,  y: 1170 },
+    { id: 'map-ta-phut-lng',           label: 'Map Ta Phut LNG',              layer: 'L8', x: 616,  y: 1170 },
     { id: 'ytl-power-seraya',    label: 'YTL PowerSeraya',        layer: 'L8', x: 750,  y: 1170 },
     { id: 'pulau-seraya',        label: 'Pulau Seraya',           layer: 'L8', x: 884,  y: 1170 },
-    { id: 'interconnect-my',     label: 'Interconnector MY-SG',   layer: 'L8', x: 1020, y: 1170 },
+    { id: 'interconnect-my',     label: 'Interconnector MY-TH',   layer: 'L8', x: 1020, y: 1170 },
 
     // L8 Cross-site row 2 (y=1240 · 7 nodes)
-    { id: 'interconnect-id',     label: 'Interconnector IND-SG',  layer: 'L8', x: 80,   y: 1240 },
+    { id: 'interconnect-id',     label: 'Interconnector LAO-TH',  layer: 'L8', x: 80,   y: 1240 },
     { id: 'pasir-panjang-sw',    label: 'Pasir Panjang switching',layer: 'L8', x: 237,  y: 1240 },
     { id: 'bukit-panjang-fdr',   label: 'Bukit Panjang feeder',   layer: 'L8', x: 393,  y: 1240 },
     { id: 'bangpakong-substation',     label: 'Bangpakong substation',        layer: 'L8', x: 550,  y: 1240 },
@@ -7704,12 +7704,12 @@ function renderP3KGSvg() {
     ['ppa-pso', 'wang-noi'], ['ancillary', 'bangpakong-power'], ['hedges', 'map-ta-phut-cogen'],
     ['ppa-wang-noi-2025', 'wang-noi'], ['ppa-bangpakong-2028', 'bangpakong-power'],
     ['longterm-map-ta-phut', 'map-ta-phut-cogen'], ['ppa-10yr', 'senoko'],
-    ['ppa-5yr', 'bangpakongpring'], ['embedded-gen', 'ytl-power-seraya'],
+    ['ppa-5yr', 'map-ta-phut-lng'], ['embedded-gen', 'ytl-power-seraya'],
     ['esco-industrial', 'pulau-seraya'],
 
     // L8 intra (8 edges · cross-site grid topology)
     ['wang-noi', 'bangpakong-power'], ['bangpakong-power', 'interconnect-my'], ['map-ta-phut-cogen', 'grid-50hz'],
-    ['senoko', 'bangpakongpring'], ['bangpakong-substation', 'bangpakong-power'],
+    ['senoko', 'map-ta-phut-lng'], ['bangpakong-substation', 'bangpakong-power'],
     ['rayong-substation', 'wang-noi'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
     ['map-ta-phut-intertie', 'interconnect-id'],
 
