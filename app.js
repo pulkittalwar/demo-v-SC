@@ -1166,8 +1166,8 @@ function buildAssetChainCard() {
 function buildOpsImpactCard() {
   const card = el('div', 'ops-card');
   // [illustrative — confirm w/ Sembcorp before 2026-05-27]
-  const tariff = 'SGD 120/MWh peak';
-  const revenueRisk = 'SGD 2.4M';
+  const tariff = 'THB 3,250/MWh peak';
+  const revenueRisk = 'THB 65M';
   card.innerHTML = `
     <div class="ops-card-lbl">Operational + revenue impact</div>
     <div class="ops-impact-text">
@@ -1425,8 +1425,8 @@ function fireRevealBlock2Agents() {
   setAgentActive(agentId, 'Revenue Commitment Exposure', 3);
   const lines = [
     { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 ICT',         dataSource: 'Hyperspace OS', nodeChain: ['esc-pso','pred-mw-derate'] },
-    { ts: '02:47:17', source: 'pl', text: 'revenue at risk · 50MW × 4h × SGD 120/MWh peak tariff', dataSource: 'NetZeroOS',     nodeChain: ['pred-mw-derate'] },
-    { ts: '02:47:18', source: 'pl', text: 'exposure ~SGD 2.4M · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
+    { ts: '02:47:17', source: 'pl', text: 'revenue at risk · 50MW × 4h × THB 3,250/MWh peak tariff', dataSource: 'NetZeroOS',     nodeChain: ['pred-mw-derate'] },
+    { ts: '02:47:18', source: 'pl', text: 'exposure ~THB 65M · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
   ];
   lines.forEach((line, idx) => {
     pushReveal(() => {
@@ -3253,7 +3253,7 @@ function spawnEscalationReportContent() {
         </div>
         <div class="oer-impact">
           <div class="oer-imp-label">Impact</div>
-          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 ICT · 4h peak tariff exposure · ~SGD 2.4M revenue at risk · curtailment / hedge eligible</div>
+          <div class="oer-imp-body">50 MW Block 2 derate · PSO commitment window 09:00–18:00 ICT · 4h peak tariff exposure · ~THB 65M revenue at risk · curtailment / hedge eligible</div>
         </div>
       </div>
     </div>
@@ -3335,7 +3335,7 @@ function fireWorkflowAgentArcNotify() {
   const lines = [
     { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Nan Chai · trading desk notification queued · commercial impact context attached', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
     { delay: 900, line: { ts: '02:59:03', source: 'workflow', text: 'Handoff sequence recorded · P1 Ops Tower → P4 Asset Perf · trading desk action queued', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'p-sundaram'] } },
-    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~SGD 2.4M revenue exposure attached · Trader desk routing complete', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
+    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~THB 65M revenue exposure attached · Trader desk routing complete', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3431,7 +3431,7 @@ function spawnAnalystScreenContent() {
         <div class="ac-context-row ac-context-exposure">
           <div class="ac-ctx-label">EXPOSURE</div>
           <div class="ac-ctx-content">
-            <div class="ac-ctx-primary">50 MW derate · SGD 2.4M revenue at risk</div>
+            <div class="ac-ctx-primary">50 MW derate · THB 65M revenue at risk</div>
             <div class="ac-ctx-secondary">4× 30-min settlement periods · HH18 (09:00 ICT) → HH21 (10:30 ICT) · PSO commitment window</div>
           </div>
         </div>
@@ -3446,7 +3446,7 @@ function spawnAnalystScreenContent() {
               <span class="ac-opt-bullet">○</span>
               <div class="ac-opt-body">
                 <span class="ac-opt-title">Hedge forward · 4×HH PSO window</span>
-                <span class="ac-opt-detail">Lock SGD 120/MWh forward · 50 MW × 4 settlement periods</span>
+                <span class="ac-opt-detail">Lock THB 3,250/MWh forward · 50 MW × 4 settlement periods</span>
               </div>
             </div>
             <div class="ac-opt-viz">
@@ -3455,7 +3455,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 2.4M</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+THB 65M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+5.7% toward May target</div>
               </div>
             </div>
@@ -3474,7 +3474,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.98M</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+THB 53M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+4.7% toward May target</div>
               </div>
             </div>
@@ -3493,7 +3493,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.56M</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-positive">+THB 42M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-positive">+3.7% toward May target</div>
               </div>
             </div>
@@ -3512,7 +3512,7 @@ function spawnAnalystScreenContent() {
                 <path d="M 0 14 L 60 14 L 70 32 L 120 32" stroke="#DC2626" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
-                <div class="ac-opt-amt-chip ac-opt-amt-negative">-SGD 0.88M</div>
+                <div class="ac-opt-amt-chip ac-opt-amt-negative">-THB 24M</div>
                 <div class="ac-opt-delta-chip ac-opt-delta-negative">-2.1% toward May target</div>
               </div>
             </div>
@@ -4112,15 +4112,15 @@ function paintLaptopDashboard(content) {
           <div class="td-kpi-rows">
             <div class="td-kpi-row">
               <span class="td-kpi-row-label">PSO commitment</span>
-              <span class="td-kpi-row-value">50 MW @ SGD 120/MWh</span>
+              <span class="td-kpi-row-value">50 MW @ THB 3,250/MWh</span>
             </div>
             <div class="td-kpi-row">
               <span class="td-kpi-row-label">Settlement value</span>
-              <span class="td-kpi-row-value">SGD 6,000</span>
+              <span class="td-kpi-row-value">THB 162,000</span>
             </div>
             <div class="td-kpi-row">
               <span class="td-kpi-row-label">At risk if no action</span>
-              <span class="td-kpi-row-value td-kpi-amber">SGD 6,000 · 4 periods (HH18–HH21)</span>
+              <span class="td-kpi-row-value td-kpi-amber">THB 162,000 · 4 periods (HH18–HH21)</span>
             </div>
           </div>
           <div class="td-kpi-status">
@@ -4141,11 +4141,11 @@ function paintLaptopDashboard(content) {
             <div class="td-kpi-target-fill" style="width: 74%"></div>
           </div>
           <div class="td-kpi-target-stats">
-            <span class="td-kpi-target-mtd"><strong>SGD 30.1M</strong> MTD <span class="td-kpi-target-pct">(74%)</span></span>
-            <span class="td-kpi-target-goal">Target SGD 40.2M</span>
+            <span class="td-kpi-target-mtd"><strong>THB 810M</strong> MTD <span class="td-kpi-target-pct">(74%)</span></span>
+            <span class="td-kpi-target-goal">Target THB 1,085M</span>
           </div>
           <div class="td-kpi-target-delta">
-            INC-2026-0537 unlock: <strong class="td-kpi-target-delta-amt">+SGD 2.4M</strong> · <span class="td-kpi-target-delta-pct">+5.7% toward target</span>
+            INC-2026-0537 unlock: <strong class="td-kpi-target-delta-amt">+THB 65M</strong> · <span class="td-kpi-target-delta-pct">+5.7% toward target</span>
           </div>
         </div>
       </div>
@@ -4160,7 +4160,7 @@ function paintLaptopDashboard(content) {
             <div class="td-portfolio">
               <div class="td-pf-card"><div class="td-pf-label">Rayong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Bangpakong Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
-              <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">South Bangkok Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (TH)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Battery Storage (TH)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
             </div>
@@ -4257,7 +4257,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">Cover MTP-CCGT-1 standby balancing position</div>
       <div class="td-task-why">Cross-site availability window · 14:00–22:00 ICT</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 0.85M spread potential</span>
+        <span class="td-task-money">~THB 23M spread potential</span>
         <span class="td-task-timer">⏱ 45 min</span>
       </div>
     </div>
@@ -4265,7 +4265,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">EGAT tariff forward curve · Q3 hedge eligibility review</div>
       <div class="td-task-why">Position review before settlement window close</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 1.2M hedge exposure</span>
+        <span class="td-task-money">~THB 32M hedge exposure</span>
         <span class="td-task-timer">⏱ 2h</span>
       </div>
     </div>
@@ -4273,7 +4273,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-what">PSO dispatch reconciliation · variance check</div>
       <div class="td-task-why">Yesterday's actual vs scheduled · settle by EOD</div>
       <div class="td-task-meta">
-        <span class="td-task-money">~SGD 0.4M variance impact</span>
+        <span class="td-task-money">~THB 11M variance impact</span>
         <span class="td-task-timer">⏱ 4h</span>
       </div>
     </div>`;
@@ -4294,7 +4294,7 @@ function updateLaptopActiveTasks() {
         <div class="td-task-what">Buy EGAT tariff forward · Jul-26 · 50 MW · Q3 peak window</div>
         <div class="td-task-why">RYG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 ICT</div>
         <div class="td-task-meta">
-          <span class="td-task-money">~SGD 2.4M at risk</span>
+          <span class="td-task-money">~THB 65M at risk</span>
           <span class="td-task-timer">⏱ 28 min</span>
         </div>
         <button class="td-task-action" type="button">Open</button>
@@ -4579,7 +4579,7 @@ const P2_SECTION_A = {
 // W12 Section G.3 — P2 Section B: Tacit Singlish-detection theater.
 // Audio waveform · language detection pulse · 5 Singlish bubbles · 5 bytes coalesced.
 const P2_SECTION_B = {
-  num: 'B', title: 'Tacit knowledge capture · Singlish-aware transcription',
+  num: 'B', title: 'Tacit knowledge capture · Thai-English transcription',
   template: 'tacit-singlish',
 };
 
@@ -5534,11 +5534,11 @@ function playSafetyGateAnimation(sectionDef) {
 // ── W12 Section G.3 — Tacit Singlish-detection theater ───────
 function buildTacitSinglishCanvas(sectionDef) {
   const bubbles = [
-    '"the pump tio jam already"',
-    '"casing got crack lah"',
+    '"pump stuck already krap"',
+    '"casing got crack na"',
     '"same as Rayong 2 case"',
     '"4 o\'clock side, near the discharge"',
-    '"Sulzer fail like this also can"',
+    '"Sulzer fail like this also possible na"',
   ];
   const bytes = [
     { txt: 'Byte · casing weld pattern matches Rayong 2023',  unpromoted: false },
@@ -6095,7 +6095,7 @@ const KG_COMMERCIAL_NODES = [
   { id: 'hedge-instrument-catalog',   label: 'Hedge instrument catalog',             layer: 'L6', x: 780, y: LAYER_Y.L6, z: -15, canonical: false, cluster: 'commercial' },
   { id: 'pso-bilateral-2024-sembcorp', label: 'PSO bilateral · 2024-Sembcorp',       layer: 'L6', x: 700, y: LAYER_Y.L6, z:  30, canonical: false, cluster: 'commercial' },
   { id: 'industrial-customer-ccaa',   label: 'Industrial customer · CCAA-2026',      layer: 'L6', x: 740, y: LAYER_Y.L6, z:   0, canonical: false, cluster: 'commercial' },
-  { id: 'futures-sgd-monthly',        label: 'Futures · SGD-monthly · Jul-26',       layer: 'L6', x: 760, y: LAYER_Y.L6, z: -30, canonical: false, cluster: 'commercial' },
+  { id: 'futures-thb-monthly',        label: 'Futures · THB-monthly · Jul-26',       layer: 'L6', x: 760, y: LAYER_Y.L6, z: -30, canonical: false, cluster: 'commercial' },
   { id: 'vesting-contract-ema',       label: 'Vesting contract · EMA',               layer: 'L6', x: 800, y: LAYER_Y.L6, z:  10, canonical: false, cluster: 'commercial' },
   { id: 'ancillary-services-contract', label: 'Ancillary services · 2026',           layer: 'L6', x: 810, y: LAYER_Y.L6, z: -10, canonical: false, cluster: 'commercial' },
 
@@ -6126,7 +6126,7 @@ const KG_COMMERCIAL_EDGES = [
   { source: 'lng-spot-index-asia',         target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'gas-pipeline-utilization',    target: 'lng-spot-index-asia',    canonical: false, cluster: 'commercial-internal' },
   { source: 'pso-bilateral-2024-sembcorp', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
-  { source: 'futures-sgd-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
+  { source: 'futures-thb-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
   { source: 'wang-noi-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
   { source: 'interconnector-malaysia',     target: 'grid-frequency-50hz',    canonical: false, cluster: 'commercial-internal' },
   { source: 'transmission-275kv-ehv',      target: 'map-ta-phut-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
@@ -7645,7 +7645,7 @@ function renderP3KGSvg() {
 
     // L7 Contracts row 2 (y=1050 · 7 nodes)
     { id: 'hedges',              label: 'Hedge catalog',          layer: 'L7', x: 80,   y: 1050 },
-    { id: 'futures',             label: 'Futures · SGD-Jul',      layer: 'L7', x: 237,  y: 1050 },
+    { id: 'futures',             label: 'Futures · THB-Jul',      layer: 'L7', x: 237,  y: 1050 },
     { id: 'trader-hedge-book',   label: 'Trader hedge book',      layer: 'L7', x: 393,  y: 1050 },
     { id: 'spot-trader-desk',    label: 'Spot trader desk',       layer: 'L7', x: 550,  y: 1050 },
     { id: 'industrial-cust',     label: 'Industrial · CCAA',      layer: 'L7', x: 707,  y: 1050 },
@@ -7656,16 +7656,16 @@ function renderP3KGSvg() {
     { id: 'wang-noi',              label: 'Wang Noi-CHP',             layer: 'L8', x: 80,   y: 1170 },
     { id: 'bangpakong-power',          label: 'Bangpakong-Power',             layer: 'L8', x: 214,  y: 1170 },
     { id: 'map-ta-phut-cogen',         label: 'Map Ta Phut-Cogen',            layer: 'L8', x: 348,  y: 1170 },
-    { id: 'senoko',              label: 'Senoko',                 layer: 'L8', x: 482,  y: 1170 },
+    { id: 'south-bkk-power',     label: 'South Bangkok Power',    layer: 'L8', x: 482,  y: 1170 },
     { id: 'map-ta-phut-lng',           label: 'Map Ta Phut LNG',              layer: 'L8', x: 616,  y: 1170 },
-    { id: 'ytl-power-seraya',    label: 'YTL PowerSeraya',        layer: 'L8', x: 750,  y: 1170 },
-    { id: 'pulau-seraya',        label: 'Pulau Seraya',           layer: 'L8', x: 884,  y: 1170 },
+    { id: 'glow-ipp-mtp',         label: 'Glow IPP Map Ta Phut',   layer: 'L8', x: 750,  y: 1170 },
+    { id: 'north-bkk-power',      label: 'North Bangkok Power',    layer: 'L8', x: 884,  y: 1170 },
     { id: 'interconnect-my',     label: 'Interconnector MY-TH',   layer: 'L8', x: 1020, y: 1170 },
 
     // L8 Cross-site row 2 (y=1240 · 7 nodes)
     { id: 'interconnect-id',     label: 'Interconnector LAO-TH',  layer: 'L8', x: 80,   y: 1240 },
-    { id: 'pasir-panjang-sw',    label: 'Pasir Panjang switching',layer: 'L8', x: 237,  y: 1240 },
-    { id: 'bukit-panjang-fdr',   label: 'Bukit Panjang feeder',   layer: 'L8', x: 393,  y: 1240 },
+    { id: 'bangkok-noi-sw',      label: 'Bangkok-Noi switching',  layer: 'L8', x: 237,  y: 1240 },
+    { id: 'nonthaburi-fdr',      label: 'Nonthaburi feeder',      layer: 'L8', x: 393,  y: 1240 },
     { id: 'bangpakong-substation',     label: 'Bangpakong substation',        layer: 'L8', x: 550,  y: 1240 },
     { id: 'rayong-substation',   label: 'Rayong substation',      layer: 'L8', x: 707,  y: 1240 },
     { id: 'map-ta-phut-intertie',      label: 'Map Ta Phut grid intertie',    layer: 'L8', x: 863,  y: 1240 },
@@ -7703,14 +7703,14 @@ function renderP3KGSvg() {
     // L7 → L8 (10 edges · contracts bound to sites)
     ['ppa-pso', 'wang-noi'], ['ancillary', 'bangpakong-power'], ['hedges', 'map-ta-phut-cogen'],
     ['ppa-wang-noi-2025', 'wang-noi'], ['ppa-bangpakong-2028', 'bangpakong-power'],
-    ['longterm-map-ta-phut', 'map-ta-phut-cogen'], ['ppa-10yr', 'senoko'],
-    ['ppa-5yr', 'map-ta-phut-lng'], ['embedded-gen', 'ytl-power-seraya'],
-    ['esco-industrial', 'pulau-seraya'],
+    ['longterm-map-ta-phut', 'map-ta-phut-cogen'], ['ppa-10yr', 'south-bkk-power'],
+    ['ppa-5yr', 'map-ta-phut-lng'], ['embedded-gen', 'glow-ipp-mtp'],
+    ['esco-industrial', 'north-bkk-power'],
 
     // L8 intra (8 edges · cross-site grid topology)
     ['wang-noi', 'bangpakong-power'], ['bangpakong-power', 'interconnect-my'], ['map-ta-phut-cogen', 'grid-50hz'],
-    ['senoko', 'map-ta-phut-lng'], ['bangpakong-substation', 'bangpakong-power'],
-    ['rayong-substation', 'wang-noi'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
+    ['south-bkk-power', 'map-ta-phut-lng'], ['bangpakong-substation', 'bangpakong-power'],
+    ['rayong-substation', 'wang-noi'], ['bangkok-noi-sw', 'nonthaburi-fdr'],
     ['map-ta-phut-intertie', 'interconnect-id'],
 
     // L8 → L3 (1 edge · cross-site touches plant)
