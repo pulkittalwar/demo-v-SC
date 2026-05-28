@@ -50,12 +50,12 @@ const state = {
     step2: { status: 'locked', selectedEngineer: null },      // locked | finding | selecting | selected
     ctaEnabled: false,
   },
-  // ── W13 R2 — Faye Initial Diagnosis gating ──
+  // ── W13 R2 — Nan Initial Diagnosis gating ──
   faye: {
-    diagnosisConfirmed: false,    // true after Faye clicks Confirm on Initial Diagnosis
+    diagnosisConfirmed: false,    // true after Nan clicks Confirm on Initial Diagnosis
     actionStepsSpawned: false,    // true after SOP Relevant section painted
   },
-  // ── W4 — Lim curated Screen D state ──
+  // ── W4 — Tan curated Screen D state ──
   lim: {
     checked: {},                       // map of inspection-item-id → true (W14 R2 — legacy · still populated for downstream paintLimChecklistComplete)
     revealStarted: false,
@@ -78,7 +78,7 @@ const state = {
     checklistRevealedTo: 1,            // 1..LIM_INSPECTION_CHECKLIST.length · sequential reveal cursor
     assistantButtonShown: false,       // FAB visibility flag · sticky after first appearance
   },
-  // ── W4 — Ismail curated Screen D state ──
+  // ── W4 — Anan curated Screen D state ──
   ismail: {
     revealStarted: false,
     summaryRevealed: false,
@@ -87,7 +87,7 @@ const state = {
   },
   // ── W6 — KG growth animation (P2 only · 10s after diagnosis-confirmed click) ──
   kgGrowthFired: false,
-  // ── W5 — Priya / trading-desk state ──
+  // ── W5 — Mali / trading-desk state ──
   priyaUnlocked: false,
   priya: {
     escalationRevealStarted: false,
@@ -112,10 +112,10 @@ function setStatePill(v) {
 }
 
 const PERSONA_INITIALS = {
-  ops:     { initials: 'FS',  name: 'Faye Sit'        },
-  onsite:  { initials: 'LWJ', name: 'Lim Wei Jie'    },
-  offsite: { initials: 'AW',  name: 'Dr. A. Ismail'    },
-  analyst: { initials: 'PS',  name: 'Priya Sundaram' },
+  ops:     { initials: 'NC',  name: 'Nan Chai'        },
+  onsite:  { initials: 'TS', name: 'Tan Suk'    },
+  offsite: { initials: 'AP',  name: 'Dr. Anan Pong'    },
+  analyst: { initials: 'MS',  name: 'Mali Sri' },
 };
 
 const BANNER_COPY = {
@@ -125,27 +125,27 @@ const BANNER_COPY = {
   },
   opsRouteBack: {
     label: 'ROUTED BACK · Hyperspace OS',
-    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Lim Wei Jie</span> · diagnosis revised via expert call · ops + commercial action required',
+    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Tan Suk</span> · diagnosis revised via expert call · ops + commercial action required',
   },
   opsConfirmedReturn: {
     label: 'WO SUBMITTED · Hyperspace OS',
-    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Lim Wei Jie</span> · diagnosis confirmed · WO submitted · ops review required',
+    body:  'INC-2026-0537 · Returned from <span class="dyn-name">Tan Suk</span> · diagnosis confirmed · WO submitted · ops review required',
   },
   onsite: {
     label: 'INCOMING HANDOFF · Hyperspace OS',
-    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Faye Sit</span> · onsite verification requested',
+    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Nan Chai</span> · onsite verification requested',
   },
   offsite: {
     label: 'INCOMING HANDOFF · Hyperspace OS',
-    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Lim Wei Jie</span> · diagnosis revision + escalation pending sign-off',
+    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Tan Suk</span> · diagnosis revision + escalation pending sign-off',
   },
   analyst: {
     label: 'INCOMING ESCALATION · Hyperspace OS',
-    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Faye Sit</span> · trading desk decision required',
+    body:  'INC-2026-0537 · Routed from <span class="dyn-name">Nan Chai</span> · trading desk decision required',
   },
 };
 
-// ── W7 — State pill labels (simplified chain · Ismail intermediate dropped) ──
+// ── W7 — State pill labels (simplified chain · Anan intermediate dropped) ──
 const STATE_PILL_LABEL = {
   TRIAGE_READY:                     'TRIAGE READY',
   DISPATCHED_TO_ONSITE:             'DISPATCHED TO ONSITE',
@@ -155,7 +155,7 @@ const STATE_PILL_LABEL = {
   HEDGED:                           'HEDGED · CLOSED',
 };
 
-// W5 — option labels for Priya's lock-decision footer
+// W5 — option labels for Mali's lock-decision footer
 const PRIYA_OPTION_LABEL = {
   'hedge':       'Forward Q3 capacity hedge',
   'cross-site':  'Cross-site balance · Sakra-CCGT-1 standby',
@@ -165,10 +165,10 @@ const PRIYA_OPTION_LABEL = {
 
 // ── W4 — canonical incident row owner per active persona ──
 const ROW_OWNER_BY_PERSONA = {
-  ops:     { name: 'Faye Sit',         initials: 'FS'  },
-  onsite:  { name: 'Lim Wei Jie',      initials: 'LWJ' },
-  offsite: { name: 'Dr. A. Ismail',      initials: 'AW'  },
-  analyst: { name: 'Priya Sundaram',   initials: 'PS'  },
+  ops:     { name: 'Nan Chai',         initials: 'NC'  },
+  onsite:  { name: 'Tan Suk',      initials: 'TS' },
+  offsite: { name: 'Dr. Anan Pong',      initials: 'AP'  },
+  analyst: { name: 'Mali Sri',   initials: 'MS'  },
 };
 
 const HANDOFF_NEXT = {
@@ -179,9 +179,9 @@ const HANDOFF_NEXT = {
 };
 
 const DISPATCH_LABEL = {
-  ops:     'Lim Wei Jie',
-  onsite:  'Dr. A. Ismail',
-  offsite: 'Priya Sundaram',
+  ops:     'Tan Suk',
+  onsite:  'Dr. Anan Pong',
+  offsite: 'Mali Sri',
 };
 
 const POST_DISPATCH_STATE_PILL = {
@@ -189,7 +189,7 @@ const POST_DISPATCH_STATE_PILL = {
   // W7 — onsite/offsite no longer dispatch via this CTA path
 };
 
-// ── W13 R2 — Faye Summary "Initial Diagnosis" rationale rows ──
+// ── W13 R2 — Nan Summary "Initial Diagnosis" rationale rows ──
 const INITIAL_DIAGNOSIS_RATIONALE = [
   { text: 'Vibration spectrum matches NDE bearing race spalling signature',
     strength: 'met',     badgeLabel: 'fully met' },
@@ -221,7 +221,7 @@ const INCIDENT = {
   hypothesis: {
     primary: 'NDE bearing race spalling (early-stage)',
     confidence: 78,
-    subtitle: 'Pending Onsite verification (Lim Wei Jie)',
+    subtitle: 'Pending Onsite verification (Tan Suk)',
   },
   alternates: [
     { name: 'Shaft misalignment', conf: 52 },
@@ -325,11 +325,11 @@ const PRE_EXISTING_INCIDENTS = [
     severity: 'GREEN',
     state: 'MONITORING',
     age: '2h 14m ago',
-    owner: 'Faye Sit',
-    ownerInitials: 'FS',
+    owner: 'Nan Chai',
+    ownerInitials: 'NC',
     clickable: false,
     // W3.6 — inline dynamic content shown next to state pill
-    dynamicTagText: { label: 'update expected in', value: '35m', from: 'Lim Wei Jie' },
+    dynamicTagText: { label: 'update expected in', value: '35m', from: 'Tan Suk' },
   },
   {
     id: 'INC-2026-0529',
@@ -338,10 +338,10 @@ const PRE_EXISTING_INCIDENTS = [
     severity: 'AMBER',
     state: 'SCHEDULED',
     age: '58m ago',
-    owner: 'Faye Sit',
-    ownerInitials: 'FS',
+    owner: 'Nan Chai',
+    ownerInitials: 'NC',
     clickable: false,
-    dynamicTagText: { label: 'task scheduled for', value: '06:30 SGT', from: 'M. Lim' },
+    dynamicTagText: { label: 'task scheduled for', value: '06:30 SGT', from: 'Pim Rat' },
   },
   {
     id: 'INC-2026-0532',
@@ -350,10 +350,10 @@ const PRE_EXISTING_INCIDENTS = [
     severity: 'RED',
     state: 'MONITORING',
     age: '31m ago',
-    owner: 'Faye Sit',
-    ownerInitials: 'FS',
+    owner: 'Nan Chai',
+    ownerInitials: 'NC',
     clickable: false,
-    dynamicTagText: { label: 'update expected in', value: '12m', from: 'J. Tan' },
+    dynamicTagText: { label: 'update expected in', value: '12m', from: 'Som Yai' },
   },
 ];
 
@@ -366,7 +366,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'JRG-CCGT-1 · GT-2',
       body: 'GT-2 borescope inspection · stage 1 compressor',
       severity: 'INFO', state: 'SCHEDULED 09:00 SGT', stateClass: 'info',
-      age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
+      age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -374,7 +374,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'JRG-CCGT-1 · BFP-2B',
       body: 'BFP-2B coupling re-greasing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
+      age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -382,7 +382,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'JRG-CCGT-1 · HRSG-2',
       body: 'HRSG-2 hand valve overhaul · awaiting parts',
       severity: 'INFO', state: 'BLOCKED · PARTS ETA 4D', stateClass: 'info',
-      age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
+      age: '—', owner: 'Tan Suk', ownerInitials: 'TS',
       clickable: false, dynamicTagText: null,
     },
   ],
@@ -392,7 +392,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Sakra-CCGT-1 · GT-1',
       body: 'Sakra-CCGT-1 GT-1 trip RCA · lead investigator',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -400,7 +400,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Jurong-CCGT-2 · BFP',
       body: 'Jurong-CCGT-2 BFP overhaul technical review',
       severity: 'INFO', state: 'AWAITING INPUT', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -408,7 +408,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Tuas-Power · Generator',
       body: 'Tuas-Power generator stator advisory · stakeholder call',
       severity: 'INFO', state: 'SCHEDULED 11:00 SGT', stateClass: 'info',
-      age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
+      age: '—', owner: 'Dr. Anan Pong', ownerInitials: 'AP',
       clickable: false, dynamicTagText: null,
     },
   ],
@@ -418,7 +418,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Sakra-CCGT-1 · Block 1',
       body: 'Cross-site balancing · Sakra-CCGT-1 standby evaluation · capacity reserve sizing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Priya Sundaram', ownerInitials: 'PS',
+      age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -426,7 +426,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'Jurong-CCGT-1 · Forward Curve',
       body: 'USEP forward curve review · Q3 capacity hedge eligibility',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Priya Sundaram', ownerInitials: 'PS',
+      age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
       clickable: false, dynamicTagText: null,
     },
     {
@@ -434,7 +434,7 @@ const PERSONA_OWN_TASKS = {
       asset: 'PSO commitment ledger',
       body: 'PSO dispatch reconciliation · daily close',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
-      age: '—', owner: 'Priya Sundaram', ownerInitials: 'PS',
+      age: '—', owner: 'Mali Sri', ownerInitials: 'MS',
       clickable: false, dynamicTagText: null,
     },
   ],
@@ -487,7 +487,7 @@ function back() {
   render();
 }
 
-// ── Personas panel (external, above tablet) — W7: Ismail tile removed (3 tiles) ──
+// ── Personas panel (external, above tablet) — W7: Anan tile removed (3 tiles) ──
 // W8 Section 0 Part 1 — diff-update (build once, mutate attrs/classes on subsequent calls).
 // Preserves in-flight .persona-tile-pulse keyframe — fixes "flash" caused by innerHTML wipe restarting pulse from 0%.
 function renderPersonasPanel() {
@@ -636,7 +636,7 @@ function renderIncidentDetailView(root) {
   switch (state.activePersona) {
     case 'ops': {
       const pill = ticket && ticket.statePill;
-      // W7 — Escalation Report fires on revised or confirmed return paths (plus downstream Priya states)
+      // W7 — Escalation Report fires on revised or confirmed return paths (plus downstream Mali states)
       if (pill === 'REVISED_DIAGNOSIS_ROUTED' ||
           pill === 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED' ||
           pill === 'ROUTED_TO_TRADING_DESK' ||
@@ -693,7 +693,7 @@ function renderOpsIncidentDetail(root) {
   summarySlot.id = 'summary-slot';
   content.appendChild(summarySlot);
 
-  // (D) Action Steps slot — W8 B: Notes section now lives INSIDE Step 2 (between Lim row + Confirm CTA).
+  // (D) Action Steps slot — W8 B: Notes section now lives INSIDE Step 2 (between Tan row + Confirm CTA).
   const actionSlot = el('div', 'action-steps-slot');
   actionSlot.id = 'action-steps-slot';
   content.appendChild(actionSlot);
@@ -750,7 +750,7 @@ function startScreenDRevealW39(summarySlot, actionSlot) {
       <div class="reveal-dots"><span></span><span></span><span></span></div>
       <div class="reveal-msg">
         <span class="reveal-agent">Sensor Anomaly Inspector</span> ·
-        Loading incident summary for <strong>Faye Sit</strong>
+        Loading incident summary for <strong>Nan Chai</strong>
       </div>
     </div>`;
   // W6 — fire right-pane card lifecycle synced with Loading #1
@@ -778,7 +778,7 @@ function startScreenDRevealW39(summarySlot, actionSlot) {
   // Stage 3 at t=10s: swap Triage placeholder for Initial Diagnosis summary + Rationale + Confirm CTA
   pushReveal(() => {
     paintSummaryComplete(summarySlot);
-    // W13 R2 — re-entry mid-flow (Faye exits + returns before dispatch while diagnosisConfirmed=true):
+    // W13 R2 — re-entry mid-flow (Nan exits + returns before dispatch while diagnosisConfirmed=true):
     // re-paint Action Steps in their current state. DOM was wiped; flag stays true so re-spawn helper bypasses guard.
     if (state.faye.diagnosisConfirmed && !document.querySelector('.action-steps')) {
       state.faye.actionStepsSpawned = false;
@@ -996,7 +996,7 @@ function paintActionStepsInitial(actionSlot) {
 function paintActionStepsComplete(actionSlot) {
   // Already actioned (re-render after dispatch). Show both steps ✓.
   // W13 R2 — heading "SOP Relevant next best actions"; Step 1 title "Inspect and confirm telemetry";
-  // notes re-attach block dropped (Faye onsite notes removed from Step 2).
+  // notes re-attach block dropped (Nan onsite notes removed from Step 2).
   actionSlot.innerHTML = `
     <div class="action-steps" data-variant="sop-relevant">
       <div class="as-heading">SOP Relevant next best actions</div>
@@ -1020,7 +1020,7 @@ function paintActionStepsComplete(actionSlot) {
           <span class="as-step-title">Step 2 · Find available engineer <span class="as-step-optional">(optional)</span></span>
         </div>
         <div class="as-step-body">
-          <span class="as-step-msg">Lim Wei Jie selected</span>
+          <span class="as-step-msg">Tan Suk selected</span>
         </div>
       </div>
       <div class="dispatch-confirmed">✓ Dispatched at ${currentSGTTime()} · ${DISPATCH_LABEL[state.activePersona] || 'next persona'} notified</div>
@@ -1067,16 +1067,16 @@ function unlockActionStep2() {
     step2.querySelector('.as-step-body').innerHTML = `
       <div class="as-engineer-card" data-engineer="lim-wei-jie">
         <div class="as-eng-status-pill">AVAILABLE</div>
-        <div class="as-eng-name">Lim Wei Jie</div>
+        <div class="as-eng-name">Tan Suk</div>
         <div class="as-eng-meta">Block 2 mechanical maintenance · on-duty · 02:47 SGT</div>
         <div class="as-eng-hint">Click to select</div>
       </div>`;
     wireEngineerCardClick();
-    // W13 R2 — Faye onsite notes tile DROPPED from Step 2. `insertOpsNotesIntoStep2` kept as dead code per WA #5.
+    // W13 R2 — Nan onsite notes tile DROPPED from Step 2. `insertOpsNotesIntoStep2` kept as dead code per WA #5.
   }, 5000);
 }
 
-// W8 B — Notes tile lives inside Step 2 (between Lim row + Confirm CTA).
+// W8 B — Notes tile lives inside Step 2 (between Tan row + Confirm CTA).
 function insertOpsNotesIntoStep2() {
   const stepsRoot = document.querySelector('.action-steps');
   if (!stepsRoot) return;
@@ -1101,7 +1101,7 @@ function wireEngineerCardClick() {
     const step2 = document.querySelector('.as-step[data-step="2"]');
     step2.dataset.status = 'selected';
     step2.querySelector('.as-step-num').textContent = '✓';
-    step2.querySelector('.as-step-body').innerHTML = `<span class="as-step-msg">Lim Wei Jie selected</span>`;
+    step2.querySelector('.as-step-body').innerHTML = `<span class="as-step-msg">Tan Suk selected</span>`;
     enableActionCTA();
   });
 }
@@ -1229,7 +1229,7 @@ function buildRecommendationBlock() {
           <path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/>
         </svg>
       </span>
-      <span>Next action steps for Faye Sit</span>
+      <span>Next action steps for Nan Chai</span>
       <span class="hitl-tag">Human-in-the-loop</span>
     </div>
     <div class="next-action-step-lbl"><span class="next-action-step-num">1.</span> Verify and confirm diagnosis</div>
@@ -1238,7 +1238,7 @@ function buildRecommendationBlock() {
         <div class="diag-hyp-title">Diagnosis hypothesis · compressor fouling (humidity-correlated)</div>
         <span class="diag-hyp-conf">78% confidence</span>
       </div>
-      <div class="diag-hyp-subtitle">Pending Onsite verification (Lim Wei Jie)</div>
+      <div class="diag-hyp-subtitle">Pending Onsite verification (Tan Suk)</div>
       <button class="see-reasoning-toggle" data-expanded="false" type="button">
         <span class="see-reasoning-icon">▸</span>
         <span>See full reasoning</span>
@@ -1518,7 +1518,7 @@ function onInitialDiagnosisConfirmClick() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'orchestrator',
-      text: 'Initial diagnosis confirmed by Faye Sit · workflow handoff to SOP-relevant next-best actions',
+      text: 'Initial diagnosis confirmed by Nan Chai · workflow handoff to SOP-relevant next-best actions',
       dataSource: 'Hyperspace OS',
       nodeChain: ['bearing-spalling-pattern', 'sop-bfp-vibration-investigation'],
     });
@@ -1558,7 +1558,7 @@ function spawnSOPRelevantNextBestActions() {
   playSOPAnticipationTheater();
 }
 
-// ── W13 R2 — Rationale collapsible (Faye Initial Diagnosis summary) ──
+// ── W13 R2 — Rationale collapsible (Nan Initial Diagnosis summary) ──
 function wireRationaleToggle() {
   const btn = document.querySelector('.sr-rationale-toggle');
   if (!btn || btn.dataset.wired === '1') return;
@@ -1573,7 +1573,7 @@ function wireRationaleToggle() {
   });
 }
 
-// ── W3.10 — Alt-hypotheses collapsible (kept as dead code per WA #5; Lim summary may still wire) ──
+// ── W3.10 — Alt-hypotheses collapsible (kept as dead code per WA #5; Tan summary may still wire) ──
 function wireAltHypothesesToggle() {
   const btn = document.querySelector('.sr-alt-toggle');
   if (!btn || btn.dataset.wired === '1') return;
@@ -1616,7 +1616,7 @@ function wireTelemetryModal() {
 }
 
 // ── Section J — Mic record + 5s preload ──
-const PRELOAD_NOTE = 'Lim — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.';
+const PRELOAD_NOTE = 'Tan — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.';
 
 function wireNotesMic() {
   const btn = document.querySelector('.notes-mic-btn');
@@ -1710,7 +1710,7 @@ function stubView(root, label) {
 }
 
 // ─────────────────────────────────────────────
-// W4 — Lim Wei Jie (Onsite) curated Screen D
+// W4 — Tan Suk (Onsite) curated Screen D
 // Banner + metrics + summary (loading theater) + diagnosis hypothesis
 // + inspection checklist + binary CTAs + call flow + diagnosis morph + escalate
 // ─────────────────────────────────────────────
@@ -1797,14 +1797,14 @@ function buildLimDetailScaffold() {
     <div class="inc-hdr-row">
       <div class="inc-hdr-left">
         <div class="inc-title">${INCIDENT.asset}</div>
-        <div class="inc-id">${INCIDENT.id} · routed from Faye Sit</div>
+        <div class="inc-id">${INCIDENT.id} · routed from Nan Chai</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
       <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
     </div>`;
   content.appendChild(hdr);
 
-  // Metrics card (re-use Faye layout)
+  // Metrics card (re-use Nan layout)
   const grid = el('div', 'metrics-card');
   INCIDENT.metrics.forEach(m => {
     const cell = el('div', 'metric-cell');
@@ -1816,7 +1816,7 @@ function buildLimDetailScaffold() {
   });
   content.appendChild(grid);
 
-  // W13 R1 — inbound Faye-notes section dropped from Lim Screen D (caller removed; buildLimNotesSection kept as dead code per WA #5).
+  // W13 R1 — inbound Nan-notes section dropped from Tan Screen D (caller removed; buildLimNotesSection kept as dead code per WA #5).
 
   // Summary report slot
   const summarySlot = el('div', 'summary-slot');
@@ -1841,7 +1841,7 @@ function buildLimDetailScaffold() {
   return content;
 }
 
-const LIM_INCOMING_NOTE = 'Lim — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.';
+const LIM_INCOMING_NOTE = 'Tan — checks rule out simple bearing fault. Inspect casing weld area near discharge flange — fatigue cracking pattern observed on similar Sulzer BFPs across the fleet. Confirm before reporting back.';
 
 function buildLimNotesSection() {
   // W8 C.3 + C.4 — display-only incoming note (no record affordance, no textarea).
@@ -1850,7 +1850,7 @@ function buildLimNotesSection() {
   wrap.innerHTML = `
     <div class="notes-section notes-section-display">
       <div class="notes-header notes-header-display">
-        <span class="notes-title">Note from <span class="dyn-name">Faye Sit</span></span>
+        <span class="notes-title">Note from <span class="dyn-name">Nan Chai</span></span>
         <span class="notes-incoming-chip">incoming · 02:48 SGT</span>
       </div>
       <div class="notes-body-display">${LIM_INCOMING_NOTE}</div>
@@ -1905,7 +1905,7 @@ function renderOnsiteIncidentDetail(root) {
 }
 
 function startLimScreenDReveal() {
-  // W8 C.1 + C.2 — paint Predicted Diagnosis IMMEDIATELY (Faye already revealed it · no 10s reload).
+  // W8 C.1 + C.2 — paint Predicted Diagnosis IMMEDIATELY (Nan already revealed it · no 10s reload).
   // Eliminates the W6 dual-stage theater + the double-paint bug where pushReveal Stage 3 fired
   // paintLimSummaryComplete a second time after the section was already painted.
   if (state.lim.summaryRevealed) return;
@@ -1914,7 +1914,7 @@ function startLimScreenDReveal() {
   // Inspection Workflow checklist spawns at t=2s — gives metrics + notes + diagnosis time to settle.
   pushReveal(() => {
     paintLimChecklist();
-    // W15 — Assistant FAB always present on Lim Screen D (was gated on item-2 reveal in W14 R2).
+    // W15 — Assistant FAB always present on Tan Screen D (was gated on item-2 reveal in W14 R2).
     spawnAssistantFloatingButton();
   }, 2000);
 }
@@ -1923,7 +1923,7 @@ function paintLimSummaryComplete(revised) {
   const slot = document.getElementById('lim-summary-slot');
   if (!slot) return;
   const hyp = INCIDENT.hypothesis;
-  // W14 R2 — Rationale dropdown replaces Alt-hypotheses dropdown · re-uses W13 R2 INITIAL_DIAGNOSIS_RATIONALE + wireRationaleToggle (Faye-consistent).
+  // W14 R2 — Rationale dropdown replaces Alt-hypotheses dropdown · re-uses W13 R2 INITIAL_DIAGNOSIS_RATIONALE + wireRationaleToggle (Nan-consistent).
   const rationaleHtml = INITIAL_DIAGNOSIS_RATIONALE.map(r => `
     <div class="sr-rationale-row" data-strength="${r.strength}">
       <span class="sr-rat-bullet">·</span>
@@ -1936,7 +1936,7 @@ function paintLimSummaryComplete(revised) {
   if (revised) {
     tileHtml = buildRevisedDiagnosisTileHTML();
   } else {
-    // W8 C.1 — confirmation pill: Faye already passed this through Hyperspace OS · pending onsite verification.
+    // W8 C.1 — confirmation pill: Nan already passed this through Hyperspace OS · pending onsite verification.
     tileHtml = `
       <div class="sr-hypothesis">
         <div class="sr-hyp-row">
@@ -2150,7 +2150,7 @@ function onCrossReasonSubmit(itemId) {
 }
 
 // ─────────────────────────────────────────────
-// W14 R2 — Assistant FAB + popup (Lim Screen D · bottom-right)
+// W14 R2 — Assistant FAB + popup (Tan Screen D · bottom-right)
 // FAB reveals after item 2 done. Popup w/ 4 options. Primary option ("Review with on-call Senior Engineer")
 // calls existing onVerdictReject() → chains into W12 SOP suggest dialogue → call flow.
 // ─────────────────────────────────────────────
@@ -2351,7 +2351,7 @@ function logChecklistItem(itemId) {
   window.LOG.appendLine({
     ts: currentSGTLog(),
     source: 'workflow',
-    text: `Inspection check · ${itemId} · confirmed by Lim Wei Jie`,
+    text: `Inspection check · ${itemId} · confirmed by Tan Suk`,
     dataSource: 'Hyperspace OS',
     nodeChain: ['sop-bfp-vibration-investigation'],
   });
@@ -2462,7 +2462,7 @@ function onVerdictReject() {
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.58l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
       </div>
       <div class="ssd-body">
-        <div class="ssd-text">SOP suggests calling <span class="dyn-name">Dr. A. Ismail</span></div>
+        <div class="ssd-text">SOP suggests calling <span class="dyn-name">Dr. Anan Pong</span></div>
         <div class="ssd-sub">SOP-BFP-VIBR-001 · escalation playbook · Senior Engineer reference</div>
       </div>
       <button class="ssd-action" type="button">Call</button>
@@ -2489,7 +2489,7 @@ function onSOPSuggestCallClick() {
     <div class="sop-routing-theater">
       <span class="reveal-dots"><span></span><span></span><span></span></span>
       <span class="reveal-msg">
-        <span class="reveal-agent">SOP Action Agent</span> · Connecting to <span class="dyn-name">Dr. A. Ismail</span> via call · routing through escalation playbook
+        <span class="reveal-agent">SOP Action Agent</span> · Connecting to <span class="dyn-name">Dr. Anan Pong</span> via call · routing through escalation playbook
       </span>
     </div>`);
 
@@ -2497,7 +2497,7 @@ function onSOPSuggestCallClick() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'sop-action',
-      text: 'SOP Action Agent · Connecting to Dr. A. Ismail via call · routing through escalation playbook',
+      text: 'SOP Action Agent · Connecting to Dr. Anan Pong via call · routing through escalation playbook',
       dataSource: 'Hyperspace OS',
       nodeChain: ['dr-ismail', 'sop-bfp-vibration-investigation'],
     });
@@ -2526,8 +2526,8 @@ function onVerdictConfirm() {
   appendConfirmedCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Hyperspace OS hypothesis confirmed by Lim Wei Jie · WO submitted', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation'] });
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Faye Sit notified', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Hyperspace OS hypothesis confirmed by Tan Suk · WO submitted', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation'] });
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Nan Chai notified', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
   render();
@@ -2541,10 +2541,10 @@ function appendConfirmedCaptureFooter() {
   footer.innerHTML = `
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · diagnosis confirmed · WO submitted</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Workflow trace routed to <strong>A2A Coordination Agent</strong></span></div>
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><span class="dyn-name">Faye Sit</span> notified · returned for ops + commercial action</span></div>`;
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><span class="dyn-name">Nan Chai</span> notified · returned for ops + commercial action</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `WO submitted · returned to <span class="dyn-name">Faye Sit</span> · ${currentSGTLog()}`;
+  lbl.innerHTML = `WO submitted · returned to <span class="dyn-name">Nan Chai</span> · ${currentSGTLog()}`;
   container.appendChild(lbl);
 }
 
@@ -2573,7 +2573,7 @@ function buildInCallStripHTML() {
       <span class="in-call-phone-ic">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.58l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
       </span>
-      <span class="in-call-label">On call · Dr. A. Ismail</span>
+      <span class="in-call-label">On call · Dr. Anan Pong</span>
       <span class="in-call-audio-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
     </div>
     <button class="in-call-end-btn" type="button">End</button>`;
@@ -2741,7 +2741,7 @@ function triggerKGGrowth() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'workflow',
-      text: "Tacit knowledge captured from Dr. A. Ismail's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
+      text: "Tacit knowledge captured from Dr. Anan Pong's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
       dataSource: 'Hyperspace OS',
       nodeChain: ['casing-tacit-knowledge', 'ismail-field-experience-2023', 'bfp-casing-inspection-protocol'],
     });
@@ -2795,7 +2795,7 @@ function spawnReviseDiagnosisTile() {
       <div class="rdt-body">
         <div class="rdt-heading">REVISED FAULT</div>
         <div class="rdt-text">
-          Hyperspace OS detected that in addition to the bearings the main reason for this was actually a <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. A. Ismail</span>.
+          Hyperspace OS detected that in addition to the bearings the main reason for this was actually a <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. Anan Pong</span>.
         </div>
       </div>
       <button class="rdt-confirm-btn" type="button">Add review finding</button>
@@ -2869,7 +2869,7 @@ function advanceToRoutedRevisedDiagnosis() {
   appendRevisedDiagnosisCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Faye Sit for ops + commercial impact', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Nan Chai for ops + commercial impact', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar'] });
     window.LOG.appendLine({ ts: currentSGTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'Hyperspace OS', nodeChain: ['pump-casing-crack-pattern'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
@@ -2882,12 +2882,12 @@ function appendRevisedDiagnosisCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · <span class="dyn-name">Faye Sit</span> notified · revised diagnosis routed</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Hyperspace OS</strong> · <span class="dyn-name">Nan Chai</span> notified · revised diagnosis routed</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript + revised diagnosis routed to <strong>A2A Coordination Agent</strong> for chain-of-custody</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · revised diagnosis + transcript enriched · routing recorded</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed back to <span class="dyn-name">Faye Sit</span> · ${currentSGTLog()}`;
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${currentSGTLog()}`;
   container.appendChild(lbl);
 }
 
@@ -2921,7 +2921,7 @@ function appendEscalationCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · team · incident · revised diagnosis + transcript enriched</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. A. Ismail</span> · 02:56 SGT`;
+  lbl.innerHTML = `Escalated to <span class="dyn-name">Dr. Anan Pong</span> · 02:56 SGT`;
   container.appendChild(lbl);
 }
 
@@ -2931,7 +2931,7 @@ function fireWorkflowAgentArcEscalate() {
   setAgentActive(agentId, 'Escalation Capture', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200,  line: { ts: '02:56:10', source: 'workflow', text: 'Lim Wei Jie · escalation captured · revised diagnosis pump casing crack', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'pump-casing-crack-pattern', 'casing-bfp-3a'] } },
+    { delay: 200,  line: { ts: '02:56:10', source: 'workflow', text: 'Tan Suk · escalation captured · revised diagnosis pump casing crack', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'pump-casing-crack-pattern', 'casing-bfp-3a'] } },
     { delay: 900,  line: { ts: '02:56:11', source: 'workflow', text: 'handoff sequence recorded · P2 Onsite → P3 Offsite · approval pending', dataSource: 'Hyperspace OS', nodeChain: ['lim-wei-jie', 'dr-ismail'] } },
     { delay: 900,  line: { ts: '02:56:12', source: 'workflow', text: 'SOP-BFP-VIBR-001 · revised diagnosis + call transcript attached to KG', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'] } },
   ];
@@ -2948,7 +2948,7 @@ function fireWorkflowAgentArcEscalate() {
 }
 
 // ─────────────────────────────────────────────
-// W4 — Dr. A. Ismail (Offsite) curated Screen D
+// W4 — Dr. Anan Pong (Offsite) curated Screen D
 // Banner + summary (single 5s loading theater) + revised diagnosis read-only
 // + transcript link + Approve escalation CTA
 // ─────────────────────────────────────────────
@@ -2968,7 +2968,7 @@ function renderOffsiteIncidentDetail(root) {
     <div class="inc-hdr-row">
       <div class="inc-hdr-left">
         <div class="inc-title">${INCIDENT.asset}</div>
-        <div class="inc-id">${INCIDENT.id} · routed from Lim Wei Jie</div>
+        <div class="inc-id">${INCIDENT.id} · routed from Tan Suk</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
       <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
@@ -3011,11 +3011,11 @@ function startIsmailScreenDReveal() {
   state.ismail.revealStarted = true;
   const slot = document.getElementById('ismail-summary-slot');
   if (!slot) return;
-  // W6 — Ismail loading reveal alias: Turbine Diagnostic Agent (institutional rotating-machinery knowledge)
+  // W6 — Anan loading reveal alias: Turbine Diagnostic Agent (institutional rotating-machinery knowledge)
   slot.innerHTML = `
     <div class="reveal-pending ismail-loading" data-stage="ismail-summary">
       <span class="reveal-dots"><span></span><span></span><span></span></span>
-      <span class="reveal-msg"><span class="reveal-agent">Turbine Diagnostic Agent</span> · Loading institutional rotating-machinery knowledge for Dr. A. Ismail</span>
+      <span class="reveal-msg"><span class="reveal-agent">Turbine Diagnostic Agent</span> · Loading institutional rotating-machinery knowledge for Dr. Anan Pong</span>
     </div>`;
   // W6 — CTA deferred: spawn only on reveal complete (Section A)
   // W6 — fire right-pane card lifecycle (triage + power-gen critic in parallel)
@@ -3024,7 +3024,7 @@ function startIsmailScreenDReveal() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'triage',
-      text: 'Turbine Diagnostic Agent · pulling Ismail\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
+      text: 'Turbine Diagnostic Agent · pulling Anan\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
       dataSource: 'Hyperspace OS',
       nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
     });
@@ -3044,7 +3044,7 @@ function paintIsmailSummaryComplete() {
     <div class="summary-report ismail-summary">
       <div class="sr-heading">Predicted diagnosis</div>
       <div class="ismail-fwd-line">
-        <span class="dyn-name">Lim Wei Jie</span> has forwarded this incident · diagnosis revision · escalation for offsite sign-off.
+        <span class="dyn-name">Tan Suk</span> has forwarded this incident · diagnosis revision · escalation for offsite sign-off.
       </div>
       <div class="sr-hypothesis sr-hypothesis-revised ismail-revised">
         <div class="sr-hyp-row sr-hyp-original">
@@ -3071,13 +3071,13 @@ function paintIsmailSummaryComplete() {
 function paintIsmailCTADisabled() {
   const slot = document.getElementById('ismail-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="ismail-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
+  slot.innerHTML = `<button class="ismail-approve-cta" type="button" disabled>Approve escalation and route back to <span class="dyn-name-on-green">Nan Chai</span></button>`;
 }
 
 function paintIsmailCTAReady() {
   const slot = document.getElementById('ismail-cta-slot');
   if (!slot) return;
-  slot.innerHTML = `<button class="ismail-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name-on-green">Faye Sit</span></button>`;
+  slot.innerHTML = `<button class="ismail-approve-cta" type="button">Approve escalation and route back to <span class="dyn-name-on-green">Nan Chai</span></button>`;
   wireIsmailApproveClick();
 }
 
@@ -3097,12 +3097,12 @@ function onIsmailApproveClick() {
   const ticket = getCanonicalTicket();
   if (ticket.byPersona.offsite.actioned) return;
   ticket.byPersona.offsite.actioned = true;
-  // W5 — Ismail routes BACK to Faye (Site Operations Manager), not direct to Priya.
+  // W5 — Anan routes BACK to Nan (Site Operations Manager), not direct to Mali.
   setStatePill('ROUTED_BACK_TO_OPS');
   ticket.handoffPending.p1 = true;        // legacy key, harmless
-  ticket.handoffPending.ops = true;       // Faye re-receives the ticket
-  ticket.handoffPending.analyst = false;  // P4 stays locked until Faye notifies trading desk
-  // Reset Faye's seen/opened so banner re-fires + dot reappears; actioned preserved (first dispatch).
+  ticket.handoffPending.ops = true;       // Nan re-receives the ticket
+  ticket.handoffPending.analyst = false;  // P4 stays locked until Nan notifies trading desk
+  // Reset Nan's seen/opened so banner re-fires + dot reappears; actioned preserved (first dispatch).
   ticket.byPersona.ops.seen = false;
   ticket.byPersona.ops.opened = false;
   state.ismail.approvalGiven = true;
@@ -3124,7 +3124,7 @@ function appendIsmailApprovalCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · sign-off attached to incident · routed back to Site Operations Manager</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed back to <span class="dyn-name">Faye Sit</span> · ${state.ismail.approvalTimestamp || '02:58 SGT'}`;
+  lbl.innerHTML = `Routed back to <span class="dyn-name">Nan Chai</span> · ${state.ismail.approvalTimestamp || '02:58 SGT'}`;
   container.appendChild(lbl);
 }
 
@@ -3135,7 +3135,7 @@ function fireWorkflowAgentArcApprove() {
   const lines = [
     { delay: 200, line: { ts: '02:58:05', source: 'workflow', text: 'Sign-off recorded · revised diagnosis confirmed · escalation approved', dataSource: 'Hyperspace OS', nodeChain: ['dr-ismail', 'pump-casing-crack-pattern'] } },
     { delay: 900, line: { ts: '02:58:06', source: 'workflow', text: 'Workflow trace · P3 Offsite → P1 Ops Tower · route-back for ops + commercial impact action', dataSource: 'Hyperspace OS', nodeChain: ['dr-ismail', 'r-kumar'] } },
-    { delay: 900, line: { ts: '02:58:07', source: 'workflow', text: 'KG enriched · sign-off attached · routed back to Faye Sit · ops manager action queued', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation', 'r-kumar'] } },
+    { delay: 900, line: { ts: '02:58:07', source: 'workflow', text: 'KG enriched · sign-off attached · routed back to Nan Chai · ops manager action queued', dataSource: 'Hyperspace OS', nodeChain: ['sop-bfp-vibration-investigation', 'r-kumar'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3150,9 +3150,9 @@ function fireWorkflowAgentArcApprove() {
 }
 
 // ─────────────────────────────────────────────
-// W5 — Faye Escalation Report (state-driven Screen D variant)
+// W5 — Nan Escalation Report (state-driven Screen D variant)
 // Routed to when ticket.statePill ∈ {ROUTED_BACK_TO_OPS, ROUTED_TO_TRADING_DESK, HEDGED}.
-// 5s loading theater → 4 sections: revised diagnosis · Lim workflow summary · source transcript link · recommendation + impact + Notify CTA.
+// 5s loading theater → 4 sections: revised diagnosis · Tan workflow summary · source transcript link · recommendation + impact + Notify CTA.
 // ─────────────────────────────────────────────
 
 function renderOpsEscalationReport(root) {
@@ -3171,7 +3171,7 @@ function renderOpsEscalationReport(root) {
     <div class="inc-hdr-row">
       <div class="inc-hdr-left">
         <div class="inc-title">${INCIDENT.asset}</div>
-        <div class="inc-id">${INCIDENT.id} · returned from Dr. A. Ismail</div>
+        <div class="inc-id">${INCIDENT.id} · returned from Dr. Anan Pong</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
       <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
@@ -3186,7 +3186,7 @@ function renderOpsEscalationReport(root) {
 
       <div class="reveal-pending oer-loading" data-stage="oer-summary">
         <span class="reveal-dots"><span></span><span></span><span></span></span>
-        <span class="reveal-msg"><span class="reveal-agent">A2A Coordination Agent</span> · Loading escalation report for <span class="dyn-name">Faye Sit</span></span>
+        <span class="reveal-msg"><span class="reveal-agent">A2A Coordination Agent</span> · Loading escalation report for <span class="dyn-name">Nan Chai</span></span>
       </div>
     </div>`;
   content.appendChild(wrap);
@@ -3230,14 +3230,14 @@ function spawnEscalationReportContent() {
       </div>
 
       <div class="oer-section">
-        <div class="oer-section-label"><span class="dyn-name">Lim Wei Jie</span>'s completed workflow</div>
+        <div class="oer-section-label"><span class="dyn-name">Tan Suk</span>'s completed workflow</div>
         <div class="oer-workflow-list">
           <div class="oer-wl-item">✓ 5/5 Safety checks</div>
           <div class="oer-wl-item">✓ 3/3 Instrument checks</div>
           <div class="oer-wl-item">✓ 2/2 Root cause isolation checks</div>
           <div class="oer-wl-item">✓ Initial bearing-spalling hypothesis rejected</div>
-          <div class="oer-wl-item">✓ Call with <span class="dyn-name">Dr. A. Ismail</span> · 7m 23s · transcript captured</div>
-          <div class="oer-wl-item">✓ Transcript captured · <span class="dyn-name">Dr. A. Ismail</span> + <span class="dyn-name">Lim Wei Jie</span> discussed and agreed <button class="oer-tx-inline" type="button">(see transcript)</button></div>
+          <div class="oer-wl-item">✓ Call with <span class="dyn-name">Dr. Anan Pong</span> · 7m 23s · transcript captured</div>
+          <div class="oer-wl-item">✓ Transcript captured · <span class="dyn-name">Dr. Anan Pong</span> + <span class="dyn-name">Tan Suk</span> discussed and agreed <button class="oer-tx-inline" type="button">(see transcript)</button></div>
         </div>
       </div>
 
@@ -3258,7 +3258,7 @@ function spawnEscalationReportContent() {
       </div>
     </div>
     <button class="oer-cta" type="button" disabled>
-      Notify trading desk · route to <span class="dyn-name-on-green">Priya Sundaram</span>
+      Notify trading desk · route to <span class="dyn-name-on-green">Mali Sri</span>
     </button>`;
   card.insertAdjacentHTML('beforeend', contentHTML);
 }
@@ -3275,7 +3275,7 @@ function paintEscalationReportCTAActioned() {
   if (!cta) return;
   cta.disabled = true;
   cta.classList.add('oer-cta-actioned');
-  cta.textContent = '✓ Trading desk notified · routed to Priya Sundaram';
+  cta.textContent = '✓ Trading desk notified · routed to Mali Sri';
 }
 
 function startEscalationReportReveal() {
@@ -3324,7 +3324,7 @@ function appendNotifyTradingDeskCaptureFooter() {
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · commercial-impact context attached · routed to Trader</span></div>`;
   container.appendChild(footer);
   const lbl = el('div', 'dispatched-to-label');
-  lbl.innerHTML = `Routed to <span class="dyn-name">Priya Sundaram</span> · 02:59 SGT`;
+  lbl.innerHTML = `Routed to <span class="dyn-name">Mali Sri</span> · 02:59 SGT`;
   container.appendChild(lbl);
 }
 
@@ -3333,7 +3333,7 @@ function fireWorkflowAgentArcNotify() {
   setAgentActive(agentId, 'Trading Desk Notification', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Faye Sit · trading desk notification queued · commercial impact context attached', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
+    { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Nan Chai · trading desk notification queued · commercial impact context attached', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
     { delay: 900, line: { ts: '02:59:03', source: 'workflow', text: 'Handoff sequence recorded · P1 Ops Tower → P4 Asset Perf · trading desk action queued', dataSource: 'Hyperspace OS', nodeChain: ['r-kumar', 'p-sundaram'] } },
     { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~SGD 2.4M revenue exposure attached · Trader desk routing complete', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
   ];
@@ -3350,7 +3350,7 @@ function fireWorkflowAgentArcNotify() {
 }
 
 // ─────────────────────────────────────────────
-// W5 — Priya (Asset Perf Analyst / Trader) curated Screen D
+// W5 — Mali (Asset Perf Analyst / Trader) curated Screen D
 // Market Intelligence Agent loading theater → operational context · 4 decision options · Lock decision CTA.
 // ─────────────────────────────────────────────
 
@@ -3369,7 +3369,7 @@ function renderAnalystIncidentDetail(root) {
     <div class="inc-hdr-row">
       <div class="inc-hdr-left">
         <div class="inc-title">${INCIDENT.asset}</div>
-        <div class="inc-id">${INCIDENT.id} · routed from Faye Sit</div>
+        <div class="inc-id">${INCIDENT.id} · routed from Nan Chai</div>
         <div class="inc-ts">${INCIDENT.timestamp}</div>
       </div>
       <span class="sev-pill" data-severity="${INCIDENT.severity}">▲ Severity: ${INCIDENT.severity}</span>
@@ -3535,7 +3535,7 @@ function revealAnalystScreenInstant() {
 
 function startAnalystScreenDReveal() {
   state.priya.escalationRevealStarted = true;
-  // W6 — fire Market Intelligence Agent card synced with Priya Loading
+  // W6 — fire Market Intelligence Agent card synced with Mali Loading
   fireAgentCardLifecycle('market-intelligence', 5000);
   pushReveal(() => {
     state.priya.escalationSummaryRevealed = true;
@@ -3641,7 +3641,7 @@ function fireWorkflowAgentArcLock() {
   fireAgentCardLifecycle(agentId, 3000);
   const optionLabel = state.priya.selectedOption ? PRIYA_OPTION_LABEL[state.priya.selectedOption] : '—';
   const lines = [
-    { delay: 200, line: { ts: '03:01:11', source: 'workflow', text: `Priya Sundaram · trading decision locked · ${optionLabel}`, dataSource: 'Hyperspace OS', nodeChain: ['p-sundaram', 'pred-mw-derate'] } },
+    { delay: 200, line: { ts: '03:01:11', source: 'workflow', text: `Mali Sri · trading decision locked · ${optionLabel}`, dataSource: 'Hyperspace OS', nodeChain: ['p-sundaram', 'pred-mw-derate'] } },
     { delay: 900, line: { ts: '03:01:12', source: 'workflow', text: 'Decision audit + market position lineage recorded · cycle close', dataSource: 'Hyperspace OS', nodeChain: ['p-sundaram'] } },
     { delay: 900, line: { ts: '03:01:13', source: 'workflow', text: 'KG · trading outcome attached to INC-2026-0537 · revenue exposure neutralized', dataSource: 'Hyperspace OS', nodeChain: ['pred-mw-derate', 'sop-bfp-vibration-investigation'] } },
   ];
@@ -3702,22 +3702,22 @@ function buildLandedIncidentRow() {
     case 'DISPATCHED_TO_ONSITE':
       stateText = STATE_PILL_LABEL.DISPATCHED_TO_ONSITE;
       stateClass = 'dispatched';
-      dynamicTagText = { label: 'dispatched to Lim Wei Jie ·', value: '02:47 SGT', from: null };
+      dynamicTagText = { label: 'dispatched to Tan Suk ·', value: '02:47 SGT', from: null };
       break;
     case 'REVISED_DIAGNOSIS_ROUTED':
       stateText = STATE_PILL_LABEL.REVISED_DIAGNOSIS_ROUTED;
       stateClass = 'revised-diagnosis-routed';
-      dynamicTagText = { label: 'returned by Lim Wei Jie ·', value: '02:58 SGT', from: null };
+      dynamicTagText = { label: 'returned by Tan Suk ·', value: '02:58 SGT', from: null };
       break;
     case 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED':
       stateText = STATE_PILL_LABEL.DIAGNOSIS_CONFIRMED_WO_SUBMITTED;
       stateClass = 'revised-diagnosis-routed';
-      dynamicTagText = { label: 'WO submitted by Lim Wei Jie ·', value: '02:58 SGT', from: null };
+      dynamicTagText = { label: 'WO submitted by Tan Suk ·', value: '02:58 SGT', from: null };
       break;
     case 'ROUTED_TO_TRADING_DESK':
       stateText = STATE_PILL_LABEL.ROUTED_TO_TRADING_DESK;
       stateClass = 'routed-to-trading-desk';
-      dynamicTagText = { label: 'routed to Priya Sundaram ·', value: '02:59 SGT', from: null };
+      dynamicTagText = { label: 'routed to Mali Sri ·', value: '02:59 SGT', from: null };
       break;
     case 'HEDGED':
       stateText = STATE_PILL_LABEL.HEDGED;
@@ -3815,18 +3815,18 @@ function renderMonitoringView(root) {
   `;
   list.appendChild(listHdr);
 
-  // W5 — Ismail post-approval banner (only on offsite monitoring after approve fired)
+  // W5 — Anan post-approval banner (only on offsite monitoring after approve fired)
   if (state.activePersona === 'offsite' && state.ismail && state.ismail.approvalGiven) {
     const wpab = el('div', 'ismail-post-approval-banner');
     wpab.innerHTML = `
       <span class="wpab-ic">✓</span>
       <span class="wpab-txt">
-        Approval given · returned to <span class="dyn-name">Faye Sit</span> · <span class="wpab-ts">${state.ismail.approvalTimestamp || '02:58 SGT'}</span>
+        Approval given · returned to <span class="dyn-name">Nan Chai</span> · <span class="wpab-ts">${state.ismail.approvalTimestamp || '02:58 SGT'}</span>
       </span>`;
     list.appendChild(wpab);
   }
 
-  // W5 — Priya demo-end banner (only on analyst monitoring after decision locked)
+  // W5 — Mali demo-end banner (only on analyst monitoring after decision locked)
   if (state.activePersona === 'analyst' && state.priya && state.priya.demoEndBannerShown) {
     const deb = el('div', 'demo-end-banner');
     const optionLabel = state.priya.selectedOption ? PRIYA_OPTION_LABEL[state.priya.selectedOption] : '—';
@@ -3913,7 +3913,7 @@ function onHeaderClick() {
   ticket.byPersona[personaKey].seen = true;
 
   state.bannerVisible = true;
-  // W7 — pick return-banner copy when Faye re-receives via Lim (revised or confirmed paths)
+  // W7 — pick return-banner copy when Nan re-receives via Tan (revised or confirmed paths)
   if (personaKey === 'ops' && ticket.statePill === 'REVISED_DIAGNOSIS_ROUTED') {
     state.bannerKey = 'opsRouteBack';
   } else if (personaKey === 'ops' && ticket.statePill === 'DIAGNOSIS_CONFIRMED_WO_SUBMITTED') {
@@ -4035,7 +4035,7 @@ function renderTablet() {
       renderMonitoringView(root);
       break;
     case 'incident-detail':
-      // W5 — Screen D dispatched per persona, including Priya
+      // W5 — Screen D dispatched per persona, including Mali
       renderIncidentDetailView(root);
       break;
   }
@@ -4068,7 +4068,7 @@ function renderLeftPane() {
 }
 
 // ─────────────────────────────────────────────
-// W8 G — Priya laptop view (MacBook chrome + trading dashboard + 60% modal)
+// W8 G — Mali laptop view (MacBook chrome + trading dashboard + 60% modal)
 // ─────────────────────────────────────────────
 
 function renderLaptopContent() {
@@ -4095,7 +4095,7 @@ function paintLaptopDashboard(content) {
           </div>
         </div>
         <div class="td-persona">
-          <span class="td-persona-name">Priya Sundaram</span>
+          <span class="td-persona-name">Mali Sri</span>
           <span class="td-persona-role">Senior Power Trader · Singapore</span>
         </div>
       </div>
@@ -4447,7 +4447,7 @@ function paintPersonaNarrative() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// W10 Section J — P3 Priya right-pane narrative (single Commercial card)
+// W10 Section J — P3 Mali right-pane narrative (single Commercial card)
 // ═══════════════════════════════════════════════════════════════
 
 function renderRightPanePriya() {
@@ -4493,10 +4493,10 @@ function wirePriyaRightPaneButtons() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// W10 Section H — P2 Lim right-pane narrative (Safety · Tacit · KG promotion)
+// W10 Section H — P2 Tan right-pane narrative (Safety · Tacit · KG promotion)
 // ═══════════════════════════════════════════════════════════════
 
-// W13 R1 Item #10 — P2 Lim right pane collapsed to Section C only (KG promotion).
+// W13 R1 Item #10 — P2 Tan right pane collapsed to Section C only (KG promotion).
 // Sections A (safety stage-gate theater) + B (tacit Singlish theater) dropped from markup;
 // their defs (P2_SECTION_A / P2_SECTION_B) + the openP2NarrativeModal path stay as dead code per WA #5.
 // Section C label retained ('C') for traceability against W12 selectors — not renumbered to '1'.
@@ -4595,7 +4595,7 @@ function openP2NarrativeModal(num) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// W10 Section C — P1 Faye right-pane narrative (3 sections + Play)
+// W10 Section C — P1 Nan right-pane narrative (3 sections + Play)
 // ═══════════════════════════════════════════════════════════════
 
 const P1_NARRATIVE_SECTIONS = [
@@ -4608,13 +4608,13 @@ const P1_NARRATIVE_SECTIONS = [
   {
     num: '2',
     title: 'SOP-driven telemetry confirmation',
-    sub: 'SOP says operator must confirm metrics. Agents fetch the snapshot and bundle it for Faye.',
+    sub: 'SOP says operator must confirm metrics. Agents fetch the snapshot and bundle it for Nan.',
     meta: '3 domain experts · 2 critics · sources: Hyperspace · SOP store',
   },
   {
     num: '3',
     title: 'Scheduling · Expertise match · Dispatch',
-    sub: 'Agents check duty roster + expertise DB · pick Lim Wei Jie · auto-bundle dispatch payload.',
+    sub: 'Agents check duty roster + expertise DB · pick Tan Suk · auto-bundle dispatch payload.',
     meta: '4 domain experts · 1 critic · source: Org Knowledge (roster · expertise DB · cert records)',
   },
 ];
@@ -4651,7 +4651,7 @@ function renderRightPaneFaye() {
     <div class="pn-section ${played ? 'pn-section-played' : ''}" data-section="workflows">
       <div class="pn-s-num">▸</div>
       <div class="pn-s-body">
-        <div class="pn-s-title">Agentic workflows for Faye</div>
+        <div class="pn-s-title">Agentic workflows for Nan</div>
         <div class="pn-s-sub">3 stage-gated workflows behind the scenes · click to walk through.</div>
       </div>
       <button class="pn-s-play ${played ? 'pn-s-played' : ''}" type="button" data-section="workflows">
@@ -4699,7 +4699,7 @@ const P1_SECTION_1 = {
   narration: [
     'Domain experts pull vibration RMS from Hyperspace and pattern-match against prior BFP failures.',
     'Criticality Scoring Agent uses Netscope analytics to confirm severity classification.',
-    'Incident Summary Synthesizer hands Faye a single Hyperspace-OS-sourced summary card.',
+    'Incident Summary Synthesizer hands Nan a single Hyperspace-OS-sourced summary card.',
   ],
 };
 
@@ -4711,9 +4711,9 @@ const P1_SECTION_2 = {
     { idx: 1, visual: 'sop-doc',         agent: 'SOP Retrieval Agent',         persistent: null,         caption: 'Pulls SOP-BFP-VIBR-001 from Org Knowledge' },
     { idx: 2, visual: 'sop-highlight',   agent: 'SOP Adherence Critic',        persistent: null,         caption: 'Flags Step 7: operator must verify telemetry' },
     { idx: 3, visual: 'chart-draw',      agent: 'Sensor Anomaly Inspector',    persistent: 'inspection', caption: 'Pulls last 15-min vibration RMS · NDE bearing housing' },
-    { idx: 4, visual: 'snapshot-staged', agent: 'Telemetry Snapshot Compiler', persistent: null,         caption: 'Bundles snapshot, places it in Faye Sit\'s queue' },
+    { idx: 4, visual: 'snapshot-staged', agent: 'Telemetry Snapshot Compiler', persistent: null,         caption: 'Bundles snapshot, places it in Nan Chai\'s queue' },
   ],
-  footer: 'The agents anticipated. Faye never asked. The snapshot was already waiting.',
+  footer: 'The agents anticipated. Nan never asked. The snapshot was already waiting.',
 };
 
 // W11 Section F — Parallel-match theater (4×4 matrix)
@@ -4722,15 +4722,15 @@ const P1_SECTION_3 = {
   template: 'parallel-match',
   criteria: ['Roster Check', 'Expertise Match', 'Availability Window', 'Certs Validator'],
   candidates: [
-    { id: 'lim',       name: 'Lim Wei Jie', results: ['pass', 'pass', 'pass', 'pass'], winner: true  },
-    { id: 'j-tan',     name: 'J. Tan',      results: ['pass', 'fail', 'na',   'na'  ], winner: false },
-    { id: 's-ibrahim', name: 'S. Ibrahim',  results: ['pass', 'pass', 'fail', 'na'  ], winner: false },
-    { id: 'm-lim',     name: 'M. Lim',      results: ['pass', 'pass', 'pass', 'fail'], winner: false },
+    { id: 'lim',       name: 'Tan Suk', results: ['pass', 'pass', 'pass', 'pass'], winner: true  },
+    { id: 'j-tan',     name: 'Som Yai',      results: ['pass', 'fail', 'na',   'na'  ], winner: false },
+    { id: 's-ibrahim', name: 'Lek Phon',  results: ['pass', 'pass', 'fail', 'na'  ], winner: false },
+    { id: 'm-lim',     name: 'Pim Rat',      results: ['pass', 'pass', 'pass', 'fail'], winner: false },
   ],
   counterLabel: '4 criteria × 4 candidates · evaluated in parallel',
   counterTime: '20-minute phone tag → ',
   counterTimeBold: '2.4 seconds',
-  dispatchHTML: '→ <strong>A2A Coordination Agent</strong> · dispatching to <span class="dyn-name">Lim Wei Jie</span> · payload pre-attached',
+  dispatchHTML: '→ <strong>A2A Coordination Agent</strong> · dispatching to <span class="dyn-name">Tan Suk</span> · payload pre-attached',
 };
 
 const P1_SECTION_BY_NUM = { '1': P1_SECTION_1, '2': P1_SECTION_2, '3': P1_SECTION_3 };
@@ -4741,7 +4741,7 @@ const P1_SECTION_BY_NUM = { '1': P1_SECTION_1, '2': P1_SECTION_2, '3': P1_SECTIO
 // ═══════════════════════════════════════════════════════════════
 
 const P1_WORKFLOWS = {
-  title: 'Agentic workflows for Faye',
+  title: 'Agentic workflows for Nan',
   steps: [
     {
       num: 1,
@@ -4765,8 +4765,8 @@ const P1_WORKFLOWS = {
         { name: 'Critic',           agents: ['SOP Adherence Critic'],                                       persistent: [null] },
         { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
-      outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Faye Review',
-      hitlNote: 'Human-in-the-loop · Faye must confirm telemetry (Step 1 Review)',
+      outputCaption: 'Action planner · SOP-BFP-VIBR-001 selected · telemetry pre-fetched · awaiting Nan Review',
+      hitlNote: 'Human-in-the-loop · Nan must confirm telemetry (Step 1 Review)',
     },
     {
       num: 3,
@@ -4778,7 +4778,7 @@ const P1_WORKFLOWS = {
         { name: 'Critic',           agents: ['Certs Validator'],                                            persistent: [null] },
         { name: 'Orchestrator',     agents: ['Orchestrator', 'A2A Coordination Agent'],                     persistent: ['orchestrator', 'workflow'] },
       ],
-      outputCaption: 'A2A Coordination Agent · dispatching to Lim Wei Jie · payload pre-attached',
+      outputCaption: 'A2A Coordination Agent · dispatching to Tan Suk · payload pre-attached',
     },
   ],
 };
@@ -5245,7 +5245,7 @@ function buildAnticipationCanvas(sectionDef) {
       <div class="nv-step-num">${s.idx}</div>
       <div class="nv-step-visual" data-visual="${s.visual}">
         ${ANTICIPATION_VISUALS[s.visual] || ''}
-        ${s.visual === 'snapshot-staged' ? '<div class="nv-anticipated-badge">✓ Anticipated · staged for Faye Sit</div>' : ''}
+        ${s.visual === 'snapshot-staged' ? '<div class="nv-anticipated-badge">✓ Anticipated · staged for Nan Chai</div>' : ''}
       </div>
       <div class="nv-step-agent">${s.agent}</div>
       <div class="nv-step-caption">${s.caption}</div>
@@ -5483,7 +5483,7 @@ function buildSafetyGateCanvas(sectionDef) {
         <div class="nv-sg-gate-title">SAFETY GATE · auto-inserted</div>
         <div class="nv-sg-gate-checks">
           <div class="nv-sg-check" data-check="hse" data-result="pending">HSE Compliance Agent · checking site safety status</div>
-          <div class="nv-sg-check" data-check="cert" data-result="pending">Safety Cert Validator · checking <span class="dyn-name">Lim Wei Jie</span> certs</div>
+          <div class="nv-sg-check" data-check="cert" data-result="pending">Safety Cert Validator · checking <span class="dyn-name">Tan Suk</span> certs</div>
           <div class="nv-sg-check" data-check="ppe" data-result="pending">PPE/LOTO Check Agent · verifying LOTO state</div>
         </div>
         <div class="nv-sg-gate-outcome" data-revealed="false">→ Gate cleared · work UNBLOCKED</div>
@@ -5545,7 +5545,7 @@ function buildTacitSinglishCanvas(sectionDef) {
     { txt: 'Byte · always check 4-o\'clock volute first',      unpromoted: false },
     { txt: 'Byte · Sulzer-specific failure mode',              unpromoted: false },
     { txt: 'Byte · vendor service rep visit (casual)',         unpromoted: true  },
-    { txt: 'Byte · Ismail mentioned Banyan case',              unpromoted: true  },
+    { txt: 'Byte · Anan mentioned Banyan case',              unpromoted: true  },
   ];
   return `
     <div class="nv-tacit-singlish-canvas">
@@ -5554,7 +5554,7 @@ function buildTacitSinglishCanvas(sectionDef) {
           <path d="M0 20 Q10 8 20 20 T40 20 T60 12 T80 20 T100 6 T120 20 T140 14 T160 20 T180 4 T200 20 T220 16 T240 20 T260 10 T280 20 T300 14 T320 20"
                 stroke="#3B82F6" stroke-width="1.5" fill="none"/>
         </svg>
-        <div class="nv-ts-audio-meta">Call audio · Lim Wei Jie ↔ <span class="dyn-name">Dr. A. Ismail</span> · 7m 23s</div>
+        <div class="nv-ts-audio-meta">Call audio · Tan Suk ↔ <span class="dyn-name">Dr. Anan Pong</span> · 7m 23s</div>
       </div>
       <div class="nv-ts-detection" data-revealed="false">
         🎤 <strong>Detected:</strong> English-Singapore (Singlish) · regional engineering vocabulary
@@ -5719,10 +5719,10 @@ function paintRightPaneStandard() {
 
 const KG_NODES = [
   // L1 People & Process (green) — y = 90
-  { id: 'r-kumar',         label: 'Faye Sit · Ops',           layer: 'L1', x:  20, y: 90, z:  20 },
-  { id: 'lim-wei-jie',     label: 'Lim Wei Jie · Onsite',     layer: 'L1', x: -20, y: 90, z: -20 },
-  { id: 'dr-ismail',         label: 'Dr. A. Ismail · Offsite',    layer: 'L1', x: -60, y: 90, z:  20 },
-  { id: 'p-sundaram',      label: 'P. Sundaram · Asset Perf', layer: 'L1', x:  60, y: 90, z: -20 },
+  { id: 'r-kumar',         label: 'Nan Chai · Ops',           layer: 'L1', x:  20, y: 90, z:  20 },
+  { id: 'lim-wei-jie',     label: 'Tan Suk · Onsite',     layer: 'L1', x: -20, y: 90, z: -20 },
+  { id: 'dr-ismail',         label: 'Dr. Anan Pong · Offsite',    layer: 'L1', x: -60, y: 90, z:  20 },
+  { id: 'p-sundaram',      label: 'Mali Sri · Asset Perf', layer: 'L1', x:  60, y: 90, z: -20 },
   { id: 'bu-power-gen',    label: 'BU · Power Gen',           layer: 'L1', x:   0, y: 90, z:  60 },
   { id: 'raci-derate',     label: 'RACI · derate ≥40MW',      layer: 'L1', x: -40, y: 90, z:  60 },
   { id: 'esc-pso',         label: 'Escalation · PSO window',  layer: 'L1', x:  40, y: 90, z:  60 },
@@ -6010,7 +6010,7 @@ const KG_STATE = {
 // Nodes present from cold load; triggerKGGrowth flashes green halo on tacit cluster 10s post-click.
 const KG_TACIT_NODES = [
   { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern', layer: 'L4', x: 360, y: -90, z:  30, canonical: false, isNew: true, cluster: 'tacit' },
-  { id: 'ismail-field-experience-2023',     label: 'Field experience · Ismail · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'ismail-field-experience-2023',     label: 'Field experience · Anan · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
   { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',     layer: 'L1', x: 400, y:  90, z: -20, canonical: false, isNew: true, cluster: 'tacit' },
 ];
 const KG_AUDITOR_NODES = [
@@ -6032,11 +6032,11 @@ const KG_CLUSTER_FLOW_EDGES = [
 ];
 KG_EDGES.push(...KG_CLUSTER_FLOW_EDGES);
 
-// Tacit cluster node IDs flashed (green halo) 10s after Lim diagnosis-confirmed click — W6 behavior preserved.
+// Tacit cluster node IDs flashed (green halo) 10s after Tan diagnosis-confirmed click — W6 behavior preserved.
 const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 
 // ── W10 Section I — Tacit-KG Staging cluster (4-tier flow) ──
-// Tacit bytes (raw from Lim ↔ Ismail call) → Knowledge Triage Agent → Process Engineering Review Agent
+// Tacit bytes (raw from Tan ↔ Anan call) → Knowledge Triage Agent → Process Engineering Review Agent
 // → promoted bytes route up to W7 tacit cluster (knowledge stratum).
 // 4-tier visual: main KG (-100..+100) → Auditor (180..260) → W7 Tacit (340..420) → Staging (500..600).
 const KG_STAGING_NODES = [
@@ -6044,7 +6044,7 @@ const KG_STAGING_NODES = [
   { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Jurong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-2', label: 'Byte · "always check 4-o\'clock volute first"',     layer: 'L4', x: 540, y:  30, z: -20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-3', label: 'Byte · "Sulzer-specific failure mode"',              layer: 'L4', x: 560, y:   0, z:  20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
-  { id: 'tacit-byte-4', label: 'Byte · "Ismail mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  { id: 'tacit-byte-4', label: 'Byte · "Anan mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   { id: 'tacit-byte-5', label: 'Byte · "casual aside · vendor service rep visit"',   layer: 'L4', x: 540, y: -60, z:  30, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   // 2 staging agents — gateway + promoter (blue halo, mirroring auditor cluster)
   { id: 'knowledge-triage-agent',           label: 'Knowledge Triage Agent',           layer: 'L1', x: 580, y:  20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
@@ -6076,7 +6076,7 @@ KG_EDGES.push(...KG_STAGING_EDGES);
 // Promoted byte IDs — green halo flash on P2 KG open
 const KG_STAGING_PROMOTED_IDS = KG_STAGING_NODES.filter(n => n.isPromoted).map(n => n.id);
 
-// ── W10 Section K — Commercial intelligence cluster (P3 Priya · trader-domain KG extension) ──
+// ── W10 Section K — Commercial intelligence cluster (P3 Mali · trader-domain KG extension) ──
 // 5-tier visual: + Commercial (x ∈ [700, 820]). Connects via bfp-3a → merchant-market-sg bridge.
 // W11 Section I — relayered across L5 (Markets) / L6 (Contracts) / L7 (Cross-site Network)
 const KG_COMMERCIAL_NODES = [
@@ -7318,8 +7318,8 @@ function toggleGraphWindow() {
 }
 
 // W14 R3 — Persona-scoped KG node/edge subset.
-// P2 (Lim · onsite): hide L6 Markets / L7 Contracts / L8 Cross-site (commercial layers).
-// L5 Predictive Intelligence now VISIBLE to Lim (patterns matter for diagnosis).
+// P2 (Tan · onsite): hide L6 Markets / L7 Contracts / L8 Cross-site (commercial layers).
+// L5 Predictive Intelligence now VISIBLE to Tan (patterns matter for diagnosis).
 // All other personas: full 8-layer graph.
 function getKGNodesForPersona(persona) {
   if (persona === 'onsite') {
@@ -7346,7 +7346,7 @@ function applyPersonaKGFilter(persona) {
 }
 
 // W16 — Persona-specific KG mount.
-// P2 (onsite · Lim) + P3 (analyst · Priya) use static SVG renderers (this wave).
+// P2 (onsite · Tan) + P3 (analyst · Mali) use static SVG renderers (this wave).
 // 3d-force-graph init code preserved as dead code per WA #5 for other personas.
 function openKGForPersona(persona) {
   const win = document.getElementById('kg-floating-window');
@@ -7422,21 +7422,21 @@ function mountSvgKG(body, win, persona) {
   wireKGParallaxTilt(body);
 }
 
-// ── P2 (Lim · onsite) — 5 layers (L1-L5) ──
+// ── P2 (Tan · onsite) — 5 layers (L1-L5) ──
 // W17 Section A: enriched 25 → 72 nodes · canvas widened 800→1100, height stays 720.
 // Layout grid: L1 (y=60), L2 (y=160), L3 (y=270/340/410 · 3 rows), L4 (y=510/580 · 2 rows), L5 (y=670).
 const P2_KG_NODES_DEF = [
   // L1 Org Structure (y=60 · 10 nodes · x spacing ~104px)
-  { id: 'lim',                label: 'Lim Wei Jie',                 layer: 'L1', x: 80,   y: 60 },
-  { id: 'faye',               label: 'Faye Sit',                    layer: 'L1', x: 184,  y: 60 },
-  { id: 'ismail',             label: 'Dr. A. Ismail',               layer: 'L1', x: 289,  y: 60 },
+  { id: 'lim',                label: 'Tan Suk',                 layer: 'L1', x: 80,   y: 60 },
+  { id: 'faye',               label: 'Nan Chai',                    layer: 'L1', x: 184,  y: 60 },
+  { id: 'ismail',             label: 'Dr. Anan Pong',               layer: 'L1', x: 289,  y: 60 },
   { id: 'supervisor',         label: 'Block 2 Supervisor',          layer: 'L1', x: 393,  y: 60 },
   { id: 'block1-supervisor',  label: 'Block 1 Supervisor',          layer: 'L1', x: 498,  y: 60 },
-  { id: 'maint-lead',         label: 'Maint Lead · S. Ibrahim',     layer: 'L1', x: 602,  y: 60 },
-  { id: 'hse-officer',        label: 'HSE · P. Subramaniam',        layer: 'L1', x: 707,  y: 60 },
-  { id: 'trading-lead',       label: 'Trading Lead · P. Sundaram',  layer: 'L1', x: 811,  y: 60 },
-  { id: 'asset-perf-mgr',     label: 'Asset Perf Mgr · J. Tan',     layer: 'L1', x: 916,  y: 60 },
-  { id: 'plant-mgr',          label: 'Plant Manager · M. Lim',      layer: 'L1', x: 1020, y: 60 },
+  { id: 'maint-lead',         label: 'Maint Lead · Lek Phon',     layer: 'L1', x: 602,  y: 60 },
+  { id: 'hse-officer',        label: 'HSE · Boon Tep',        layer: 'L1', x: 707,  y: 60 },
+  { id: 'trading-lead',       label: 'Trading Lead · Mali Sri',  layer: 'L1', x: 811,  y: 60 },
+  { id: 'asset-perf-mgr',     label: 'Asset Perf Mgr · Som Yai',     layer: 'L1', x: 916,  y: 60 },
+  { id: 'plant-mgr',          label: 'Plant Manager · Pim Rat',      layer: 'L1', x: 1020, y: 60 },
 
   // L2 SOPs (y=160 · 10 nodes)
   { id: 'sop-bfp-vibr',       label: 'SOP-BFP-VIBR-001',            layer: 'L2', x: 80,   y: 160 },
@@ -7607,7 +7607,7 @@ function renderP2KGSvg() {
   return buildKGSvg({ nodes, edges, persona: 'onsite', width: 1100, height: 840 });
 }
 
-// ── P3 (Priya · analyst) — all 8 layers ──
+// ── P3 (Mali · analyst) — all 8 layers ──
 // W17 Section B: L6/L7/L8 each expanded 5 → 15 nodes (total P3 = 72 P2 + 45 P3-only = 117).
 // Canvas widened 840→1100, height 1040→1500 to fit 8-layer commercial cluster.
 function renderP3KGSvg() {

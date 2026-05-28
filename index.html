@@ -1539,7 +1539,7 @@
 
     /* ─── Monitoring incident state pill — W3.2 extensions ─── */
     .mon-pill-state-review-ready { background: #ECFDF5; color: #065F46; }
-    /* W3.9 — TRIAGE READY (incident already triaged by AI; awaiting Faye review) */
+    /* W3.9 — TRIAGE READY (incident already triaged by AI; awaiting Nan review) */
     .mon-pill-state-triage-ready { background: #ECFDF5; color: #065F46; }
     .mon-pill-state-dispatched   { background: #F5F3FF; color: #5B21B6; }
 
@@ -1995,7 +1995,7 @@
       flex-shrink: 0;
     }
 
-    /* W14 R3 — P2 (Lim · onsite) hides L6/L7/L8 (new scheme: Markets/Contracts/Cross-site) */
+    /* W14 R3 — P2 (Tan · onsite) hides L6/L7/L8 (new scheme: Markets/Contracts/Cross-site) */
     #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L6"],
     #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L7"],
     #kg-floating-window[data-persona="onsite"] .kg-leg-row[data-layer="L8"] {
@@ -2304,7 +2304,7 @@
     .sr-alt-toggle[data-expanded="true"] .sr-alt-toggle-icon { transform: rotate(90deg); }
     .sr-alt-list { padding-top: 4px; }
 
-    /* W13 R2 — Rationale dropdown (replaces alt-hypotheses on Faye Summary) */
+    /* W13 R2 — Rationale dropdown (replaces alt-hypotheses on Nan Summary) */
     .sr-rationale-block {
       margin-top: 12px;
       padding-top: 12px;
@@ -2610,13 +2610,13 @@
     }
     .notes-standalone .notes-section { margin-top: 0; }
 
-    /* W8 B — Notes tile lives inside Step 2 action card (between Lim row + Confirm CTA). */
+    /* W8 B — Notes tile lives inside Step 2 action card (between Tan row + Confirm CTA). */
     .notes-standalone.notes-in-step2 {
       margin: 12px 0 14px;
       animation: reveal-slide 0.35s ease-out;
     }
 
-    /* W8 C.3 + C.4 — Lim incoming note: display-only, 12px top spacing from metrics 2x2. */
+    /* W8 C.3 + C.4 — Tan incoming note: display-only, 12px top spacing from metrics 2x2. */
     .notes-standalone.notes-incoming {
       margin-top: 12px;
     }
@@ -2739,9 +2739,9 @@
     }
     .dispatched-to-label strong { color: var(--text-primary); font-weight: 700; }
 
-    /* ────────── W4 — Lim curated Screen D ────────── */
+    /* ────────── W4 — Tan curated Screen D ────────── */
 
-    /* Inspection checklist (replaces Action Steps section for Lim) */
+    /* Inspection checklist (replaces Action Steps section for Tan) */
     .inspection-checklist {
       margin: 14px 16px;
       padding: 14px 16px;
@@ -3275,7 +3275,7 @@
     }
     .post-call-confirm-btn:hover { background: var(--green-deep); }
 
-    /* Revised diagnosis tile (Lim post-call + Ismail read-only) */
+    /* Revised diagnosis tile (Tan post-call + Anan read-only) */
     .sr-hypothesis-revised { padding-top: 4px; }
     .sr-hyp-original {
       padding-bottom: 6px; border-bottom: 1px dashed var(--border-subtle);
@@ -3333,7 +3333,7 @@
     }
     .sr-hyp-transcript-link:hover, .ismail-tx-link:hover { color: var(--green-deep); }
 
-    /* Ismail curated Screen D */
+    /* Anan curated Screen D */
     .ismail-fwd-line {
       font-size: 12.5px; line-height: 1.55;
       padding: 10px 0; color: var(--text-secondary);
@@ -3366,7 +3366,7 @@
     }
     .ismail-approve-cta:not(:disabled):hover { background: var(--green-deep); }
 
-    /* Ismail post-approval banner on monitoring home */
+    /* Anan post-approval banner on monitoring home */
     .ismail-post-approval-banner {
       display: flex; align-items: center; gap: 10px;
       margin: 8px 16px 12px;
@@ -3660,7 +3660,7 @@
     .mon-pill-state-dispatched { background: #EFF6FF; color: #1D4ED8; }
 
     /* ═══════════════════════════════════════════════
-       W5 — Faye Escalation Report (renderOpsEscalationReport)
+       W5 — Nan Escalation Report (renderOpsEscalationReport)
        ═══════════════════════════════════════════════ */
     .ops-escalation-report { padding-bottom: 14px; }
     .oer-card {
@@ -3737,7 +3737,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       W5 — Priya Analyst Screen D (renderAnalystIncidentDetail)
+       W5 — Mali Analyst Screen D (renderAnalystIncidentDetail)
        ═══════════════════════════════════════════════ */
     .analyst-card {
       margin: 14px 16px;
@@ -3936,7 +3936,7 @@
       background: var(--green-soft); color: var(--green-soft-text);
     }
 
-    /* W5 — Persistent demo-end banner on Priya monitoring */
+    /* W5 — Persistent demo-end banner on Mali monitoring */
     .demo-end-banner {
       display: flex; align-items: center; gap: 10px;
       margin: 8px 16px 14px;
@@ -5319,7 +5319,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       W8 G — Priya laptop view (MacBook-style chrome + trading dashboard + 60% modal)
+       W8 G — Mali laptop view (MacBook-style chrome + trading dashboard + 60% modal)
        ═══════════════════════════════════════════════ */
 
     #laptop-frame {
@@ -5968,7 +5968,7 @@
         </div>
       </div>
 
-      <!-- W8 G — LAPTOP FRAME (Priya analyst view · MacBook-style chrome) -->
+      <!-- W8 G — LAPTOP FRAME (Mali analyst view · MacBook-style chrome) -->
       <div id="laptop-frame" style="display: none">
         <div class="laptop-screen">
           <div class="laptop-titlebar">
@@ -6402,10 +6402,10 @@
             <span class="kg-layer-count">8</span>
           </div>
           <div class="kg-layer-nodes">
-            <span class="kg-node">Faye Sit · Ops</span>
-            <span class="kg-node">Lim Wei Jie · Onsite</span>
-            <span class="kg-node">Dr. A. Ismail · Offsite</span>
-            <span class="kg-node">P. Sundaram · Asset Perf</span>
+            <span class="kg-node">Nan Chai · Ops</span>
+            <span class="kg-node">Tan Suk · Onsite</span>
+            <span class="kg-node">Dr. Anan Pong · Offsite</span>
+            <span class="kg-node">Mali Sri · Asset Perf</span>
             <span class="kg-node">BU · Power Gen</span>
             <span class="kg-node">RACI · derate ≥40MW</span>
             <span class="kg-node">Escalation · PSO window</span>
@@ -6599,16 +6599,16 @@
       <div class="transcript-modal-header">
         <div class="transcript-modal-title">Call transcript</div>
         <div class="transcript-modal-sub">
-          Lim Wei Jie ↔ Dr. A. Ismail · 02:48 SGT · 7m 23s · auto-generated via Hyperspace OS
+          Tan Suk ↔ Dr. Anan Pong · 02:48 SGT · 7m 23s · auto-generated via Hyperspace OS
         </div>
       </div>
       <div class="transcript-modal-body">
-        <div class="tx-line"><span class="tx-spk">L. Lim</span><span class="tx-txt">Ismail-sir, vibration on BFP-3A NDE bearing — checks don't fit bearing spalling cleanly. Bearing temp normal, lube oil clean, no spall pattern on the inspection port. Something else.</span></div>
-        <div class="tx-line"><span class="tx-spk">Dr. Ismail</span><span class="tx-txt">Pull up the casing inspection from your station. Look for hairline cracking around the volute weld near the discharge flange.</span></div>
-        <div class="tx-line"><span class="tx-spk">L. Lim</span><span class="tx-txt">... I see it. Faint discontinuity at the 4-o'clock position on the casing, about 60mm from the discharge weld. Liquid penetrant would confirm.</span></div>
-        <div class="tx-line"><span class="tx-spk">Dr. Ismail</span><span class="tx-txt">That's casing crack — same failure mode I saw on Jurong-CCGT-2 BFP three years ago. Pump casing fatigue under cyclic pressure load. Vibration is a symptom, not the root cause.</span></div>
-        <div class="tx-line"><span class="tx-spk">L. Lim</span><span class="tx-txt">Updating diagnosis: pump casing crack · BFP-3A. Bearing damage looks like secondary fatigue from imbalanced loading.</span></div>
-        <div class="tx-line"><span class="tx-spk">Dr. Ismail</span><span class="tx-txt">Confirmed. Shutdown required — can't run with a propagating casing crack. Escalating back to Faye for ops + commercial impact routing.</span></div>
+        <div class="tx-line"><span class="tx-spk">Tan Suk</span><span class="tx-txt">Anan-sir, vibration on BFP-3A NDE bearing — checks don't fit bearing spalling cleanly. Bearing temp normal, lube oil clean, no spall pattern on the inspection port. Something else.</span></div>
+        <div class="tx-line"><span class="tx-spk">Dr. Anan</span><span class="tx-txt">Pull up the casing inspection from your station. Look for hairline cracking around the volute weld near the discharge flange.</span></div>
+        <div class="tx-line"><span class="tx-spk">Tan Suk</span><span class="tx-txt">... I see it. Faint discontinuity at the 4-o'clock position on the casing, about 60mm from the discharge weld. Liquid penetrant would confirm.</span></div>
+        <div class="tx-line"><span class="tx-spk">Dr. Anan</span><span class="tx-txt">That's casing crack — same failure mode I saw on Jurong-CCGT-2 BFP three years ago. Pump casing fatigue under cyclic pressure load. Vibration is a symptom, not the root cause.</span></div>
+        <div class="tx-line"><span class="tx-spk">Tan Suk</span><span class="tx-txt">Updating diagnosis: pump casing crack · BFP-3A. Bearing damage looks like secondary fatigue from imbalanced loading.</span></div>
+        <div class="tx-line"><span class="tx-spk">Dr. Anan</span><span class="tx-txt">Confirmed. Shutdown required — can't run with a propagating casing crack. Escalating back to Nan for ops + commercial impact routing.</span></div>
       </div>
       <div class="transcript-modal-footer">
         <strong>Revised diagnosis:</strong> Crack in pump casing · BFP-3A · confirmed via field-experience pattern + targeted inspection (60mm discontinuity, 4 o'clock on volute, near discharge weld). Bearing damage secondary. Action: immediate shutdown + casing replacement scheduling. Material commercial impact — escalation required.
