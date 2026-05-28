@@ -235,10 +235,10 @@ const INCIDENT = {
 
 // ── Persona roster ──
 const PERSONAS = [
-  { key: 'ops',     role: 'Ops · Control Tower',   name: 'FAYE SIT' },
-  { key: 'onsite',  role: 'Onsite · Maint',         name: 'LIM WEI JIE' },
-  { key: 'offsite', role: 'Offsite · Expert',       name: 'DR. A. WONG' },
-  { key: 'analyst', role: 'Asset Perf · Analyst',   name: 'PRIYA SUNDARAM' },
+  { key: 'ops',     role: 'Ops · Control Tower',   name: 'NAN CHAI' },
+  { key: 'onsite',  role: 'Onsite · Maint',         name: 'TAN SUK' },
+  { key: 'offsite', role: 'Offsite · Expert',       name: 'DR. ANAN PONG' },
+  { key: 'analyst', role: 'Asset Perf · Analyst',   name: 'MALI SRI' },
 ];
 
 // ── Persona scene SVGs (light-theme retuned) ──
@@ -4799,7 +4799,7 @@ function openP1WorkflowsModal() {
   backdrop.innerHTML = `
     <div class="narrative-modal narrative-modal-workflows" role="dialog" aria-modal="true">
       <div class="narrative-modal-header">
-        <div class="nm-section-num">FAYE</div>
+        <div class="nm-section-num">NAN</div>
         <div class="nm-section-title">${P1_WORKFLOWS.title}</div>
         <button class="nm-close" type="button" aria-label="Close">×</button>
       </div>
