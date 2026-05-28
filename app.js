@@ -242,15 +242,15 @@ const PERSONAS = [
 ];
 
 // ── Persona scene SVGs (light-theme retuned) ──
-// Stroke #475569 (slate-600) for silhouette/structure, #00A651 (Sembcorp green) for active accents,
+// Stroke #475569 (slate-600) for silhouette/structure, #00529B (Sembcorp green) for active accents,
 // #94A3B8 (slate-400) for schematic lines.
 const PERSONA_SCENES = {
   ops: `
     <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
       <!-- 3-monitor wall -->
-      <rect x="6"   y="10" width="36" height="22" rx="2" fill="#FFFFFF" stroke="#00A651" stroke-width="0.7"/>
-      <rect x="48"  y="6"  width="44" height="26" rx="2" fill="#FFFFFF" stroke="#00A651" stroke-width="0.7"/>
-      <rect x="98"  y="10" width="36" height="22" rx="2" fill="#FFFFFF" stroke="#00A651" stroke-width="0.7"/>
+      <rect x="6"   y="10" width="36" height="22" rx="2" fill="#FFFFFF" stroke="#00529B" stroke-width="0.7"/>
+      <rect x="48"  y="6"  width="44" height="26" rx="2" fill="#FFFFFF" stroke="#00529B" stroke-width="0.7"/>
+      <rect x="98"  y="10" width="36" height="22" rx="2" fill="#FFFFFF" stroke="#00529B" stroke-width="0.7"/>
       <!-- gridlines in center monitor -->
       <line x1="55" y1="13" x2="86" y2="13" stroke="#94A3B8" stroke-width="0.4" stroke-dasharray="2,2"/>
       <line x1="55" y1="20" x2="86" y2="20" stroke="#94A3B8" stroke-width="0.4" stroke-dasharray="2,2"/>
@@ -269,7 +269,7 @@ const PERSONA_SCENES = {
       <line x1="83" y1="36" x2="107" y2="36" stroke="#94A3B8" stroke-width="0.5"/>
       <circle cx="95" cy="36" r="5" fill="none" stroke="#475569" stroke-width="0.6"/>
       <!-- hard hat silhouette -->
-      <path d="M 32 28 Q 32 20 44 20 Q 56 20 56 28 L 56 30 L 32 30 Z" fill="#00A651"/>
+      <path d="M 32 28 Q 32 20 44 20 Q 56 20 56 28 L 56 30 L 32 30 Z" fill="#00529B"/>
       <rect x="30" y="29" width="28" height="2" fill="#475569"/>
       <circle cx="44" cy="36" r="4.5" fill="#475569"/>
       <path d="M 30 66 Q 44 44 58 66 Z" fill="#475569"/>
@@ -302,11 +302,11 @@ const PERSONA_SCENES = {
       <!-- monitor -->
       <rect x="38" y="10" width="64" height="36" rx="2" fill="#FFFFFF" stroke="#475569" stroke-width="0.7"/>
       <!-- bar chart -->
-      <rect x="46" y="34" width="6" height="8"  fill="#00A651"/>
-      <rect x="56" y="28" width="6" height="14" fill="#00A651"/>
-      <rect x="66" y="22" width="6" height="20" fill="#00A651"/>
-      <rect x="76" y="18" width="6" height="24" fill="#00A651"/>
-      <rect x="86" y="14" width="6" height="28" fill="#00A651"/>
+      <rect x="46" y="34" width="6" height="8"  fill="#00529B"/>
+      <rect x="56" y="28" width="6" height="14" fill="#00529B"/>
+      <rect x="66" y="22" width="6" height="20" fill="#00529B"/>
+      <rect x="76" y="18" width="6" height="24" fill="#00529B"/>
+      <rect x="86" y="14" width="6" height="28" fill="#00529B"/>
       <line x1="44" y1="42" x2="96" y2="42" stroke="#475569" stroke-width="0.5"/>
       <!-- dollar overlay -->
       <text x="91" y="22" font-family="monospace" font-size="10" fill="#DB2777" font-weight="bold">$</text>
@@ -1132,7 +1132,7 @@ function buildScreenDSourceLegend() {
       <span>Hyperspace OS</span>
     </span>
     <span class="source-chip">
-      <svg class="source-ic" viewBox="0 0 24 24" width="18" height="18" fill="#00A651" aria-hidden="true">
+      <svg class="source-ic" viewBox="0 0 24 24" width="18" height="18" fill="#00529B" aria-hidden="true">
         <path d="M12 2C7 7 4 11 4 15a8 8 0 0 0 16 0c0-4-3-8-8-13zm0 5l4 4-4 4-4-4 4-4z"/>
       </svg>
       <span>NetZeroOS</span>
@@ -3451,8 +3451,8 @@ function spawnAnalystScreenContent() {
             </div>
             <div class="ac-opt-viz">
               <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
-                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5" stroke="#00A651" stroke-width="2" fill="none"/>
+                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5 L 120 36 L 0 36 Z" fill="#00529B" opacity="0.15"/>
+                <path d="M 0 30 L 20 28 L 40 24 L 60 18 L 80 12 L 100 8 L 120 5" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
                 <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 2.4M</div>
@@ -3470,8 +3470,8 @@ function spawnAnalystScreenContent() {
             </div>
             <div class="ac-opt-viz">
               <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
-                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
+                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8 L 120 36 L 0 36 Z" fill="#00529B" opacity="0.15"/>
+                <path d="M 0 32 L 30 32 L 30 16 L 70 16 L 70 8 L 120 8" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
                 <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.98M</div>
@@ -3489,8 +3489,8 @@ function spawnAnalystScreenContent() {
             </div>
             <div class="ac-opt-viz">
               <svg class="ac-opt-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8 L 120 36 L 0 36 Z" fill="#00A651" opacity="0.15"/>
-                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8" stroke="#00A651" stroke-width="2" fill="none"/>
+                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8 L 120 36 L 0 36 Z" fill="#00529B" opacity="0.15"/>
+                <path d="M 0 24 L 30 22 L 50 26 L 70 10 L 90 4 L 100 6 L 120 8" stroke="#00529B" stroke-width="2" fill="none"/>
               </svg>
               <div class="ac-opt-stats">
                 <div class="ac-opt-amt-chip ac-opt-amt-positive">+SGD 1.56M</div>
@@ -4186,14 +4186,14 @@ function paintLaptopDashboard(content) {
           <svg class="td-usep-trend" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="td-usep-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#00A651" stop-opacity="0.5"/>
-                <stop offset="100%" stop-color="#00A651" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#00529B" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#00529B" stop-opacity="0"/>
               </linearGradient>
             </defs>
             <path d="M0 80 L40 75 L80 65 L120 68 L160 55 L200 50 L240 45 L280 38 L320 42 L320 100 L0 100 Z"
                   fill="url(#td-usep-grad)"/>
             <path d="M0 80 L40 75 L80 65 L120 68 L160 55 L200 50 L240 45 L280 38 L320 42"
-                  stroke="#00A651" stroke-width="2" fill="none"/>
+                  stroke="#00529B" stroke-width="2" fill="none"/>
             <line x1="0" y1="100" x2="320" y2="100" stroke="#E5E7EB"/>
           </svg>
           <div class="td-position-summary">
@@ -4222,7 +4222,7 @@ function paintLaptopDashboard(content) {
             <div class="td-zone-margin-body">
               <svg class="td-margin-donut" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="60" cy="60" r="50" stroke="#E5E7EB" stroke-width="12" fill="none"/>
-                <circle cx="60" cy="60" r="50" stroke="#00A651" stroke-width="12" fill="none"
+                <circle cx="60" cy="60" r="50" stroke="#00529B" stroke-width="12" fill="none"
                         stroke-dasharray="88 314" stroke-linecap="round"
                         transform="rotate(-90 60 60)"/>
                 <text x="60" y="64" text-anchor="middle" font-size="22" font-weight="800" fill="#0F1B3D">28%</text>
@@ -6484,7 +6484,7 @@ function initKG3D() {
         // Newly-added (W6 KG growth) keeps green flash; everything else = white halo radius*1.18 opacity 0.95.
         // Per-cluster ring color logic (staging/auditor/tacit/commercial) DROPPED.
         const isNewlyAdded = KG_STATE.newlyAddedNodes && KG_STATE.newlyAddedNodes.has(node.id);
-        const ringColor = isNewlyAdded ? 0x00A651 : 0xFFFFFF;
+        const ringColor = isNewlyAdded ? 0x00529B : 0xFFFFFF;
         const ringRadius = isNewlyAdded ? radius * 1.55 : radius * 1.18;
         const ringGeo = isTacitByte
           ? new THREE.OctahedronGeometry(ringRadius * 1.05, 0)
@@ -6507,7 +6507,7 @@ function initKG3D() {
       // Drops W14 R3 double-attenuation (rgba 0.75 × opacity 0.85 = 0.64 effective).
       .linkColor(link => {
         if (chainContainsLink(link)) return '#FFFFFF';
-        if (link.isPromotionEdge)    return '#00A651';
+        if (link.isPromotionEdge)    return '#00529B';
         return link.canonical ? '#94A3B8' : '#64748B';
       })
       .linkWidth(link => {
@@ -6518,7 +6518,7 @@ function initKG3D() {
       .linkDirectionalParticles(link => link.isPromotionEdge ? 3 : 0)
       .linkDirectionalParticleSpeed(0.008)
       .linkDirectionalParticleWidth(2.5)
-      .linkDirectionalParticleColor(() => '#00A651')
+      .linkDirectionalParticleColor(() => '#00529B')
       .linkOpacity(0.92)
       .backgroundColor('#0A0F1C')
       .showNavInfo(false)
