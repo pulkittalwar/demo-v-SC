@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// PTT OS — Demo · Wave 1.5
+// NEXUS — Demo · Wave 1.5
 // LIGHT THEME · personas panel external above tablet · Ops Control Tower view.
 // render() is PURE PAINT — no timers, no animation kickoffs.
 // ─────────────────────────────────────────────
@@ -120,27 +120,27 @@ const PERSONA_INITIALS = {
 
 const BANNER_COPY = {
   ops: {
-    label: 'NEW INCIDENT · PTT OS',
+    label: 'NEW INCIDENT · NEXUS',
     body:  'RYG-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 ICT',
   },
   opsRouteBack: {
-    label: 'ROUTED BACK · PTT OS',
+    label: 'ROUTED BACK · NEXUS',
     body:  'INC-2026-0537 · Returned from <span class="dyn-name">Tan Suk</span> · diagnosis revised via expert call · ops + commercial action required',
   },
   opsConfirmedReturn: {
-    label: 'WO SUBMITTED · PTT OS',
+    label: 'WO SUBMITTED · NEXUS',
     body:  'INC-2026-0537 · Returned from <span class="dyn-name">Tan Suk</span> · diagnosis confirmed · WO submitted · ops review required',
   },
   onsite: {
-    label: 'INCOMING HANDOFF · PTT OS',
+    label: 'INCOMING HANDOFF · NEXUS',
     body:  'INC-2026-0537 · Routed from <span class="dyn-name">Nan Chai</span> · onsite verification requested',
   },
   offsite: {
-    label: 'INCOMING HANDOFF · PTT OS',
+    label: 'INCOMING HANDOFF · NEXUS',
     body:  'INC-2026-0537 · Routed from <span class="dyn-name">Tan Suk</span> · diagnosis revision + escalation pending sign-off',
   },
   analyst: {
-    label: 'INCOMING ESCALATION · PTT OS',
+    label: 'INCOMING ESCALATION · NEXUS',
     body:  'INC-2026-0537 · Routed from <span class="dyn-name">Nan Chai</span> · trading desk decision required',
   },
 };
@@ -862,7 +862,7 @@ function playSOPAnticipationTheater() {
       ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Compliance Agent · confirming SOP-BFP-VIBR-001 specific steps · checking pre-conditions',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['sop-bfp-vibration-investigation'],
     });
   }
@@ -890,7 +890,7 @@ function revealStep1WithAddButton() {
         <span class="as-step-title">Step 1 · Inspect and confirm telemetry</span>
       </div>
       <div class="as-step-body">
-        <span class="as-step-msg">Telemetry snapshot pre-fetched by PTT OS · pending operator confirmation</span>
+        <span class="as-step-msg">Telemetry snapshot pre-fetched by NEXUS · pending operator confirmation</span>
         <button class="as-step-add-btn" type="button">Review</button>
       </div>
     </div>`;
@@ -1058,7 +1058,7 @@ function unlockActionStep2() {
   state.actionSteps.step2.status = 'finding';
   step2.querySelector('.as-step-body').innerHTML = `
     <span class="as-step-spinner"><span class="reveal-dots"><span></span><span></span><span></span></span></span>
-    <span class="as-step-msg">PTT OS · finding on-duty engineers…</span>`;
+    <span class="as-step-msg">NEXUS · finding on-duty engineers…</span>`;
   // W6 — fire Workflow Agent card synced with Step 2 (5s find)
   fireAgentCardLifecycle('workflow', 5000);
   pushReveal(() => {
@@ -1129,7 +1129,7 @@ function buildScreenDSourceLegend() {
       <svg class="source-ic" viewBox="0 0 24 24" width="18" height="18" fill="#3B82F6" aria-hidden="true">
         <path d="M12 2l1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2z"/>
       </svg>
-      <span>PTT OS</span>
+      <span>NEXUS</span>
     </span>
     <span class="source-chip">
       <svg class="source-ic" viewBox="0 0 24 24" width="18" height="18" fill="#00529B" aria-hidden="true">
@@ -1424,7 +1424,7 @@ function fireRevealBlock2Agents() {
   const agentId = 'pl';
   setAgentActive(agentId, 'Revenue Commitment Exposure', 3);
   const lines = [
-    { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 ICT',         dataSource: 'PTT OS', nodeChain: ['esc-pso','pred-mw-derate'] },
+    { ts: '02:47:16', source: 'pl', text: 'pulling PSO commitment window 09:00–18:00 ICT',         dataSource: 'NEXUS', nodeChain: ['esc-pso','pred-mw-derate'] },
     { ts: '02:47:17', source: 'pl', text: 'revenue at risk · 50MW × 4h × THB 3,250/MWh peak tariff', dataSource: 'NetZeroOS',     nodeChain: ['pred-mw-derate'] },
     { ts: '02:47:18', source: 'pl', text: 'exposure ~THB 65M · forward Q3 capacity hedge eligible', dataSource: 'NetZeroOS',   nodeChain: ['pred-mw-derate','roi-wash'] },
   ];
@@ -1445,10 +1445,10 @@ function fireRevealBlock3Agents() {
 
   const lines = [
     { ts: '02:47:19', source: 'triage',           text: 'pattern-match · 3 prior RCAs · compressor fouling humidity-correlated', dataSource: 'PTT KG', nodeChain: ['rca-2025-014-map-ta-phut','rca-2024-093-rayong','rca-2025-031-rayong2','pat-comp-fouling'] },
-    { ts: '02:47:20', source: 'triage',           text: 'diagnosis hypothesis · 78% confidence',                                  dataSource: 'PTT OS', nodeChain: ['pat-comp-fouling'] },
+    { ts: '02:47:20', source: 'triage',           text: 'diagnosis hypothesis · 78% confidence',                                  dataSource: 'NEXUS', nodeChain: ['pat-comp-fouling'] },
     { ts: '02:47:21', source: 'playbook',         text: 'OEM procedure · GE 9HA compressor offline wash · est 6h',                dataSource: 'Maximo',         nodeChain: ['oem-ge-9ha-manual','rec-oem-playbook'] },
     { ts: '02:47:22', source: 'critic-power-gen', text: 'KG path validated · humidity-fouling matches GE 9HA degradation curve ✓', dataSource: 'PTT KG', nodeChain: ['pat-comp-fouling','mdl-humidity-v3','oem-ge-9ha-manual'] },
-    { ts: '02:47:23', source: 'orchestrator',     text: 'recommendation ready · SOP-WASH-001 · awaiting dispatch',                 dataSource: 'PTT OS', nodeChain: ['rec-oem-playbook'] },
+    { ts: '02:47:23', source: 'orchestrator',     text: 'recommendation ready · SOP-WASH-001 · awaiting dispatch',                 dataSource: 'NEXUS', nodeChain: ['rec-oem-playbook'] },
   ];
   lines.forEach((line, idx) => {
     pushReveal(() => {
@@ -1519,7 +1519,7 @@ function onInitialDiagnosisConfirmClick() {
       ts: currentICTLog(),
       source: 'orchestrator',
       text: 'Initial diagnosis confirmed by Nan Chai · workflow handoff to SOP-relevant next-best actions',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['bearing-spalling-pattern', 'sop-bfp-vibration-investigation'],
     });
   }
@@ -1647,7 +1647,7 @@ function appendDispatchCaptureFooter() {
   footer.innerHTML = `
     <div class="dcf-line">
       <span class="dcf-ic">✓</span>
-      <span class="dcf-txt"><strong>PTT OS</strong> confirms SOP followed</span>
+      <span class="dcf-txt"><strong>NEXUS</strong> confirms SOP followed</span>
     </div>
     <div class="dcf-line">
       <span class="dcf-ic">✓</span>
@@ -1936,7 +1936,7 @@ function paintLimSummaryComplete(revised) {
   if (revised) {
     tileHtml = buildRevisedDiagnosisTileHTML();
   } else {
-    // W8 C.1 — confirmation pill: Nan already passed this through PTT OS · pending onsite verification.
+    // W8 C.1 — confirmation pill: Nan already passed this through NEXUS · pending onsite verification.
     tileHtml = `
       <div class="sr-hypothesis">
         <div class="sr-hyp-row">
@@ -2319,7 +2319,7 @@ function triggerGroupTheater(targetGroupName, opts = {}) {
       ts: currentICTLog(),
       source: meta.source,
       text: `${meta.displayName} · ${meta.loadingText}`,
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: meta.nodeChain,
     });
   }
@@ -2352,7 +2352,7 @@ function logChecklistItem(itemId) {
     ts: currentICTLog(),
     source: 'workflow',
     text: `Inspection check · ${itemId} · confirmed by Tan Suk`,
-    dataSource: 'PTT OS',
+    dataSource: 'NEXUS',
     nodeChain: ['sop-bfp-vibration-investigation'],
   });
 }
@@ -2426,7 +2426,7 @@ function paintDiagnosisVerdict() {
       ts: currentICTLog(),
       source: 'workflow',
       text: 'Inspection workflow complete · 10/10 checks logged · Fault review gated open',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['sop-bfp-vibration-investigation'],
     });
   }
@@ -2498,7 +2498,7 @@ function onSOPSuggestCallClick() {
       ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Action Agent · Connecting to Dr. Anan Pong via call · routing through escalation playbook',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['dr-ismail', 'sop-bfp-vibration-investigation'],
     });
   }
@@ -2526,8 +2526,8 @@ function onVerdictConfirm() {
   appendConfirmedCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'PTT OS hypothesis confirmed by Tan Suk · WO submitted', dataSource: 'PTT OS', nodeChain: ['sop-bfp-vibration-investigation'] });
-    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Nan Chai notified', dataSource: 'PTT OS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'NEXUS hypothesis confirmed by Tan Suk · WO submitted', dataSource: 'NEXUS', nodeChain: ['sop-bfp-vibration-investigation'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'Workflow trace · P2 Onsite → P1 Ops Tower · WO chain enriched · Nan Chai notified', dataSource: 'NEXUS', nodeChain: ['r-kumar'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
   render();
@@ -2539,7 +2539,7 @@ function appendConfirmedCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> · diagnosis confirmed · WO submitted</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> · diagnosis confirmed · WO submitted</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Workflow trace routed to <strong>A2A Coordination Agent</strong></span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><span class="dyn-name">Nan Chai</span> notified · returned for ops + commercial action</span></div>`;
   container.appendChild(footer);
@@ -2604,7 +2604,7 @@ function onCallEnd() {
       ts: currentICTLog(),
       source: 'audio-transcription',
       text: 'Audio-transcription Agent · Capturing call audio · generating transcript',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: [],
     });
   }
@@ -2625,7 +2625,7 @@ function onCallEnd() {
         ts: currentICTLog(),
         source: 'audio-transcription',
         text: 'Call transcript generated · 7m 23s · 6 exchanges · auto-attached',
-        dataSource: 'PTT OS',
+        dataSource: 'NEXUS',
         nodeChain: [],
       });
     }
@@ -2643,7 +2643,7 @@ function onCallEnd() {
           ts: currentICTLog(),
           source: 'audio-transcription',
           text: 'Transcript analysis · diarized speakers · revised diagnosis extracted',
-          dataSource: 'PTT OS',
+          dataSource: 'NEXUS',
           nodeChain: ['pump-casing-crack-pattern'],
         });
       }
@@ -2725,7 +2725,7 @@ function onDiagnosisConfirmedClick() {
       ts: currentICTLog(),
       source: 'workflow',
       text: `Diagnosis revised at ${state.lim.revisionTimestamp} · pump casing crack confirmed via call + targeted inspection`,
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['pump-casing-crack-pattern', 'casing-bfp-3a', 'casing-rca-jrg-2023'],
     });
   }
@@ -2742,7 +2742,7 @@ function triggerKGGrowth() {
       ts: currentICTLog(),
       source: 'workflow',
       text: "Tacit knowledge captured from Dr. Anan Pong's expert collaboration · 3 KG nodes refreshed · BFP casing patterns codified",
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['casing-tacit-knowledge', 'ismail-field-experience-2023', 'bfp-casing-inspection-protocol'],
     });
   }
@@ -2795,7 +2795,7 @@ function spawnReviseDiagnosisTile() {
       <div class="rdt-body">
         <div class="rdt-heading">REVISED FAULT</div>
         <div class="rdt-text">
-          PTT OS detected that in addition to the bearings the main reason for this was actually a <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. Anan Pong</span>.
+          NEXUS detected that in addition to the bearings the main reason for this was actually a <span class="dyn-name">crack in pump casing on BFP-3A</span> based on call with <span class="dyn-name">Dr. Anan Pong</span>.
         </div>
       </div>
       <button class="rdt-confirm-btn" type="button">Add review finding</button>
@@ -2844,7 +2844,7 @@ function onConfirmRevisedDiagnosisClick() {
       ts: currentICTLog(),
       source: 'sop-action',
       text: 'SOP Action Agent · Reviewing SOP-BFP-VIBR-001 + cross-checking revised diagnosis · routing to Ops',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'],
     });
   }
@@ -2869,8 +2869,8 @@ function advanceToRoutedRevisedDiagnosis() {
   appendRevisedDiagnosisCaptureFooter();
 
   if (window.LOG) {
-    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Nan Chai for ops + commercial impact', dataSource: 'PTT OS', nodeChain: ['r-kumar'] });
-    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'PTT OS', nodeChain: ['pump-casing-crack-pattern'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'State advance · REVISED_DIAGNOSIS_ROUTED · routed to Nan Chai for ops + commercial impact', dataSource: 'NEXUS', nodeChain: ['r-kumar'] });
+    window.LOG.appendLine({ ts: currentICTLog(), source: 'workflow', text: 'KG enriched · revised diagnosis + call transcript attached to incident', dataSource: 'NEXUS', nodeChain: ['pump-casing-crack-pattern'] });
   }
   fireAgentCardLifecycle('workflow', 2000);
   render();
@@ -2882,7 +2882,7 @@ function appendRevisedDiagnosisCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> · <span class="dyn-name">Nan Chai</span> notified · revised diagnosis routed</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> · <span class="dyn-name">Nan Chai</span> notified · revised diagnosis routed</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript + revised diagnosis routed to <strong>A2A Coordination Agent</strong> for chain-of-custody</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · revised diagnosis + transcript enriched · routing recorded</span></div>`;
   container.appendChild(footer);
@@ -2916,7 +2916,7 @@ function appendEscalationCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> confirms revised diagnosis SOP followed</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> confirms revised diagnosis SOP followed</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Call transcript routed to <strong>A2A Coordination Agent</strong> for review</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · team · incident · revised diagnosis + transcript enriched</span></div>`;
   container.appendChild(footer);
@@ -2931,9 +2931,9 @@ function fireWorkflowAgentArcEscalate() {
   setAgentActive(agentId, 'Escalation Capture', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200,  line: { ts: '02:56:10', source: 'workflow', text: 'Tan Suk · escalation captured · revised diagnosis pump casing crack', dataSource: 'PTT OS', nodeChain: ['lim-wei-jie', 'pump-casing-crack-pattern', 'casing-bfp-3a'] } },
-    { delay: 900,  line: { ts: '02:56:11', source: 'workflow', text: 'handoff sequence recorded · P2 Onsite → P3 Offsite · approval pending', dataSource: 'PTT OS', nodeChain: ['lim-wei-jie', 'dr-ismail'] } },
-    { delay: 900,  line: { ts: '02:56:12', source: 'workflow', text: 'SOP-BFP-VIBR-001 · revised diagnosis + call transcript attached to KG', dataSource: 'PTT OS', nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'] } },
+    { delay: 200,  line: { ts: '02:56:10', source: 'workflow', text: 'Tan Suk · escalation captured · revised diagnosis pump casing crack', dataSource: 'NEXUS', nodeChain: ['lim-wei-jie', 'pump-casing-crack-pattern', 'casing-bfp-3a'] } },
+    { delay: 900,  line: { ts: '02:56:11', source: 'workflow', text: 'handoff sequence recorded · P2 Onsite → P3 Offsite · approval pending', dataSource: 'NEXUS', nodeChain: ['lim-wei-jie', 'dr-ismail'] } },
+    { delay: 900,  line: { ts: '02:56:12', source: 'workflow', text: 'SOP-BFP-VIBR-001 · revised diagnosis + call transcript attached to KG', dataSource: 'NEXUS', nodeChain: ['sop-bfp-vibration-investigation', 'pump-casing-crack-pattern'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3025,7 +3025,7 @@ function startIsmailScreenDReveal() {
       ts: currentICTLog(),
       source: 'triage',
       text: 'Turbine Diagnostic Agent · pulling Anan\'s 2023 Rayong-2 BFP casing field-experience pattern + prior RCA traversal',
-      dataSource: 'PTT OS',
+      dataSource: 'NEXUS',
       nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
     });
   }
@@ -3119,7 +3119,7 @@ function appendIsmailApprovalCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> · escalation approval sign-off recorded</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> · escalation approval sign-off recorded</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Approval + transcript routed to <strong>A2A Coordination Agent</strong> for chain-of-custody</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · sign-off attached to incident · routed back to Site Operations Manager</span></div>`;
   container.appendChild(footer);
@@ -3133,9 +3133,9 @@ function fireWorkflowAgentArcApprove() {
   setAgentActive(agentId, 'Approval Sign-off Capture', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200, line: { ts: '02:58:05', source: 'workflow', text: 'Sign-off recorded · revised diagnosis confirmed · escalation approved', dataSource: 'PTT OS', nodeChain: ['dr-ismail', 'pump-casing-crack-pattern'] } },
-    { delay: 900, line: { ts: '02:58:06', source: 'workflow', text: 'Workflow trace · P3 Offsite → P1 Ops Tower · route-back for ops + commercial impact action', dataSource: 'PTT OS', nodeChain: ['dr-ismail', 'r-kumar'] } },
-    { delay: 900, line: { ts: '02:58:07', source: 'workflow', text: 'KG enriched · sign-off attached · routed back to Nan Chai · ops manager action queued', dataSource: 'PTT OS', nodeChain: ['sop-bfp-vibration-investigation', 'r-kumar'] } },
+    { delay: 200, line: { ts: '02:58:05', source: 'workflow', text: 'Sign-off recorded · revised diagnosis confirmed · escalation approved', dataSource: 'NEXUS', nodeChain: ['dr-ismail', 'pump-casing-crack-pattern'] } },
+    { delay: 900, line: { ts: '02:58:06', source: 'workflow', text: 'Workflow trace · P3 Offsite → P1 Ops Tower · route-back for ops + commercial impact action', dataSource: 'NEXUS', nodeChain: ['dr-ismail', 'r-kumar'] } },
+    { delay: 900, line: { ts: '02:58:07', source: 'workflow', text: 'KG enriched · sign-off attached · routed back to Nan Chai · ops manager action queued', dataSource: 'NEXUS', nodeChain: ['sop-bfp-vibration-investigation', 'r-kumar'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3319,7 +3319,7 @@ function appendNotifyTradingDeskCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> · ops escalation logged · trading desk notification queued</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> · ops escalation logged · trading desk notification queued</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Escalation packet routed to <strong>A2A Coordination Agent</strong> for trading-desk chain</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · commercial-impact context attached · routed to Trader</span></div>`;
   container.appendChild(footer);
@@ -3333,9 +3333,9 @@ function fireWorkflowAgentArcNotify() {
   setAgentActive(agentId, 'Trading Desk Notification', 3);
   fireAgentCardLifecycle(agentId, 3000);
   const lines = [
-    { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Nan Chai · trading desk notification queued · commercial impact context attached', dataSource: 'PTT OS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
-    { delay: 900, line: { ts: '02:59:03', source: 'workflow', text: 'Handoff sequence recorded · P1 Ops Tower → P4 Asset Perf · trading desk action queued', dataSource: 'PTT OS', nodeChain: ['r-kumar', 'p-sundaram'] } },
-    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~THB 65M revenue exposure attached · Trader desk routing complete', dataSource: 'PTT OS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
+    { delay: 200, line: { ts: '02:59:02', source: 'workflow', text: 'Nan Chai · trading desk notification queued · commercial impact context attached', dataSource: 'NEXUS', nodeChain: ['r-kumar', 'pred-mw-derate'] } },
+    { delay: 900, line: { ts: '02:59:03', source: 'workflow', text: 'Handoff sequence recorded · P1 Ops Tower → P4 Asset Perf · trading desk action queued', dataSource: 'NEXUS', nodeChain: ['r-kumar', 'p-sundaram'] } },
+    { delay: 900, line: { ts: '02:59:04', source: 'workflow', text: 'KG enriched · ~THB 65M revenue exposure attached · Trader desk routing complete', dataSource: 'NEXUS', nodeChain: ['pred-mw-derate', 'p-sundaram'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3521,7 +3521,7 @@ function spawnAnalystScreenContent() {
       </div>
     </div>
     <button class="ac-lock-cta" type="button" disabled>
-      Lock decision · PTT OS confirms revenue exposure neutralized
+      Lock decision · NEXUS confirms revenue exposure neutralized
     </button>`;
   card.insertAdjacentHTML('beforeend', contentHTML);
 }
@@ -3625,7 +3625,7 @@ function appendLockDecisionCaptureFooter() {
   if (container.querySelector('.dispatch-capture-footer')) return;
   const footer = el('div', 'dispatch-capture-footer');
   footer.innerHTML = `
-    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>PTT OS</strong> · trading decision locked · commercial close</span></div>
+    <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>NEXUS</strong> · trading decision locked · commercial close</span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt">Decision audit + lineage routed to <strong>A2A Coordination Agent</strong></span></div>
     <div class="dcf-line"><span class="dcf-ic">✓</span><span class="dcf-txt"><strong>Knowledge-Graph</strong> · trading outcome attached · cycle complete</span></div>`;
   container.appendChild(footer);
@@ -3641,9 +3641,9 @@ function fireWorkflowAgentArcLock() {
   fireAgentCardLifecycle(agentId, 3000);
   const optionLabel = state.priya.selectedOption ? PRIYA_OPTION_LABEL[state.priya.selectedOption] : '—';
   const lines = [
-    { delay: 200, line: { ts: '03:01:11', source: 'workflow', text: `Mali Sri · trading decision locked · ${optionLabel}`, dataSource: 'PTT OS', nodeChain: ['p-sundaram', 'pred-mw-derate'] } },
-    { delay: 900, line: { ts: '03:01:12', source: 'workflow', text: 'Decision audit + market position lineage recorded · cycle close', dataSource: 'PTT OS', nodeChain: ['p-sundaram'] } },
-    { delay: 900, line: { ts: '03:01:13', source: 'workflow', text: 'KG · trading outcome attached to INC-2026-0537 · revenue exposure neutralized', dataSource: 'PTT OS', nodeChain: ['pred-mw-derate', 'sop-bfp-vibration-investigation'] } },
+    { delay: 200, line: { ts: '03:01:11', source: 'workflow', text: `Mali Sri · trading decision locked · ${optionLabel}`, dataSource: 'NEXUS', nodeChain: ['p-sundaram', 'pred-mw-derate'] } },
+    { delay: 900, line: { ts: '03:01:12', source: 'workflow', text: 'Decision audit + market position lineage recorded · cycle close', dataSource: 'NEXUS', nodeChain: ['p-sundaram'] } },
+    { delay: 900, line: { ts: '03:01:13', source: 'workflow', text: 'KG · trading outcome attached to INC-2026-0537 · revenue exposure neutralized', dataSource: 'NEXUS', nodeChain: ['pred-mw-derate', 'sop-bfp-vibration-investigation'] } },
   ];
   let t = 0;
   lines.forEach((entry, idx) => {
@@ -3739,7 +3739,7 @@ function buildLandedIncidentRow() {
   return {
     id: INCIDENT.id,
     asset: INCIDENT.asset,
-    body: 'BFP-3A NDE bearing housing vibration RMS exceeds ISO 10816-7 Zone C threshold. PTT OS hypothesis: NDE bearing race spalling (early-stage). Pending onsite verification.',
+    body: 'BFP-3A NDE bearing housing vibration RMS exceeds ISO 10816-7 Zone C threshold. NEXUS hypothesis: NDE bearing race spalling (early-stage). Pending onsite verification.',
     severity: INCIDENT.severity,
     state: stateText,
     stateClass: stateClass,
@@ -3761,7 +3761,7 @@ function renderMonitoringView(root) {
   const persona = PERSONA_INITIALS[state.activePersona] || PERSONA_INITIALS.ops;
   hdr.innerHTML = `
     <div class="mon-hdr-left">
-      <div class="mon-hdr-brand">PTT OS</div>
+      <div class="mon-hdr-brand">NEXUS</div>
     </div>
     <div class="mon-hdr-right">
       <div class="mon-hdr-time">${currentICTTime()}</div>
@@ -4601,14 +4601,14 @@ const P1_NARRATIVE_SECTIONS = [
   {
     num: '1',
     title: 'Criticality · Diagnosis · Summary',
-    sub: 'Agents pull the right PTT OS metrics + run pattern-match against prior incidents to land a single criticality + diagnosis summary card.',
-    meta: '4 domain experts · 2 critics · sources: PTT OS · Netscope · Org Knowledge',
+    sub: 'Agents pull the right NEXUS metrics + run pattern-match against prior incidents to land a single criticality + diagnosis summary card.',
+    meta: '4 domain experts · 2 critics · sources: NEXUS · Netscope · Org Knowledge',
   },
   {
     num: '2',
     title: 'SOP-driven telemetry confirmation',
     sub: 'SOP says operator must confirm metrics. Agents fetch the snapshot and bundle it for Nan.',
-    meta: '3 domain experts · 2 critics · sources: PTT OS · SOP store',
+    meta: '3 domain experts · 2 critics · sources: NEXUS · SOP store',
   },
   {
     num: '3',
@@ -4681,10 +4681,10 @@ function wireFayeRightPanePlayButtons() {
 const P1_SECTION_1 = {
   num: 1, title: 'Criticality · Diagnosis · Summary',
   domain: [
-    { name: 'Sensor Anomaly Inspector',      persistent: 'inspection', dataSource: 'PTT OS' },
+    { name: 'Sensor Anomaly Inspector',      persistent: 'inspection', dataSource: 'NEXUS' },
     { name: 'Turbine Diagnostic Agent',      persistent: 'triage',     dataSource: 'Org Knowledge' },
     { name: 'Criticality Scoring Agent',     persistent: null,         dataSource: 'Netscope' },
-    { name: 'Incident Summary Synthesizer',  persistent: null,         dataSource: 'PTT OS' },
+    { name: 'Incident Summary Synthesizer',  persistent: null,         dataSource: 'NEXUS' },
   ],
   orch: [
     { name: 'Orchestrator',           persistent: 'orchestrator' },
@@ -4694,9 +4694,9 @@ const P1_SECTION_1 = {
     { name: 'Critic · Power Gen',           persistent: 'critic-power-gen' },
     { name: 'Criticality Standards Critic', persistent: null },
   ],
-  sources: ['PTT OS · telemetry', 'Netscope · analytics', 'Org Knowledge · SOPs + RCA'],
+  sources: ['NEXUS · telemetry', 'Netscope · analytics', 'Org Knowledge · SOPs + RCA'],
   narration: [
-    'Domain experts pull vibration RMS from PTT OS and pattern-match against prior BFP failures.',
+    'Domain experts pull vibration RMS from NEXUS and pattern-match against prior BFP failures.',
     'Criticality Scoring Agent uses Netscope analytics to confirm severity classification.',
     'Incident Summary Synthesizer hands Nan a single PTT-OS-sourced summary card.',
   ],
@@ -6962,17 +6962,17 @@ const TRIAGE_AGENT_SCRIPT = {
       delayMs: 200,
     },
     {
-      log: { ts: '02:47:20', source: 'triage', text: 'diagnosis hypothesis · NDE bearing race spalling (early-stage) · 78% confidence', dataSource: 'PTT OS', nodeChain: ['bearing-spalling-pattern','bearing-bfp-3a-nde'] },
+      log: { ts: '02:47:20', source: 'triage', text: 'diagnosis hypothesis · NDE bearing race spalling (early-stage) · 78% confidence', dataSource: 'NEXUS', nodeChain: ['bearing-spalling-pattern','bearing-bfp-3a-nde'] },
       treeLabel: 'Form hypothesis',
       delayMs: 900,
     },
     {
-      log: { ts: '02:47:21', source: 'triage', text: 'alternatives considered · shaft misalignment 52% · coupling wear 31% · impeller imbalance 19%', dataSource: 'PTT OS', nodeChain: ['shaft-bfp-3a','coupling-bfp-3a'] },
+      log: { ts: '02:47:21', source: 'triage', text: 'alternatives considered · shaft misalignment 52% · coupling wear 31% · impeller imbalance 19%', dataSource: 'NEXUS', nodeChain: ['shaft-bfp-3a','coupling-bfp-3a'] },
       treeLabel: 'Consider alternatives',
       delayMs: 900,
     },
     {
-      log: { ts: '02:47:22', source: 'triage', text: 'synthesis · 78% confidence · passing to Power Gen Critic', dataSource: 'PTT OS', nodeChain: ['bearing-spalling-pattern'] },
+      log: { ts: '02:47:22', source: 'triage', text: 'synthesis · 78% confidence · passing to Power Gen Critic', dataSource: 'NEXUS', nodeChain: ['bearing-spalling-pattern'] },
       treeLabel: 'Pass to critic',
       delayMs: 800,
     },
