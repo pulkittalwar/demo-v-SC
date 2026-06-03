@@ -3465,7 +3465,7 @@ function spawnAnalystScreenContent() {
               <span class="ac-opt-bullet">○</span>
               <div class="ac-opt-body">
                 <span class="ac-opt-title">Cross-site balance · North-CCGT-1 standby</span>
-                <span class="ac-opt-detail">Dispatch North standby capacity · cover BFP-3A derate</span>
+                <span class="ac-opt-detail">Dispatch North-CCGT-1 standby capacity · cover BFP-3A derate</span>
               </div>
             </div>
             <div class="ac-opt-viz">
@@ -4157,7 +4157,7 @@ function paintLaptopDashboard(content) {
               <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
             </div>
             <div class="td-portfolio">
-              <div class="td-pf-card"><div class="td-pf-label">East Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">East-CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">West Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
