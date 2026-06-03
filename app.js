@@ -121,7 +121,7 @@ const PERSONA_INITIALS = {
 const BANNER_COPY = {
   ops: {
     label: 'NEW INCIDENT · Asset Intelligence OS',
-    body:  'JRG-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 SGT',
+    body:  'EAST-CCGT-1 · Block 2 · BFP-3A · vibration anomaly · 02:47 SGT',
   },
   opsRouteBack: {
     label: 'ROUTED BACK · Asset Intelligence OS',
@@ -158,7 +158,7 @@ const STATE_PILL_LABEL = {
 // W5 — option labels for Priya's lock-decision footer
 const PRIYA_OPTION_LABEL = {
   'hedge':       'Forward Q3 capacity hedge',
-  'cross-site':  'Cross-site balance · Sakra-CCGT-1 standby',
+  'cross-site':  'Cross-site balance · North-CCGT-1 standby',
   'spot':        'Spot market purchase · USEP peak',
   'curtailment': 'PSO curtailment notice',
 };
@@ -195,7 +195,7 @@ const INITIAL_DIAGNOSIS_RATIONALE = [
     strength: 'met',     badgeLabel: 'fully met' },
   { text: '1×RPM dominance · synchronous vibration component elevated',
     strength: 'partial', badgeLabel: 'partially met' },
-  { text: 'Pattern-match · 3 prior BFP race-spalling failures across fleet (Jurong-CCGT-2 · Sakra-CCGT-1 · Banyan-CHP)',
+  { text: 'Pattern-match · 3 prior BFP race-spalling failures across fleet (East-CCGT-2 · North-CCGT-1 · South-CHP)',
     strength: 'met',     badgeLabel: 'fully met' },
   { text: 'Bearing temperature trend · NDE housing rising over last 4 hours',
     strength: 'partial', badgeLabel: 'partially met' },
@@ -203,10 +203,10 @@ const INITIAL_DIAGNOSIS_RATIONALE = [
     strength: 'met',     badgeLabel: 'fully met' },
 ];
 
-// ── Hardcoded incident data (Jurong-CCGT-1 BFP-3A) — W3.9 pivot ──
+// ── Hardcoded incident data (East-CCGT-1 BFP-3A) — W3.9 pivot ──
 const INCIDENT = {
   id: 'INC-2026-0537',
-  asset: 'JRG-CCGT-1 · Block 2 · BFP-3A',
+  asset: 'EAST-CCGT-1 · Block 2 · BFP-3A',
   title: 'BFP-3A vibration RMS drift · NDE bearing housing',
   timestamp: '02:47 SGT · 2026-05-20',
   severity: 'AMBER',
@@ -320,7 +320,7 @@ const PERSONA_SCENES = {
 const PRE_EXISTING_INCIDENTS = [
   {
     id: 'INC-2026-0521',
-    asset: 'Jurong-CCGT-2 · BFP-2A',
+    asset: 'East-CCGT-2 · BFP-2A',
     body: 'Bearing vibration trending within OEM band — surveillance only.',
     severity: 'GREEN',
     state: 'MONITORING',
@@ -333,7 +333,7 @@ const PRE_EXISTING_INCIDENTS = [
   },
   {
     id: 'INC-2026-0529',
-    asset: 'Sakra-CCGT-1 · ST-1',
+    asset: 'North-CCGT-1 · ST-1',
     body: 'LP turbine exhaust pressure rise — wash cycle scheduled per OEM PTC.',
     severity: 'AMBER',
     state: 'SCHEDULED',
@@ -345,7 +345,7 @@ const PRE_EXISTING_INCIDENTS = [
   },
   {
     id: 'INC-2026-0532',
-    asset: 'Banyan-CHP · Cooling Tower 2',
+    asset: 'South-CHP · Cooling Tower 2',
     body: 'CT2 fill media plugging — supplementary cooling engaged.',
     severity: 'RED',
     state: 'MONITORING',
@@ -363,7 +363,7 @@ const PERSONA_OWN_TASKS = {
   onsite: [
     {
       id: 'WO-2026-1182',
-      asset: 'JRG-CCGT-1 · GT-2',
+      asset: 'EAST-CCGT-1 · GT-2',
       body: 'GT-2 borescope inspection · stage 1 compressor',
       severity: 'INFO', state: 'SCHEDULED 09:00 SGT', stateClass: 'info',
       age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
@@ -371,7 +371,7 @@ const PERSONA_OWN_TASKS = {
     },
     {
       id: 'WO-2026-1156',
-      asset: 'JRG-CCGT-1 · BFP-2B',
+      asset: 'EAST-CCGT-1 · BFP-2B',
       body: 'BFP-2B coupling re-greasing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
@@ -379,7 +379,7 @@ const PERSONA_OWN_TASKS = {
     },
     {
       id: 'WO-2026-1173',
-      asset: 'JRG-CCGT-1 · HRSG-2',
+      asset: 'EAST-CCGT-1 · HRSG-2',
       body: 'HRSG-2 hand valve overhaul · awaiting parts',
       severity: 'INFO', state: 'BLOCKED · PARTS ETA 4D', stateClass: 'info',
       age: '—', owner: 'Lim Wei Jie', ownerInitials: 'LWJ',
@@ -389,24 +389,24 @@ const PERSONA_OWN_TASKS = {
   offsite: [
     {
       id: 'RCA-2026-0034',
-      asset: 'Sakra-CCGT-1 · GT-1',
-      body: 'Sakra-CCGT-1 GT-1 trip RCA · lead investigator',
+      asset: 'North-CCGT-1 · GT-1',
+      body: 'North-CCGT-1 GT-1 trip RCA · lead investigator',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'ER-2026-0089',
-      asset: 'Jurong-CCGT-2 · BFP',
-      body: 'Jurong-CCGT-2 BFP overhaul technical review',
+      asset: 'East-CCGT-2 · BFP',
+      body: 'East-CCGT-2 BFP overhaul technical review',
       severity: 'INFO', state: 'AWAITING INPUT', stateClass: 'info',
       age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'CR-2026-0156',
-      asset: 'Tuas-Power · Generator',
-      body: 'Tuas-Power generator stator advisory · stakeholder call',
+      asset: 'West-Power · Generator',
+      body: 'West-Power generator stator advisory · stakeholder call',
       severity: 'INFO', state: 'SCHEDULED 11:00 SGT', stateClass: 'info',
       age: '—', owner: 'Dr. A. Ismail', ownerInitials: 'AW',
       clickable: false, dynamicTagText: null,
@@ -415,15 +415,15 @@ const PERSONA_OWN_TASKS = {
   analyst: [
     {
       id: 'TRD-2026-0218',
-      asset: 'Sakra-CCGT-1 · Block 1',
-      body: 'Cross-site balancing · Sakra-CCGT-1 standby evaluation · capacity reserve sizing',
+      asset: 'North-CCGT-1 · Block 1',
+      body: 'Cross-site balancing · North-CCGT-1 standby evaluation · capacity reserve sizing',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Priya Sundaram', ownerInitials: 'PS',
       clickable: false, dynamicTagText: null,
     },
     {
       id: 'TRD-2026-0224',
-      asset: 'Jurong-CCGT-1 · Forward Curve',
+      asset: 'East-CCGT-1 · Forward Curve',
       body: 'USEP forward curve review · Q3 capacity hedge eligibility',
       severity: 'INFO', state: 'IN PROGRESS', stateClass: 'info',
       age: '—', owner: 'Priya Sundaram', ownerInitials: 'PS',
@@ -1254,7 +1254,7 @@ function buildRecommendationBlock() {
         </div>
         <div class="reasoning-step">
           <span class="rs-num">3</span>
-          <span class="rs-body"><span class="rs-agent">Turbine Diagnostic Agent</span> pattern-matched against 3 prior RCAs across the fleet (Jurong-CCGT-2 &middot; 2025-08, Sakra-CCGT-1 &middot; 2025-11, Jurong-CCGT-1 &middot; 2024-09 &mdash; all compressor fouling, all humidity-correlated).</span>
+          <span class="rs-body"><span class="rs-agent">Turbine Diagnostic Agent</span> pattern-matched against 3 prior RCAs across the fleet (East-CCGT-2 &middot; 2025-08, North-CCGT-1 &middot; 2025-11, East-CCGT-1 &middot; 2024-09 &mdash; all compressor fouling, all humidity-correlated).</span>
         </div>
         <div class="reasoning-step">
           <span class="rs-num">4</span>
@@ -1444,7 +1444,7 @@ function fireRevealBlock3Agents() {
   activateAgentParallel('critic-power-gen', 1);
 
   const lines = [
-    { ts: '02:47:19', source: 'triage',           text: 'pattern-match · 3 prior RCAs · compressor fouling humidity-correlated', dataSource: 'Asset Intelligence KG', nodeChain: ['rca-2025-014-sakra','rca-2024-093-jurong','rca-2025-031-jurong2','pat-comp-fouling'] },
+    { ts: '02:47:19', source: 'triage',           text: 'pattern-match · 3 prior RCAs · compressor fouling humidity-correlated', dataSource: 'Asset Intelligence KG', nodeChain: ['rca-2025-014-north','rca-2024-093-east','rca-2025-031-east2','pat-comp-fouling'] },
     { ts: '02:47:20', source: 'triage',           text: 'diagnosis hypothesis · 78% confidence',                                  dataSource: 'Asset Intelligence OS', nodeChain: ['pat-comp-fouling'] },
     { ts: '02:47:21', source: 'playbook',         text: 'OEM procedure · GE 9HA compressor offline wash · est 6h',                dataSource: 'Maximo',         nodeChain: ['oem-ge-9ha-manual','rec-oem-playbook'] },
     { ts: '02:47:22', source: 'critic-power-gen', text: 'KG path validated · humidity-fouling matches GE 9HA degradation curve ✓', dataSource: 'Asset Intelligence KG', nodeChain: ['pat-comp-fouling','mdl-humidity-v3','oem-ge-9ha-manual'] },
@@ -2726,7 +2726,7 @@ function onDiagnosisConfirmedClick() {
       source: 'workflow',
       text: `Diagnosis revised at ${state.lim.revisionTimestamp} · pump casing crack confirmed via call + targeted inspection`,
       dataSource: 'Asset Intelligence OS',
-      nodeChain: ['pump-casing-crack-pattern', 'casing-bfp-3a', 'casing-rca-jrg-2023'],
+      nodeChain: ['pump-casing-crack-pattern', 'casing-bfp-3a', 'casing-rca-east-2023'],
     });
   }
   // W6 — KG growth animation fires 10s later
@@ -3024,9 +3024,9 @@ function startIsmailScreenDReveal() {
     window.LOG.appendLine({
       ts: currentSGTLog(),
       source: 'triage',
-      text: 'Turbine Diagnostic Agent · pulling Ismail\'s 2023 Jurong-2 BFP casing field-experience pattern + prior RCA traversal',
+      text: 'Turbine Diagnostic Agent · pulling Ismail\'s 2023 East-2 BFP casing field-experience pattern + prior RCA traversal',
       dataSource: 'Asset Intelligence OS',
-      nodeChain: ['casing-rca-jrg-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
+      nodeChain: ['casing-rca-east-2023', 'pump-casing-crack-pattern', 'dr-ismail'],
     });
   }
   pushReveal(() => {
@@ -3464,8 +3464,8 @@ function spawnAnalystScreenContent() {
             <div class="ac-opt-header">
               <span class="ac-opt-bullet">○</span>
               <div class="ac-opt-body">
-                <span class="ac-opt-title">Cross-site balance · Sakra-CCGT-1 standby</span>
-                <span class="ac-opt-detail">Dispatch Sakra standby capacity · cover BFP-3A derate</span>
+                <span class="ac-opt-title">Cross-site balance · North-CCGT-1 standby</span>
+                <span class="ac-opt-detail">Dispatch North standby capacity · cover BFP-3A derate</span>
               </div>
             </div>
             <div class="ac-opt-viz">
@@ -4157,8 +4157,8 @@ function paintLaptopDashboard(content) {
               <span class="td-zone-title">Portfolio Overview · Singapore Market</span>
             </div>
             <div class="td-portfolio">
-              <div class="td-pf-card"><div class="td-pf-label">Jurong Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
-              <div class="td-pf-card"><div class="td-pf-label">Tuas Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">East Island CCGT</div><div class="td-pf-value">1,600 MW</div><span class="td-pf-status online">ONLINE</span></div>
+              <div class="td-pf-card"><div class="td-pf-label">West Cogen Plant</div><div class="td-pf-value">860 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Senoko Power Station</div><div class="td-pf-value">560 MW</div><span class="td-pf-status online">ONLINE</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Solar Portfolio (SG)</div><div class="td-pf-value">200 MWp</div><span class="td-pf-status forecast">FORECAST</span></div>
               <div class="td-pf-card"><div class="td-pf-label">Battery Storage (SG)</div><div class="td-pf-value">100 MW / 200 MWh</div><span class="td-pf-status standby">STANDBY</span></div>
@@ -4238,7 +4238,7 @@ function paintLaptopDashboard(content) {
 // W11 Section H — render Active Tasks list with URGENT tile gated by state.
 const PRIYA_LOCKED_OPTION_TILE = {
   hedge:        { what: 'Hedge locked · Forward Q3 capacity hedge',     why: 'Revenue exposure neutralized via Q3 forward hedge instrument.' },
-  'cross-site': { what: 'Hedge locked · Cross-site Sakra balancing',    why: 'Sakra-CCGT-1 standby capacity nominated for HH18–HH21 cover.' },
+  'cross-site': { what: 'Hedge locked · Cross-site North balancing',    why: 'North-CCGT-1 standby capacity nominated for HH18–HH21 cover.' },
   spot:         { what: 'Hedge locked · Spot market purchase',          why: 'Spot purchase covers PSO commitment shortfall.' },
   curtailment:  { what: 'Curtailment notice locked · PSO',              why: 'PSO commitment curtailed under force-majeure clause.' },
 };
@@ -4253,7 +4253,7 @@ function updateLaptopActiveTasks() {
 
   const baselineTiles = `
     <div class="td-task-tile" data-tile="trd-0218">
-      <div class="td-task-what">Cover Sakra-CCGT-1 standby balancing position</div>
+      <div class="td-task-what">Cover North-CCGT-1 standby balancing position</div>
       <div class="td-task-why">Cross-site availability window · 14:00–22:00 SGT</div>
       <div class="td-task-meta">
         <span class="td-task-money">~SGD 0.85M spread potential</span>
@@ -4291,7 +4291,7 @@ function updateLaptopActiveTasks() {
       <div class="td-task-tile td-task-urgent" data-tile="inc">
         <div class="td-task-urgent-badge">URGENT</div>
         <div class="td-task-what">Buy USEP forward · Jul-26 · 50 MW · Q3 peak window</div>
-        <div class="td-task-why">JRG-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT</div>
+        <div class="td-task-why">EAST-CCGT-1 BFP-3A unplanned shutdown · 4hrs · ~200 MWh at risk · PSO 09:00–18:00 SGT</div>
         <div class="td-task-meta">
           <span class="td-task-money">~SGD 2.4M at risk</span>
           <span class="td-task-timer">⏱ 28 min</span>
@@ -5535,16 +5535,16 @@ function buildTacitSinglishCanvas(sectionDef) {
   const bubbles = [
     '"the pump tio jam already"',
     '"casing got crack lah"',
-    '"same as Jurong 2 case"',
+    '"same as East 2 case"',
     '"4 o\'clock side, near the discharge"',
     '"Sulzer fail like this also can"',
   ];
   const bytes = [
-    { txt: 'Byte · casing weld pattern matches Jurong 2023',  unpromoted: false },
+    { txt: 'Byte · casing weld pattern matches East 2023',  unpromoted: false },
     { txt: 'Byte · always check 4-o\'clock volute first',      unpromoted: false },
     { txt: 'Byte · Sulzer-specific failure mode',              unpromoted: false },
     { txt: 'Byte · vendor service rep visit (casual)',         unpromoted: true  },
-    { txt: 'Byte · Ismail mentioned Banyan case',              unpromoted: true  },
+    { txt: 'Byte · Ismail mentioned South case',              unpromoted: true  },
   ];
   return `
     <div class="nv-tacit-singlish-canvas">
@@ -5750,10 +5750,10 @@ const KG_NODES = [
   // L3 Historical State (amber) — y = -30
   { id: 'vib-rms-90d',         label: 'BFP-3A · 90d vib RMS',           layer: 'L3', x: -60, y: -30, z:   0 },
   { id: 'bearing-temp-30d',    label: 'NDE bearing · 30d temp',         layer: 'L3', x: -45, y: -30, z:  20 },
-  { id: 'rca-bfp-jrg-2025',    label: 'RCA · Jurong-2 BFP · 2025-08',   layer: 'L3', x: -15, y: -30, z:  10 },
-  { id: 'rca-bfp-skr-2024',    label: 'RCA · Sakra-1 BFP · 2024-11',    layer: 'L3', x:  15, y: -30, z:  10 },
-  { id: 'rca-bfp-banyan-2024', label: 'RCA · Banyan BFP · 2024-05',     layer: 'L3', x:  45, y: -30, z:  10 },
-  { id: 'casing-rca-jrg-2023', label: 'RCA · Jurong-2 BFP casing · 2023-08', layer: 'L3', x:  30, y: -30, z:  -10 },
+  { id: 'rca-bfp-east-2025',    label: 'RCA · East-2 BFP · 2025-08',   layer: 'L3', x: -15, y: -30, z:  10 },
+  { id: 'rca-bfp-skr-2024',    label: 'RCA · North-1 BFP · 2024-11',    layer: 'L3', x:  15, y: -30, z:  10 },
+  { id: 'rca-bfp-south-2024', label: 'RCA · South BFP · 2024-05',     layer: 'L3', x:  45, y: -30, z:  10 },
+  { id: 'casing-rca-east-2023', label: 'RCA · East-2 BFP casing · 2023-08', layer: 'L3', x:  30, y: -30, z:  -10 },
   { id: 'wo-log-47',           label: 'WO log · 47 prior',              layer: 'L3', x:  60, y: -30, z:   0 },
   { id: 'pi-18mo',             label: 'PI · 18mo telemetry',            layer: 'L3', x: -15, y: -30, z: -30 },
   { id: 'audit-iso50001',      label: 'Audit · ISO 50001',              layer: 'L3', x:  15, y: -30, z: -30 },
@@ -5808,9 +5808,9 @@ const KG_EDGES = [
   { source: 'audit-iso50001', target: 'bfp-3a' },
 
   // L3 RCA → L4 pattern
-  { source: 'rca-bfp-jrg-2025',    target: 'bearing-spalling-pattern' },
+  { source: 'rca-bfp-east-2025',    target: 'bearing-spalling-pattern' },
   { source: 'rca-bfp-skr-2024',    target: 'bearing-spalling-pattern' },
-  { source: 'rca-bfp-banyan-2024', target: 'bearing-spalling-pattern' },
+  { source: 'rca-bfp-south-2024', target: 'bearing-spalling-pattern' },
   { source: 'vib-rms-90d',         target: 'bearing-spalling-pattern' },
 
   // L4 patterns → models / SOP
@@ -5821,7 +5821,7 @@ const KG_EDGES = [
   { source: 'pump-casing-crack-pattern',       target: 'shaft-bfp-3a' },
   // W4.1 — pump casing crack narrative
   { source: 'casing-bfp-3a',            target: 'bfp-3a' },
-  { source: 'casing-rca-jrg-2023',      target: 'pump-casing-crack-pattern' },
+  { source: 'casing-rca-east-2023',      target: 'pump-casing-crack-pattern' },
   { source: 'pump-casing-crack-pattern', target: 'sop-bfp-vibration-investigation' },
 
   // L4 standard → L2 sensors (ISO 10816-7 governs sensor alarm thresholds)
@@ -6009,7 +6009,7 @@ const KG_STATE = {
 // Nodes present from cold load; triggerKGGrowth flashes green halo on tacit cluster 10s post-click.
 const KG_TACIT_NODES = [
   { id: 'casing-tacit-knowledge',         label: 'Tacit knowledge · BFP casing fatigue pattern', layer: 'L4', x: 360, y: -90, z:  30, canonical: false, isNew: true, cluster: 'tacit' },
-  { id: 'ismail-field-experience-2023',     label: 'Field experience · Ismail · Jurong BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
+  { id: 'ismail-field-experience-2023',     label: 'Field experience · Ismail · East BFP 2023',    layer: 'L3', x: 380, y: -30, z:  10, canonical: false, isNew: true, cluster: 'tacit' },
   { id: 'bfp-casing-inspection-protocol', label: 'Updated SOP · BFP casing weld inspection',     layer: 'L1', x: 400, y:  90, z: -20, canonical: false, isNew: true, cluster: 'tacit' },
 ];
 const KG_AUDITOR_NODES = [
@@ -6025,7 +6025,7 @@ const KG_CLUSTER_FLOW_EDGES = [
   { source: 'ismail-field-experience-2023',     target: 'kg-auditor-agent',      canonical: false, cluster: 'tk-to-auditor' },
   { source: 'bfp-casing-inspection-protocol', target: 'workflow-rewire-agent', canonical: false, cluster: 'tk-to-auditor' },
   { source: 'kg-auditor-agent',               target: 'pump-casing-crack-pattern',          canonical: false, cluster: 'auditor-to-main' },
-  { source: 'kg-updater-agent',               target: 'casing-rca-jrg-2023',                canonical: false, cluster: 'auditor-to-main' },
+  { source: 'kg-updater-agent',               target: 'casing-rca-east-2023',                canonical: false, cluster: 'auditor-to-main' },
   { source: 'workflow-rewire-agent',          target: 'sop-bfp-vibration-investigation',    canonical: false, cluster: 'auditor-to-main' },
   { source: 'kg-auditor-agent',               target: 'kg-updater-agent',                   canonical: false, cluster: 'auditor-internal' },
 ];
@@ -6040,10 +6040,10 @@ const KG_GROWTH_NODE_IDS = KG_TACIT_NODES.map(n => n.id);
 // 4-tier visual: main KG (-100..+100) → Auditor (180..260) → W7 Tacit (340..420) → Staging (500..600).
 const KG_STAGING_NODES = [
   // 5 tacit bytes — diamond glyph, 3 promoted green / 2 unpromoted amber
-  { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches Jurong 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
+  { id: 'tacit-byte-1', label: 'Byte · "casing weld pattern matches East 2023"', layer: 'L4', x: 520, y:  60, z:  10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-2', label: 'Byte · "always check 4-o\'clock volute first"',     layer: 'L4', x: 540, y:  30, z: -20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
   { id: 'tacit-byte-3', label: 'Byte · "Sulzer-specific failure mode"',              layer: 'L4', x: 560, y:   0, z:  20, canonical: false, cluster: 'staging', isStaging: true, isPromoted: true },
-  { id: 'tacit-byte-4', label: 'Byte · "Ismail mentioned similar case in Banyan"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
+  { id: 'tacit-byte-4', label: 'Byte · "Ismail mentioned similar case in South"',     layer: 'L4', x: 520, y: -30, z: -10, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   { id: 'tacit-byte-5', label: 'Byte · "casual aside · vendor service rep visit"',   layer: 'L4', x: 540, y: -60, z:  30, canonical: false, cluster: 'staging', isStaging: true, isPromoted: false },
   // 2 staging agents — gateway + promoter (blue halo, mirroring auditor cluster)
   { id: 'knowledge-triage-agent',           label: 'Knowledge Triage Agent',           layer: 'L1', x: 580, y:  20, z: 0, canonical: false, cluster: 'staging', isStagingAgent: true },
@@ -6099,14 +6099,14 @@ const KG_COMMERCIAL_NODES = [
   { id: 'ancillary-services-contract', label: 'Ancillary services · 2026',           layer: 'L6', x: 810, y: LAYER_Y.L6, z: -10, canonical: false, cluster: 'commercial' },
 
   // L7 — Cross-site Network (W12 Section C: densified 2 → 8)
-  { id: 'cross-site-sakra-availability', label: 'Cross-site · Sakra-CCGT-1 standby', layer: 'L7', x: 720, y: LAYER_Y.L7, z:  10, canonical: false, cluster: 'commercial' },
-  { id: 'cross-site-tuas-availability',  label: 'Cross-site · Tuas-Power available', layer: 'L7', x: 780, y: LAYER_Y.L7, z: -10, canonical: false, cluster: 'commercial' },
-  { id: 'banyan-chp-availability',    label: 'Banyan-CHP · availability',            layer: 'L7', x: 700, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
-  { id: 'tuas-power-spinning-reserve', label: 'Tuas-Power · spinning reserve',       layer: 'L7', x: 730, y: LAYER_Y.L7, z: -20, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-north-availability', label: 'Cross-site · North-CCGT-1 standby', layer: 'L7', x: 720, y: LAYER_Y.L7, z:  10, canonical: false, cluster: 'commercial' },
+  { id: 'cross-site-west-availability',  label: 'Cross-site · West-Power available', layer: 'L7', x: 780, y: LAYER_Y.L7, z: -10, canonical: false, cluster: 'commercial' },
+  { id: 'south-chp-availability',    label: 'South-CHP · availability',            layer: 'L7', x: 700, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'west-power-spinning-reserve', label: 'West-Power · spinning reserve',       layer: 'L7', x: 730, y: LAYER_Y.L7, z: -20, canonical: false, cluster: 'commercial' },
   { id: 'transmission-275kv-ehv',     label: 'Transmission · 275kV EHV',             layer: 'L7', x: 760, y: LAYER_Y.L7, z:  20, canonical: false, cluster: 'commercial' },
   { id: 'interconnector-malaysia',    label: 'Interconnector · Malaysia',            layer: 'L7', x: 790, y: LAYER_Y.L7, z:  30, canonical: false, cluster: 'commercial' },
   { id: 'grid-frequency-50hz',        label: 'Grid frequency · 50 Hz status',        layer: 'L7', x: 810, y: LAYER_Y.L7, z:   0, canonical: false, cluster: 'commercial' },
-  { id: 'sakra-cogen-standby',        label: 'Sakra-Cogen · standby state',          layer: 'L7', x: 750, y: LAYER_Y.L7, z: -30, canonical: false, cluster: 'commercial' },
+  { id: 'north-cogen-standby',        label: 'North-Cogen · standby state',          layer: 'L7', x: 750, y: LAYER_Y.L7, z: -30, canonical: false, cluster: 'commercial' },
 ];
 KG_NODES.push(...KG_COMMERCIAL_NODES);
 
@@ -6117,18 +6117,18 @@ const KG_COMMERCIAL_EDGES = [
   { source: 'merchant-market-sg',           target: 'supply-curve-singapore',       canonical: false, cluster: 'commercial-internal' },
   { source: 'supply-curve-singapore',       target: 'demand-forecast-q3-2026',      canonical: false, cluster: 'commercial-internal' },
   { source: 'demand-forecast-q3-2026',      target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
-  { source: 'ppa-pso-2026',                 target: 'cross-site-sakra-availability', canonical: false, cluster: 'commercial-internal' },
-  { source: 'ppa-pso-2026',                 target: 'cross-site-tuas-availability',  canonical: false, cluster: 'commercial-internal' },
-  { source: 'cross-site-sakra-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-north-availability', canonical: false, cluster: 'commercial-internal' },
+  { source: 'ppa-pso-2026',                 target: 'cross-site-west-availability',  canonical: false, cluster: 'commercial-internal' },
+  { source: 'cross-site-north-availability', target: 'hedge-instrument-catalog',     canonical: false, cluster: 'commercial-internal' },
   // W12 Section C.4 — new inter/intra-layer edges for densified L5/L6/L7
   { source: 'usep-30min-clearing',         target: 'merchant-market-sg',     canonical: false, cluster: 'commercial-internal' },
   { source: 'lng-spot-index-asia',         target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'gas-pipeline-utilization',    target: 'lng-spot-index-asia',    canonical: false, cluster: 'commercial-internal' },
   { source: 'pso-bilateral-2024', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'futures-sgd-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
-  { source: 'banyan-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
+  { source: 'south-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
   { source: 'interconnector-malaysia',     target: 'grid-frequency-50hz',    canonical: false, cluster: 'commercial-internal' },
-  { source: 'transmission-275kv-ehv',      target: 'sakra-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'transmission-275kv-ehv',      target: 'north-cogen-standby',    canonical: false, cluster: 'commercial-internal' },
   // Cross-cluster bridge: L4 predictive → L5 markets
   { source: 'pump-casing-crack-pattern',   target: 'demand-forecast-q3-2026', canonical: false, cluster: 'main-to-commercial' },
 ];
@@ -6212,9 +6212,9 @@ const KG_W14R3_EDGES = [
   { source: 'bearing-bfp-3a-nde',           target: 'telemetry-bearing-temp-live', canonical: false, cluster: 'w14r3-l3' },
 
   // Failure modes → L4 historical RCA evidence
-  { source: 'failure-mode-race-spalling',   target: 'rca-bfp-jrg-2025',           canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-race-spalling',   target: 'rca-bfp-east-2025',           canonical: false, cluster: 'w14r3-l3' },
   { source: 'failure-mode-race-spalling',   target: 'rca-bfp-skr-2024',           canonical: false, cluster: 'w14r3-l3' },
-  { source: 'failure-mode-casing-crack',    target: 'casing-rca-jrg-2023',        canonical: false, cluster: 'w14r3-l3' },
+  { source: 'failure-mode-casing-crack',    target: 'casing-rca-east-2023',        canonical: false, cluster: 'w14r3-l3' },
 
   // Failure modes → L5 predictive patterns (bridge L3→L5)
   { source: 'failure-mode-race-spalling',   target: 'bearing-spalling-pattern',   canonical: false, cluster: 'w14r3-l3' },
@@ -6231,7 +6231,7 @@ const KG_W14R3_EDGES = [
   { source: 'industrial-customer-ccaa',     target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
   { source: 'vesting-contract-ema',         target: 'ppa-pso-2026',               canonical: false, cluster: 'w14r3-commercial-fix' },
   { source: 'ancillary-services-contract',  target: 'grid-frequency-50hz',        canonical: false, cluster: 'w14r3-commercial-fix' },
-  { source: 'tuas-power-spinning-reserve',  target: 'cross-site-tuas-availability', canonical: false, cluster: 'w14r3-commercial-fix' },
+  { source: 'west-power-spinning-reserve',  target: 'cross-site-west-availability', canonical: false, cluster: 'w14r3-commercial-fix' },
 ];
 KG_EDGES.push(...KG_W14R3_EDGES);
 
@@ -6957,7 +6957,7 @@ const TRIAGE_AGENT_SCRIPT = {
   taskTreeLabel: 'Bearing Hypothesis · Pattern-Match',
   steps: [
     {
-      log: { ts: '02:47:19', source: 'triage', text: 'pattern-match · 3 prior BFP bearing failures · Jurong-CCGT-2 / Sakra-CCGT-1 / Banyan-CHP', dataSource: 'Asset Intelligence KG', nodeChain: ['rca-bfp-jrg-2025','rca-bfp-skr-2024','rca-bfp-banyan-2024','bearing-spalling-pattern'] },
+      log: { ts: '02:47:19', source: 'triage', text: 'pattern-match · 3 prior BFP bearing failures · East-CCGT-2 / North-CCGT-1 / South-CHP', dataSource: 'Asset Intelligence KG', nodeChain: ['rca-bfp-east-2025','rca-bfp-skr-2024','rca-bfp-south-2024','bearing-spalling-pattern'] },
       treeLabel: 'Pattern-match prior RCAs',
       delayMs: 200,
     },
@@ -7207,7 +7207,7 @@ function seedLogLines() {
   appendLogLine({
     ts: '02:47:08',
     source: 'orchestrator',
-    text: 'received INC-2026-0537 · JRG-CCGT-1 · Block 2 · BFP-3A',
+    text: 'received INC-2026-0537 · EAST-CCGT-1 · Block 2 · BFP-3A',
     nodeChain: ['bfp-3a', 'r-kumar'],
   });
   appendLogLine({
@@ -7486,13 +7486,13 @@ const P2_KG_NODES_DEF = [
   { id: 'manual-abb',         label: 'Manual · ABB drives',         layer: 'L3', x: 1020, y: 410 },
 
   // L4 row 1 (y=510) — WOs + RCAs (7 nodes · x spacing ~157px)
-  { id: 'wo-jrg-2025',        label: 'WO · Jurong 2025',            layer: 'L4', x: 80,   y: 510 },
-  { id: 'wo-skr-2024',        label: 'WO · Sakra 2024',             layer: 'L4', x: 237,  y: 510 },
-  { id: 'wo-banyan-2024',     label: 'WO · Banyan 2024',            layer: 'L4', x: 393,  y: 510 },
-  { id: 'wo-tuas-2023',       label: 'WO · Tuas 2023',              layer: 'L4', x: 550,  y: 510 },
-  { id: 'rca-jrg-2025',       label: 'RCA · Jurong 2025',           layer: 'L4', x: 707,  y: 510 },
-  { id: 'rca-banyan-2024',    label: 'RCA · Banyan 2024',           layer: 'L4', x: 863,  y: 510 },
-  { id: 'rca-sakra-coupling', label: 'RCA · Sakra coupling 2025',   layer: 'L4', x: 1020, y: 510 },
+  { id: 'wo-east-2025',        label: 'WO · East 2025',            layer: 'L4', x: 80,   y: 510 },
+  { id: 'wo-skr-2024',        label: 'WO · North 2024',             layer: 'L4', x: 237,  y: 510 },
+  { id: 'wo-south-2024',     label: 'WO · South 2024',            layer: 'L4', x: 393,  y: 510 },
+  { id: 'wo-west-2023',       label: 'WO · West 2023',              layer: 'L4', x: 550,  y: 510 },
+  { id: 'rca-east-2025',       label: 'RCA · East 2025',           layer: 'L4', x: 707,  y: 510 },
+  { id: 'rca-south-2024',    label: 'RCA · South 2024',           layer: 'L4', x: 863,  y: 510 },
+  { id: 'rca-north-coupling', label: 'RCA · North coupling 2025',   layer: 'L4', x: 1020, y: 510 },
 
   // L4 row 2 (y=580) — historical telemetry + logs (7 nodes)
   { id: 'vib-90d',            label: 'Vibration history · 90d',     layer: 'L4', x: 80,   y: 580 },
@@ -7564,19 +7564,19 @@ const P2_KG_EDGES_DEF = [
   ['bfp-3a', 'maint-log'], ['hrsg-3', 'maint-log'],
 
   // L4 intra (9 edges)
-  ['wo-jrg-2025', 'rca-jrg-2025'], ['wo-skr-2024', 'rca-banyan-2024'],
-  ['wo-banyan-2024', 'rca-banyan-2024'], ['wo-tuas-2023', 'rca-sakra-coupling'],
+  ['wo-east-2025', 'rca-east-2025'], ['wo-skr-2024', 'rca-south-2024'],
+  ['wo-south-2024', 'rca-south-2024'], ['wo-west-2023', 'rca-north-coupling'],
   ['vib-90d', 'trend-90d'], ['temp-30d', 'trend-90d'],
   ['trend-90d', 'spec-compliance'], ['maint-log', 'align-history'],
   ['brg-replace-log', 'maint-log'],
 
   // L4 → L5 (11 edges)
-  ['rca-jrg-2025', 'pattern-race'], ['rca-banyan-2024', 'pattern-crack'],
+  ['rca-east-2025', 'pattern-race'], ['rca-south-2024', 'pattern-crack'],
   ['vib-90d', 'pattern-race'], ['temp-30d', 'pattern-race'],
-  ['rca-sakra-coupling', 'pattern-misalign'], ['align-history', 'pattern-misalign'],
+  ['rca-north-coupling', 'pattern-misalign'], ['align-history', 'pattern-misalign'],
   ['brg-replace-log', 'pattern-race'],
   ['spec-compliance', 'mtbf-model'], ['maint-log', 'mtbf-model'],
-  ['trend-90d', 'pattern-imbalance'], ['wo-banyan-2024', 'pattern-cavitation'],
+  ['trend-90d', 'pattern-imbalance'], ['wo-south-2024', 'pattern-cavitation'],
 
   // L5 intra + L5 → L3 (12 edges)
   ['pattern-race', 'derate-model'], ['pattern-crack', 'derate-model'],
@@ -7589,7 +7589,7 @@ const P2_KG_EDGES_DEF = [
 
   // W18 Section D — L4 RCAs/telemetry → L4.5 tacit bytes → L5 patterns (8 edges · narrative:
   // tacit knowledge captured from past incidents now feeds predictive pattern recognition).
-  ['rca-jrg-2025', 'tacit-1'], ['rca-banyan-2024', 'tacit-2'],
+  ['rca-east-2025', 'tacit-1'], ['rca-south-2024', 'tacit-2'],
   ['vib-90d', 'tacit-3'], ['temp-30d', 'tacit-4'],
   ['tacit-1', 'pattern-race'], ['tacit-2', 'pattern-crack'],
   ['tacit-3', 'pattern-race'], ['tacit-5', 'pattern-crack'],
@@ -7634,11 +7634,11 @@ function renderP3KGSvg() {
 
     // L7 Contracts row 1 (y=980 · 8 nodes)
     { id: 'ppa-pso',             label: 'PPA · PSO 2026',         layer: 'L7', x: 80,   y: 980 },
-    { id: 'ppa-banyan-2025',     label: 'PPA · Banyan 2025',      layer: 'L7', x: 214,  y: 980 },
-    { id: 'ppa-tuas-2028',       label: 'PPA · Tuas 2028',        layer: 'L7', x: 348,  y: 980 },
+    { id: 'ppa-south-2025',     label: 'PPA · South 2025',      layer: 'L7', x: 214,  y: 980 },
+    { id: 'ppa-west-2028',       label: 'PPA · West 2028',        layer: 'L7', x: 348,  y: 980 },
     { id: 'ppa-10yr',            label: 'PPA · 10-yr',            layer: 'L7', x: 482,  y: 980 },
     { id: 'ppa-5yr',             label: 'PPA · 5-yr',             layer: 'L7', x: 616,  y: 980 },
-    { id: 'longterm-sakra',      label: 'Long-term · Sakra',      layer: 'L7', x: 750,  y: 980 },
+    { id: 'longterm-north',      label: 'Long-term · North',      layer: 'L7', x: 750,  y: 980 },
     { id: 'vesting-baseline',    label: 'Vesting baseline',       layer: 'L7', x: 884,  y: 980 },
     { id: 'embedded-gen',        label: 'Embedded gen contract',  layer: 'L7', x: 1020, y: 980 },
 
@@ -7652,11 +7652,11 @@ function renderP3KGSvg() {
     { id: 'ancillary',           label: 'Ancillary services',     layer: 'L7', x: 1020, y: 1050 },
 
     // L8 Cross-site row 1 (y=1170 · 8 nodes)
-    { id: 'banyan',              label: 'Banyan-CHP',             layer: 'L8', x: 80,   y: 1170 },
-    { id: 'tuas-power',          label: 'Tuas-Power',             layer: 'L8', x: 214,  y: 1170 },
-    { id: 'sakra-cogen',         label: 'Sakra-Cogen',            layer: 'L8', x: 348,  y: 1170 },
+    { id: 'south',              label: 'South-CHP',             layer: 'L8', x: 80,   y: 1170 },
+    { id: 'west-power',          label: 'West-Power',             layer: 'L8', x: 214,  y: 1170 },
+    { id: 'north-cogen',         label: 'North-Cogen',            layer: 'L8', x: 348,  y: 1170 },
     { id: 'senoko',              label: 'Senoko',                 layer: 'L8', x: 482,  y: 1170 },
-    { id: 'tuaspring',           label: 'Tuaspring',              layer: 'L8', x: 616,  y: 1170 },
+    { id: 'west-spring',           label: 'West-Spring',              layer: 'L8', x: 616,  y: 1170 },
     { id: 'ytl-power-seraya',    label: 'YTL PowerSeraya',        layer: 'L8', x: 750,  y: 1170 },
     { id: 'pulau-seraya',        label: 'Pulau Seraya',           layer: 'L8', x: 884,  y: 1170 },
     { id: 'interconnect-my',     label: 'Interconnector MY-SG',   layer: 'L8', x: 1020, y: 1170 },
@@ -7665,9 +7665,9 @@ function renderP3KGSvg() {
     { id: 'interconnect-id',     label: 'Interconnector IND-SG',  layer: 'L8', x: 80,   y: 1240 },
     { id: 'pasir-panjang-sw',    label: 'Pasir Panjang switching',layer: 'L8', x: 237,  y: 1240 },
     { id: 'bukit-panjang-fdr',   label: 'Bukit Panjang feeder',   layer: 'L8', x: 393,  y: 1240 },
-    { id: 'tuas-substation',     label: 'Tuas substation',        layer: 'L8', x: 550,  y: 1240 },
-    { id: 'jurong-substation',   label: 'Jurong substation',      layer: 'L8', x: 707,  y: 1240 },
-    { id: 'sakra-intertie',      label: 'Sakra grid intertie',    layer: 'L8', x: 863,  y: 1240 },
+    { id: 'west-substation',     label: 'West substation',        layer: 'L8', x: 550,  y: 1240 },
+    { id: 'east-substation',   label: 'East substation',      layer: 'L8', x: 707,  y: 1240 },
+    { id: 'north-intertie',      label: 'North grid intertie',    layer: 'L8', x: 863,  y: 1240 },
     { id: 'grid-50hz',           label: 'Grid · 50 Hz',           layer: 'L8', x: 1020, y: 1240 },
   ];
 
@@ -7688,32 +7688,32 @@ function renderP3KGSvg() {
     ['usep', 'ppa-pso'], ['usep', 'hedges'], ['lng-spot', 'futures'],
     ['demand-q3', 'industrial-cust'],
     ['vesting-price', 'vesting-baseline'], ['usep-day-ahead', 'spot-trader-desk'],
-    ['electricity-futures', 'trader-hedge-book'], ['lng-charter', 'longterm-sakra'],
+    ['electricity-futures', 'trader-hedge-book'], ['lng-charter', 'longterm-north'],
     ['spinning-reserve', 'ancillary'], ['reg-ancillary', 'ancillary'],
     ['grid-rel-levy', 'embedded-gen'], ['imbalance-settle', 'hedges'],
 
     // L7 intra (10 edges · contracts internal)
     ['ppa-pso', 'hedges'], ['hedges', 'futures'], ['ppa-pso', 'ancillary'],
-    ['ppa-banyan-2025', 'ppa-pso'], ['ppa-tuas-2028', 'ppa-10yr'],
-    ['ppa-10yr', 'ppa-5yr'], ['longterm-sakra', 'ppa-10yr'],
+    ['ppa-south-2025', 'ppa-pso'], ['ppa-west-2028', 'ppa-10yr'],
+    ['ppa-10yr', 'ppa-5yr'], ['longterm-north', 'ppa-10yr'],
     ['trader-hedge-book', 'spot-trader-desk'], ['esco-industrial', 'industrial-cust'],
     ['vesting-baseline', 'ppa-pso'],
 
     // L7 → L8 (10 edges · contracts bound to sites)
-    ['ppa-pso', 'banyan'], ['ancillary', 'tuas-power'], ['hedges', 'sakra-cogen'],
-    ['ppa-banyan-2025', 'banyan'], ['ppa-tuas-2028', 'tuas-power'],
-    ['longterm-sakra', 'sakra-cogen'], ['ppa-10yr', 'senoko'],
-    ['ppa-5yr', 'tuaspring'], ['embedded-gen', 'ytl-power-seraya'],
+    ['ppa-pso', 'south'], ['ancillary', 'west-power'], ['hedges', 'north-cogen'],
+    ['ppa-south-2025', 'south'], ['ppa-west-2028', 'west-power'],
+    ['longterm-north', 'north-cogen'], ['ppa-10yr', 'senoko'],
+    ['ppa-5yr', 'west-spring'], ['embedded-gen', 'ytl-power-seraya'],
     ['esco-industrial', 'pulau-seraya'],
 
     // L8 intra (8 edges · cross-site grid topology)
-    ['banyan', 'tuas-power'], ['tuas-power', 'interconnect-my'], ['sakra-cogen', 'grid-50hz'],
-    ['senoko', 'tuaspring'], ['tuas-substation', 'tuas-power'],
-    ['jurong-substation', 'banyan'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
-    ['sakra-intertie', 'interconnect-id'],
+    ['south', 'west-power'], ['west-power', 'interconnect-my'], ['north-cogen', 'grid-50hz'],
+    ['senoko', 'west-spring'], ['west-substation', 'west-power'],
+    ['east-substation', 'south'], ['pasir-panjang-sw', 'bukit-panjang-fdr'],
+    ['north-intertie', 'interconnect-id'],
 
     // L8 → L3 (1 edge · cross-site touches plant)
-    ['banyan', 'bfp-3a'],
+    ['south', 'bfp-3a'],
   ];
 
   return buildKGSvg({
