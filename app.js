@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Asset Intelligence OS — Sembcorp Demo · Wave 1.5
+// Asset Intelligence OS — Demo · Wave 1.5
 // LIGHT THEME · personas panel external above tablet · Ops Control Tower view.
 // render() is PURE PAINT — no timers, no animation kickoffs.
 // ─────────────────────────────────────────────
@@ -242,7 +242,7 @@ const PERSONAS = [
 ];
 
 // ── Persona scene SVGs (light-theme retuned) ──
-// Stroke #475569 (slate-600) for silhouette/structure, #00A651 (Sembcorp green) for active accents,
+// Stroke #475569 (slate-600) for silhouette/structure, #00A651 (brand green) for active accents,
 // #94A3B8 (slate-400) for schematic lines.
 const PERSONA_SCENES = {
   ops: `
@@ -316,7 +316,7 @@ const PERSONA_SCENES = {
     </svg>`,
 };
 
-// ── Pre-existing incident roster (locked, Sembcorp-canonical) — W2.6 ──
+// ── Pre-existing incident roster (locked, canonical) — W2.6 ──
 const PRE_EXISTING_INCIDENTS = [
   {
     id: 'INC-2026-0521',
@@ -1165,7 +1165,7 @@ function buildAssetChainCard() {
 // ── Block 2 — Ops impact card (Section M revised content) ──
 function buildOpsImpactCard() {
   const card = el('div', 'ops-card');
-  // [illustrative — confirm w/ Sembcorp before 2026-05-27]
+  // [illustrative]
   const tariff = 'SGD 120/MWh peak';
   const revenueRisk = 'SGD 2.4M';
   card.innerHTML = `
@@ -3756,7 +3756,7 @@ function buildLandedIncidentRow() {
 function renderMonitoringView(root) {
   const content = el('div', 'tablet-content');
 
-  // (A) Header band — Sembcorp-teal, click target. W3.9: clickable per active persona handoff
+  // (A) Header band — teal, click target. W3.9: clickable per active persona handoff
   const hdr = el('div', 'mon-header');
   const persona = PERSONA_INITIALS[state.activePersona] || PERSONA_INITIALS.ops;
   hdr.innerHTML = `
@@ -4088,9 +4088,8 @@ function paintLaptopDashboard(content) {
     <div class="trader-dash">
       <div class="td-topbar">
         <div class="td-brand">
-          <img class="td-brand-logo" src="vendor/sembcorp-logo.png" alt="Sembcorp"/>
           <div class="td-brand-text-block">
-            <span class="td-brand-text">Sembcorp</span>
+            <span class="td-brand-text">Asset Intelligence OS</span>
             <span class="td-brand-text-sub">Energy Trading · Singapore</span>
           </div>
         </div>
@@ -6093,7 +6092,7 @@ const KG_COMMERCIAL_NODES = [
   // L6 — Contracts (W12 Section C: densified 2 → 7)
   { id: 'ppa-pso-2026',               label: 'PPA · PSO commitment · 2026',          layer: 'L6', x: 720, y: LAYER_Y.L6, z:  15, canonical: false, cluster: 'commercial' },
   { id: 'hedge-instrument-catalog',   label: 'Hedge instrument catalog',             layer: 'L6', x: 780, y: LAYER_Y.L6, z: -15, canonical: false, cluster: 'commercial' },
-  { id: 'pso-bilateral-2024-sembcorp', label: 'PSO bilateral · 2024-Sembcorp',       layer: 'L6', x: 700, y: LAYER_Y.L6, z:  30, canonical: false, cluster: 'commercial' },
+  { id: 'pso-bilateral-2024', label: 'PSO bilateral · 2024',       layer: 'L6', x: 700, y: LAYER_Y.L6, z:  30, canonical: false, cluster: 'commercial' },
   { id: 'industrial-customer-ccaa',   label: 'Industrial customer · CCAA-2026',      layer: 'L6', x: 740, y: LAYER_Y.L6, z:   0, canonical: false, cluster: 'commercial' },
   { id: 'futures-sgd-monthly',        label: 'Futures · SGD-monthly · Jul-26',       layer: 'L6', x: 760, y: LAYER_Y.L6, z: -30, canonical: false, cluster: 'commercial' },
   { id: 'vesting-contract-ema',       label: 'Vesting contract · EMA',               layer: 'L6', x: 800, y: LAYER_Y.L6, z:  10, canonical: false, cluster: 'commercial' },
@@ -6125,7 +6124,7 @@ const KG_COMMERCIAL_EDGES = [
   { source: 'usep-30min-clearing',         target: 'merchant-market-sg',     canonical: false, cluster: 'commercial-internal' },
   { source: 'lng-spot-index-asia',         target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'gas-pipeline-utilization',    target: 'lng-spot-index-asia',    canonical: false, cluster: 'commercial-internal' },
-  { source: 'pso-bilateral-2024-sembcorp', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
+  { source: 'pso-bilateral-2024', target: 'usep-30min-clearing',    canonical: false, cluster: 'commercial-internal' },
   { source: 'futures-sgd-monthly',         target: 'hedge-instrument-catalog', canonical: false, cluster: 'commercial-internal' },
   { source: 'banyan-chp-availability',     target: 'ppa-pso-2026',           canonical: false, cluster: 'commercial-internal' },
   { source: 'interconnector-malaysia',     target: 'grid-frequency-50hz',    canonical: false, cluster: 'commercial-internal' },
@@ -6169,7 +6168,7 @@ KG_NODES.forEach(n => {
   if (!n.isStaging) n.y = LAYER_Y[n.layer];
 });
 
-// Label refinements per Pulkit spec (Section C.3 — clearer Sembcorp-canonical naming).
+// Label refinements per Pulkit spec (Section C.3 — clearer canonical naming).
 const W14R3_LABEL_OVERRIDES = {
   'bearing-bfp-3a-nde':   'BFP-3A · NDE bearing (SKF)',
   'casing-bfp-3a':        'BFP-3A · pump casing (Sulzer)',
@@ -7014,7 +7013,7 @@ const WORKFLOW_AGENT_SCRIPT = {
   taskTreeLabel: 'Capture SOP Trace',
   steps: [
     {
-      log: { ts: '02:47:48', source: 'workflow', text: 'Sembcorp CCGT-1 · incident workflow trace captured · INC-2026-0537', nodeChain: ['bfp-3a', 'r-kumar'] },
+      log: { ts: '02:47:48', source: 'workflow', text: 'East-CCGT-1 · incident workflow trace captured · INC-2026-0537', nodeChain: ['bfp-3a', 'r-kumar'] },
       treeLabel: 'Capture trace',
       delayMs: 200,
     },
